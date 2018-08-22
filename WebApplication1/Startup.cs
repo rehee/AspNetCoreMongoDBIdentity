@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using WebApplication1.Data;
 using WebApplication1.Services;
 using MongoDB.Driver;
+using SDHCC.Identity;
+using SDHCC.DB;
 
 namespace WebApplication1
 {
@@ -43,9 +45,11 @@ namespace WebApplication1
 
       //        return new MUserStore<MUser>(database);
       //      });
-      services.AddScoped<IUserStore<MUser>, MUserStore<MUser>>();
-      services.AddScoped<IRoleStore<MRole>, MRoleStore<MRole>>();
-      services.AddScoped<IUserRoleStore<MUser>, MUserRoleStore<MUser, MRole, MUserRole>>();
+      services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
+      services.AddScoped<IRoleStore<MRole>, SDHCCRoleStore<MRole>>();
+      services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();
+      services.AddScoped<IUserStore<MUser>, SDHCCUserStore<MUser>>();
+      
 
       services.AddScoped<UserManager<MUser>>();
       services.AddScoped<RoleManager<MRole>>();
