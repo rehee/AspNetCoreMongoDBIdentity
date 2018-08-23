@@ -8,7 +8,12 @@ using System.Threading.Tasks;
 
 namespace SDHCC.Identity
 {
-  public class SDHCCUserStore<TUser> : IUserStore<TUser>, IUserPasswordStore<TUser>, IUserLoginStore<TUser>, IUserRoleStore<TUser> where TUser : IdentityUser
+  public class SDHCCUserStore<TUser> : IUserStore<TUser>, 
+    IUserPasswordStore<TUser>, 
+    IUserLoginStore<TUser>, 
+    IUserRoleStore<TUser>,
+    IUserEmailStore<TUser>
+    where TUser : IdentityUser
   {
     private ISDHCCDbContext db { get; set; }
     private IUserRoleStore<TUser> userRole { get; set; }
@@ -160,7 +165,12 @@ namespace SDHCC.Identity
 
     public Task<string> GetPasswordHashAsync(TUser user, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      var task = new Task<string>((u) => {
+        return ((TUser)u).PasswordHash;
+      }, user);
+      task.Start();
+      return task;
+
     }
 
     public Task<bool> HasPasswordAsync(TUser user, CancellationToken cancellationToken)
@@ -210,6 +220,41 @@ namespace SDHCC.Identity
     }
 
     public Task<IList<TUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+    {
+      throw new NotImplementedException();
+    }
+
+    public Task SetEmailAsync(TUser user, string email, CancellationToken cancellationToken)
+    {
+      throw new NotImplementedException();
+    }
+
+    public Task<string> GetEmailAsync(TUser user, CancellationToken cancellationToken)
+    {
+      throw new NotImplementedException();
+    }
+
+    public Task<bool> GetEmailConfirmedAsync(TUser user, CancellationToken cancellationToken)
+    {
+      throw new NotImplementedException();
+    }
+
+    public Task SetEmailConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken)
+    {
+      throw new NotImplementedException();
+    }
+
+    public Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+    {
+      throw new NotImplementedException();
+    }
+
+    public Task<string> GetNormalizedEmailAsync(TUser user, CancellationToken cancellationToken)
+    {
+      throw new NotImplementedException();
+    }
+
+    public Task SetNormalizedEmailAsync(TUser user, string normalizedEmail, CancellationToken cancellationToken)
     {
       throw new NotImplementedException();
     }

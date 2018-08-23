@@ -73,6 +73,28 @@ namespace SDHCC.DB
         return default(T);
       }
     }
+    public IEnumerable<T> Find<T>(IEnumerable<string> keys, out MethodResponse response)
+    {
+      var result = new List<T>();
+      var uniqueKeys = keys.Distinct();
+      foreach (var key in uniqueKeys)
+      {
+        MethodResponse res;
+        var obj = this.Find<T>(key, out res);
+        if (res.Success)
+        {
+          result.Add(obj);
+        }
+        else
+        {
+          response = res;
+          return result;
+        }
+      }
+      response = new MethodResponse();
+      response.Success = true;
+      return result;
+    }
     public object Find(string key, string entityName, string fullName, out MethodResponse response)
     {
       response = new MethodResponse();
@@ -85,7 +107,7 @@ namespace SDHCC.DB
           response.Success = true;
           return null;
         }
-        var returnObj = BsonSerializer.Deserialize(obj,Type.GetType(fullName));
+        var returnObj = BsonSerializer.Deserialize(obj, Type.GetType(fullName));
         response.Success = true;
         return returnObj;
       }
@@ -95,6 +117,27 @@ namespace SDHCC.DB
         response.ResponseObject = ex;
         return null;
       }
+    }
+    public IEnumerable<object> Find(IEnumerable<string> keys, string entityName, string fullName, out MethodResponse response)
+    {
+      var result = new List<object>();
+      var uniqueKeys = keys.Distinct();
+      foreach (var key in uniqueKeys)
+      {
+        MethodResponse res;
+        var obj = this.Find(key, entityName, fullName, out res);
+        if (res.Success)
+        {
+          result.Add(obj);
+        }
+        else
+        {
+          response = res;
+          return result;
+        }
+      }
+      response = new MethodResponse() { Success = true };
+      return result;
     }
     public T Find<T>(object search, out MethodResponse response)
     {
@@ -134,7 +177,7 @@ namespace SDHCC.DB
           response.Success = true;
           return null;
         }
-        var entity = BsonSerializer.Deserialize(obj,Type.GetType(search.ReturnFullName));
+        var entity = BsonSerializer.Deserialize(obj, Type.GetType(search.ReturnFullName));
         response.Success = true;
         return entity;
       }
@@ -158,7 +201,7 @@ namespace SDHCC.DB
           response.Success = true;
           return new List<T>();
         }
-        var entity = obj.Select(b=> BsonSerializer.Deserialize<T>(b)).ToList();
+        var entity = obj.Select(b => BsonSerializer.Deserialize<T>(b)).ToList();
         response.Success = true;
         return entity;
       }

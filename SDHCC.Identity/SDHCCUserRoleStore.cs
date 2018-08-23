@@ -72,10 +72,7 @@ namespace SDHCC.Identity
         {
           return new List<string>();
         }
-        var roleCollection = db.Filter<TRole>(new FilterParam()
-        {
-          Filters = new List<SearchFilter>() { new SearchFilter() { Compare = CompareOption.In, Property = "_id", Value = userRoles } }
-        }, out var response2);
+        var roleCollection = db.Find<TRole>(userRoles, out var res);
         return roleCollection.Select(b => b.Name).ToList();
       }, user);
       task.Start();

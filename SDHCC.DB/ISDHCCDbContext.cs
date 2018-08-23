@@ -10,6 +10,7 @@ namespace SDHCC.DB
     void Add(Object input,out MethodResponse response);
     void AddRange(IEnumerable<Object> input, out MethodResponse response);
     T Find<T>(string key, out MethodResponse response);
+    IEnumerable<T> Find<T>(IEnumerable<string> keys, out MethodResponse response);
     object Find(string key, string entityName, string fullName, out MethodResponse response);
     T Find<T>(object search, out MethodResponse response);
     object Find(SearchParam search, out MethodResponse response);
