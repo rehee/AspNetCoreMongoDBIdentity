@@ -37,63 +37,63 @@ namespace System
 {
   public static class SCHCCDBExtend
   {
-    public static FilterDefinition<BsonDocument> GetFilter(this SearchFilter filter)
+    public static FilterDefinition<T> GetFilter<T>(this SearchFilter filter)
     {
       switch (filter.Compare)
       {
         case CompareOption.Eq:
           var obj = filter.Value as object;
-          return (FilterDefinition<BsonDocument>)obj.ToBsonDocument();
+          return (FilterDefinition<T>)obj.ToBsonDocument();
         case CompareOption.In:
-          return Builders<BsonDocument>.Filter.In(filter.Property, filter.Value);
+          return Builders<T>.Filter.In(filter.Property, filter.Value);
         case CompareOption.Lt:
-          return Builders<BsonDocument>.Filter.Lt(filter.Property, filter.Value);
+          return Builders<T>.Filter.Lt(filter.Property, filter.Value);
         case CompareOption.Lte:
-          return Builders<BsonDocument>.Filter.Lte(filter.Property, filter.Value);
+          return Builders<T>.Filter.Lte(filter.Property, filter.Value);
         case CompareOption.Mod:
-          return Builders<BsonDocument>.Filter.Mod(filter.Property, filter.Value, filter.Value2);
+          return Builders<T>.Filter.Mod(filter.Property, filter.Value, filter.Value2);
         case CompareOption.Ne:
-          return Builders<BsonDocument>.Filter.Ne(filter.Property, filter.Value);
+          return Builders<T>.Filter.Ne(filter.Property, filter.Value);
         case CompareOption.Near:
-          return Builders<BsonDocument>.Filter.Near(filter.Property, filter.Value);
+          return Builders<T>.Filter.Near(filter.Property, filter.Value);
         case CompareOption.NearSphere:
-          return Builders<BsonDocument>.Filter.NearSphere(filter.Property, filter.Value);
+          return Builders<T>.Filter.NearSphere(filter.Property, filter.Value);
         case CompareOption.Nin:
-          return Builders<BsonDocument>.Filter.Nin(filter.Property, filter.Value);
+          return Builders<T>.Filter.Nin(filter.Property, filter.Value);
         case CompareOption.Not:
-          return Builders<BsonDocument>.Filter.Not(
-            SCHCCDBExtend.GetFilter(
+          return Builders<T>.Filter.Not(
+            SCHCCDBExtend.GetFilter<T>(
               new SearchFilter() { Compare = filter.Value, Property = filter.Property, Value = filter.Value2 }
               )
             );
         case CompareOption.OfType:
-          return Builders<BsonDocument>.Filter.OfType(filter.Property, filter.Value);
+          return Builders<T>.Filter.OfType(filter.Property, filter.Value);
         case CompareOption.Or:
-          return Builders<BsonDocument>.Filter.Or(filter.Property, filter.Value);
+          return Builders<T>.Filter.Or(filter.Property, filter.Value);
         case CompareOption.Regex:
-          return Builders<BsonDocument>.Filter.Regex(filter.Property, filter.Value);
+          return Builders<T>.Filter.Regex(filter.Property, filter.Value);
         case CompareOption.Size:
-          return Builders<BsonDocument>.Filter.Size(filter.Property, filter.Value);
+          return Builders<T>.Filter.Size(filter.Property, filter.Value);
         case CompareOption.SizeGt:
           return Builders<BsonDocument>.Filter.SizeGt(filter.Property, filter.Value);
         case CompareOption.SizeGte:
-          return Builders<BsonDocument>.Filter.SizeGte(filter.Property, filter.Value);
+          return Builders<T>.Filter.SizeGte(filter.Property, filter.Value);
         case CompareOption.SizeLt:
-          return Builders<BsonDocument>.Filter.SizeLt(filter.Property, filter.Value);
+          return Builders<T>.Filter.SizeLt(filter.Property, filter.Value);
         case CompareOption.SizeLte:
-          return Builders<BsonDocument>.Filter.SizeLte(filter.Property, filter.Value);
+          return Builders<T>.Filter.SizeLte(filter.Property, filter.Value);
         case CompareOption.Text:
-          return Builders<BsonDocument>.Filter.Text(filter.Property, filter.Value);
+          return Builders<T>.Filter.Text(filter.Property, filter.Value);
         case CompareOption.Type:
-          return Builders<BsonDocument>.Filter.Type(filter.Property, filter.Value);
+          return Builders<T>.Filter.Type(filter.Property, filter.Value);
         case CompareOption.Where:
-          return Builders<BsonDocument>.Filter.Where(filter.Value);
+          return Builders<T>.Filter.Where(filter.Value);
       }
-      return Builders<BsonDocument>.Filter.Eq(filter.Property, filter.Value);
+      return Builders<T>.Filter.Eq(filter.Property, filter.Value);
     }
-    public static FilterDefinition<BsonDocument> GetFilter(this IEnumerable<SearchFilter> filters)
+    public static FilterDefinition<T> GetFilter<T>(this IEnumerable<SearchFilter> filters)
     {
-      var filterList = filters.Select(b => b.GetFilter()).ToList();
+      var filterList = filters.Select(b => b.GetFilter<T>()).ToList();
       var filter = filterList[0];
       for(var i = 1; i < filterList.Count; i++)
       {
@@ -101,5 +101,6 @@ namespace System
       }
       return filter;
     }
+   
   }
 }

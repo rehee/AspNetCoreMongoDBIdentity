@@ -14,6 +14,7 @@ using WebApplication1.Services;
 using MongoDB.Driver;
 using SDHCC.Identity;
 using SDHCC.DB;
+using SDHCC.DB.Modules;
 
 namespace WebApplication1
 {
@@ -29,8 +30,8 @@ namespace WebApplication1
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      //services.AddDbContext<ApplicationDbContext>(options =>
-      //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+      services.AddDbContext<ApplicationDbContext>(options =>
+      options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
       services.AddSingleton<IMongoDatabase>(s =>
       {
@@ -38,6 +39,12 @@ namespace WebApplication1
         var database = client.GetDatabase("lalala");
         return database;
       });
+      SDHCCBaseEntity.db = () =>
+      {
+        var client = new MongoClient("mongodb://localhost:27017");
+        var database = client.GetDatabase("lalala");
+        return database;
+      };
       //services.AddScoped<IUserStore<MUser>>(provider =>
       //      {
       //        var client = new MongoClient("mongodb://localhost:27017");
@@ -46,10 +53,10 @@ namespace WebApplication1
       //        return new MUserStore<MUser>(database);
       //      });
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
-      services.AddScoped<IRoleStore<MRole>, SDHCCRoleStore<MRole>>();
+      services.AddScoped<IRoleStore<MRole>, SDHCCRoleStore<MRole, MUserRole>>();
       services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();
       services.AddScoped<IUserStore<MUser>, SDHCCUserStore<MUser>>();
-      
+
 
       services.AddScoped<UserManager<MUser>>();
       services.AddScoped<RoleManager<MRole>>();

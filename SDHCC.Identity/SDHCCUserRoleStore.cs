@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SDHCC.DB;
+using SDHCC.DB.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,11 @@ using System.Threading.Tasks;
 
 namespace SDHCC.Identity
 {
-  public class SDHCCUserRoleStore<TUser, TRole, TUserRole> : IUserRoleStore<TUser> where TUser : IdentityUser where TRole : IdentityRole<string> where TUserRole : IdentityUserRole<string>
+  public class SDHCCUserRoleStore<TUser, TRole, TUserRole> :
+    IUserRoleStore<TUser>
+    where TUser : IdentityUser, BaseEntity
+    where TRole : IdentityRole<string>, BaseEntity
+    where TUserRole : IdentityUserRole<string>, BaseEntity, new()
   {
     private ISDHCCDbContext db { get; set; }
     private IRoleStore<TRole> roles { get; set; }
@@ -22,9 +27,16 @@ namespace SDHCC.Identity
       this.mRoleName = typeof(TRole).Name;
       this.mUserRoleName = typeof(TUserRole).Name;
     }
-    public Task AddToRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
+    public async Task AddToRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      var roleExist = await this.IsInRoleAsync(user, roleName, cancellationToken);
+      if (roleExist)
+        return;
+      var role = db.Where<TRole>(b => b.NormalizedName == roleName.ToLower()).FirstOrDefault();
+      var userRole = new TUserRole();
+      userRole.RoleId = role.Id;
+      userRole.UserId = user.Id;
+      db.Add<TUserRole>(userRole, out var response);
     }
 
     public Task<IdentityResult> CreateAsync(TUser user, CancellationToken cancellationToken)
@@ -66,7 +78,7 @@ namespace SDHCC.Identity
           new FilterParam()
           {
             Filters = new List<SearchFilter>() { new SearchFilter() { Compare = CompareOption.Eq, Property = "UserId", Value = thisUser.Id } }
-          },out var response).ToList().Select(b=>b.RoleId).ToList();
+          }, out var response).ToList().Select(b => b.RoleId).ToList();
 
         if (userRoles.Count == 0)
         {
@@ -94,9 +106,12 @@ namespace SDHCC.Identity
       throw new NotImplementedException();
     }
 
-    public Task<bool> IsInRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
+    public async Task<bool> IsInRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      var role = await this.roles.FindByNameAsync(roleName, cancellationToken);
+      if (role == null)
+        return false;
+      return db.Where<TUserRole>(b => b.UserId == user.Id && b.RoleId == role.Id).Count() > 0;
     }
 
     public Task RemoveFromRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
