@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace SDHCC.Identity
 {
-  partial class SDHCCUserStore<TUser> : 
+  partial class SDHCCUserStore<TUser> :
     IUserSecurityStampStore<TUser>,
      IUserPhoneNumberStore<TUser>
-    where TUser : IdentityUser, BaseEntity
+    where TUser : IdentityUser
   {
     public async Task SetSecurityStampAsync(TUser user, string stamp, CancellationToken cancellationToken)
     {
@@ -29,24 +29,36 @@ namespace SDHCC.Identity
       return task;
     }
 
-    public Task SetPhoneNumberAsync(TUser user, string phoneNumber, CancellationToken cancellationToken)
+    public async Task SetPhoneNumberAsync(TUser user, string phoneNumber, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      user.PhoneNumber = phoneNumber;
+      await this.UpdateAsync(user, cancellationToken);
     }
 
     public Task<string> GetPhoneNumberAsync(TUser user, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      var task = new Task<string>(() =>
+      {
+        return user.PhoneNumber ?? "";
+      });
+      task.Start();
+      return task;
     }
 
     public Task<bool> GetPhoneNumberConfirmedAsync(TUser user, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      var task = new Task<bool>(() =>
+      {
+        return user.PhoneNumberConfirmed;
+      });
+      task.Start();
+      return task;
     }
 
-    public Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken)
+    public async Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      user.PhoneNumberConfirmed = confirmed;
+      await this.UpdateAsync(user, cancellationToken);
     }
   }
 }

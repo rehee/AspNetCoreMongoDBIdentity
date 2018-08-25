@@ -24,7 +24,7 @@ namespace SDHCC.Identity
     IUserTwoFactorRecoveryCodeStore<TUser>,
     IUserLockoutStore<TUser>,
     IUserClaimStore<TUser>
-    where TUser : IdentityUser, BaseEntity
+    where TUser : IdentityUser
   {
     private ISDHCCDbContext db { get; set; }
     private IUserRoleStore<TUser> userRole { get; set; }
@@ -91,7 +91,7 @@ namespace SDHCC.Identity
     {
       var task = new Task<IdentityResult>(() =>
       {
-        db.Remove<TUser>(user);
+        db.Remove<TUser>(user, user.Id);
         return IdentityResult.Success;
       });
       task.Start();
@@ -188,7 +188,7 @@ namespace SDHCC.Identity
     {
       var task = new Task<IdentityResult>(() =>
       {
-        db.Update<TUser>(user, out var response);
+        db.Update<TUser>(user, user.Id, out var response);
         if (response.Success)
         {
           return IdentityResult.Success;
@@ -253,7 +253,7 @@ namespace SDHCC.Identity
       {
         var existLogin = db.Where<SDHCIdentityUserLogin>(
           b => b.UserId == user.Id && b.LoginProvider == loginProvider && b.ProviderKey == providerKey
-          ).ToList();
+          ).Select(b => new UpdateEntity<SDHCIdentityUserLogin>() { Object = b, Key = b.Id }).ToList();
         if (existLogin.Count < 0)
           return;
         db.Remove<SDHCIdentityUserLogin>(existLogin);
@@ -264,7 +264,7 @@ namespace SDHCC.Identity
 
     public Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken)
     {
-      var task = new Task<IList<UserLoginInfo>>(()=> 
+      var task = new Task<IList<UserLoginInfo>>(() =>
       {
         return db.Where<SDHCIdentityUserLogin>(b => b.UserId == user.Id)
         .Select(b => new UserLoginInfo(b.LoginProvider, b.ProviderKey, b.ProviderDisplayName))
@@ -427,8 +427,10 @@ namespace SDHCC.Identity
 
     public Task<int> CountCodesAsync(TUser user, CancellationToken cancellationToken)
     {
+      
       throw new NotImplementedException();
     }
+
 
     public Task<DateTimeOffset?> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken)
     {
@@ -496,7 +498,7 @@ namespace SDHCC.Identity
       var task = new Task<IList<Claim>>(() =>
       {
         var records = db.Where<SDHCIdentityUserClaim>(b => b.UserId == user.Id);
-        return records.Select(b => new Claim(b.ClaimType,b.ClaimValue)).ToList();
+        return records.Select(b => new Claim(b.ClaimType, b.ClaimValue)).ToList();
       });
       task.Start();
       return task;
@@ -534,10 +536,10 @@ namespace SDHCC.Identity
         var first = existClain.FirstOrDefault();
         first.ClaimType = newClaim.Type;
         first.ClaimValue = newClaim.Value;
-        db.Update<SDHCIdentityUserClaim>(first, out var response);
+        db.Update<SDHCIdentityUserClaim>(first, first.Id, out var response);
         if (existClain.Count > 1)
         {
-          var exture = existClain.Where(b => existClain.IndexOf(b) > 1).ToList();
+          var exture = existClain.Where(b => existClain.IndexOf(b) > 1).Select(b => new UpdateEntity<SDHCIdentityUserClaim>() { Object = b, Key = b.Id }).ToList();
           db.Remove<SDHCIdentityUserClaim>(exture);
         }
       });
@@ -551,7 +553,9 @@ namespace SDHCC.Identity
       {
         foreach (var item in claims)
         {
-          var list = db.Where<SDHCIdentityUserClaim>(b => b.UserId == user.Id && b.ClaimValue == b.ClaimValue && b.ClaimType == item.Type).ToList();
+          var list = db.Where<SDHCIdentityUserClaim>(
+            b => b.UserId == user.Id && b.ClaimValue == b.ClaimValue && b.ClaimType == item.Type
+            ).Select(b => new UpdateEntity<SDHCIdentityUserClaim>() { Object = b, Key = b.Id }).ToList();
           db.Remove<SDHCIdentityUserClaim>(list);
         }
       });

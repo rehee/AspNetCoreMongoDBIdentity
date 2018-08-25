@@ -17,8 +17,8 @@ namespace SDHCC.Identity
     IRoleStore<TRole>,
     IQueryableRoleStore<TRole>,
     IRoleClaimStore<TRole>
-    where TRole : IdentityRole<string>, BaseEntity
-    where TUserRole : IdentityUserRole<string>, BaseEntity
+    where TRole : IdentityRole<string>
+    where TUserRole : IdentityUserRole<string>, BaseEntity, new()
   {
     private ISDHCCDbContext db { get; set; }
     public SDHCCRoleStore(ISDHCCDbContext db)
@@ -51,12 +51,12 @@ namespace SDHCC.Identity
     {
       var task = new Task<IdentityResult>(() =>
       {
-        var userRoles = db.Where<TUserRole>(b => b.UserId == role.Id).ToList();
+        var userRoles = db.Where<TUserRole>(b => b.UserId == role.Id).Select(b => new UpdateEntity<TUserRole>() { Object = b, Key = b.Id }).ToList();
         if (userRoles.Count > 0)
         {
           db.Remove<TUserRole>(userRoles);
         }
-        db.Remove<TRole>(role);
+        db.Remove<TRole>(role, role.Id);
         return IdentityResult.Success;
       });
       task.Start();
@@ -65,7 +65,7 @@ namespace SDHCC.Identity
 
     public void Dispose()
     {
-      
+
     }
 
     public Task<TRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
@@ -139,7 +139,7 @@ namespace SDHCC.Identity
     {
       var task = new Task<IdentityResult>(() =>
       {
-        db.Update<TRole>(role, out var response);
+        db.Update<TRole>(role, role.Id, out var response);
         if (response.Success)
           return IdentityResult.Success;
         return IdentityResult.Failed(new IdentityError[1]
@@ -194,7 +194,9 @@ namespace SDHCC.Identity
       {
         try
         {
-          var roleClaim = db.Where<SDHCIdentityRoleClaim>(b => b.RoleId == role.Id && b.ClaimType == claim.Type && b.ClaimValue == claim.Value).ToList();
+          var roleClaim = db.Where<SDHCIdentityRoleClaim>(
+            b => b.RoleId == role.Id && b.ClaimType == claim.Type && b.ClaimValue == claim.Value
+            ).Select(b => new UpdateEntity<SDHCIdentityRoleClaim>() { Object = b, Key = b.Id }).ToList();
           db.Remove<SDHCIdentityRoleClaim>(roleClaim);
         }
         catch { }

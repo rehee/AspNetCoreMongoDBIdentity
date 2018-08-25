@@ -18,13 +18,9 @@ namespace SDHCC.DB
     {
       this.db = db;
     }
-    public void Add<T>(T input, out MethodResponse response) where T : BaseEntity
+    public void Add<T>(T input, out MethodResponse response) where T : class
     {
       response = new MethodResponse();
-      if (String.IsNullOrEmpty(input.Id))
-      {
-        input.Id = Guid.NewGuid().ToString();
-      }
       try
       {
         var typeName = input.GetType().Name;
@@ -58,9 +54,9 @@ namespace SDHCC.DB
 
     }
 
-    public void AddRange<T>(IEnumerable<T> input, out MethodResponse response) where T : BaseEntity
+    public void AddRange<T>(IEnumerable<T> input, out MethodResponse response) where T : class
     {
-      foreach(var item in input)
+      foreach (var item in input)
       {
         this.Add<T>(item, out var res);
       }
@@ -81,7 +77,8 @@ namespace SDHCC.DB
       response = new MethodResponse();
       response.Success = true;
     }
-    public T Find<T>(string key, out MethodResponse response) where T: BaseEntity
+
+    public T Find<T>(string key, out MethodResponse response) where T : class
     {
       response = new MethodResponse();
       try
@@ -108,7 +105,7 @@ namespace SDHCC.DB
         return default(T);
       }
     }
-    public IEnumerable<T> Find<T>(IEnumerable<string> keys, out MethodResponse response) where T: BaseEntity
+    public IEnumerable<T> Find<T>(IEnumerable<string> keys, out MethodResponse response) where T : class
     {
       var result = new List<T>();
       var uniqueKeys = keys.Distinct();
@@ -146,7 +143,7 @@ namespace SDHCC.DB
         {
           obj = collection.Find(new { _id = key }.ToBsonDocument()).FirstOrDefault();
         }
-        
+
         if (obj == null)
         {
           response.Success = true;
@@ -161,6 +158,25 @@ namespace SDHCC.DB
         response.ResponseMessage = ex.Message;
         response.ResponseObject = ex;
         return null;
+      }
+    }
+    
+    public T Find<T>(object search, out MethodResponse response) where T : class
+    {
+      response = new MethodResponse();
+      try
+      {
+        var typeName = typeof(T).Name;
+        var collection = db.GetCollection<T>(typeName);
+        var obj = collection.Find(search.ToBsonDocument()).FirstOrDefault();
+        response.Success = true;
+        return obj;
+      }
+      catch (Exception ex)
+      {
+        response.ResponseMessage = ex.Message;
+        response.ResponseObject = ex;
+        return default(T);
       }
     }
     public IEnumerable<object> Find(IEnumerable<string> keys, string entityName, string fullName, out MethodResponse response)
@@ -183,24 +199,6 @@ namespace SDHCC.DB
       }
       response = new MethodResponse() { Success = true };
       return result;
-    }
-    public T Find<T>(object search, out MethodResponse response) where T : BaseEntity
-    {
-      response = new MethodResponse();
-      try
-      {
-        var typeName = typeof(T).Name;
-        var collection = db.GetCollection<T>(typeName);
-        var obj = collection.Find(search.ToBsonDocument()).FirstOrDefault();
-        response.Success = true;
-        return obj;
-      }
-      catch (Exception ex)
-      {
-        response.ResponseMessage = ex.Message;
-        response.ResponseObject = ex;
-        return default(T);
-      }
     }
     public object Find(SearchParam search, out MethodResponse response)
     {
@@ -227,7 +225,7 @@ namespace SDHCC.DB
         return null;
       }
     }
-    public IEnumerable<T> Filter<T>(FilterParam param, out MethodResponse response) where T : BaseEntity
+    public IEnumerable<T> Filter<T>(FilterParam param, out MethodResponse response) where T : class
     {
       response = new MethodResponse();
       try
@@ -245,22 +243,26 @@ namespace SDHCC.DB
         return null;
       }
     }
-    public void Update<T>(T input,out MethodResponse response) where T : BaseEntity
+    public void Update<T>(T input, string id, out MethodResponse response) where T : class
     {
       response = new MethodResponse();
       try
       {
         var name = typeof(T).Name;
         var collection = db.GetCollection<T>(name);
-        collection.UpdateOne(new { Id = input.Id }.ToBsonDocument(), new BsonDocument { { "$set", input.ToBsonDocument() } });
+        collection.UpdateOne(
+          new { Id = id }.ToBsonDocument(),
+          new BsonDocument { { "$set", input.ToBsonDocument() } }
+          );
         response.Success = true;
-      }catch(Exception ex)
+      }
+      catch (Exception ex)
       {
         response.ResponseMessage = ex.Message;
         response.ResponseObject = ex;
       }
     }
-    public IQueryable<T> Where<T>(Expression<Func<T, bool>> where = null) where T : BaseEntity
+    public IQueryable<T> Where<T>(Expression<Func<T, bool>> where = null) where T : class
     {
       var name = typeof(T).Name;
       var collection = db.GetCollection<T>(name);
@@ -271,22 +273,21 @@ namespace SDHCC.DB
       }
       return collection.AsQueryable<T>();
     }
-
-    public void Remove<T>(T input) where T : BaseEntity
+    public void Remove<T>(T input, string id) where T : class
     {
       try
       {
         var name = input.GetType().Name;
         var collection = db.GetCollection<T>(name);
-        collection.DeleteOne(new { Id = input.Id }.ToBsonDocument());
+        collection.DeleteOne(new { Id = id }.ToBsonDocument());
       }
       catch { }
     }
-    public void Remove<T>(IEnumerable<T> input) where T : BaseEntity
+    public void Remove<T>(IEnumerable<UpdateEntity<T>> items) where T : class
     {
-      foreach(var item in input)
+      foreach (var item in items)
       {
-        this.Remove<T>(item);
+        this.Remove<T>(item.Object, item.Key);
       }
     }
   }

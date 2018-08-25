@@ -23,10 +23,16 @@ namespace WebApplication1.Controllers
     public async Task<IActionResult> Index()
     {
       var user = db.Where<MUser>().FirstOrDefault();
-      var token = await userManager.GenerateChangePhoneNumberTokenAsync(user,"12345");
-      var result = await userManager.ChangePhoneNumberAsync(user, "12345", token);
-
-      return new ObjectResult(result);
+      //var token1 = await userManager.GenerateEmailConfirmationTokenAsync(user);
+      //var result = await userManager.ConfirmEmailAsync(user, token1);
+      //var result2 = await userManager.ConfirmEmailAsync(user, token1);
+      //var token2 = await userManager.GenerateEmailConfirmationTokenAsync(user);
+      //var token3 = await userManager.GenerateEmailConfirmationTokenAsync(user);
+      //var result2 = await userManager.ConfirmEmailAsync(user, token1);
+      //var token1 = await userManager.GenerateChangeEmailTokenAsync(user, "x3iii131@gmail.com");
+      //var token2 = await userManager.GenerateChangeEmailTokenAsync(user, "x3iii132@gmail.com");
+      var result = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 1); 
+      return new ObjectResult(user);
     }
   }
 

@@ -12,9 +12,9 @@ namespace SDHCC.Identity
 {
   public partial class SDHCCUserRoleStore<TUser, TRole, TUserRole> :
     IUserRoleStore<TUser>
-    where TUser : IdentityUser, BaseEntity
-    where TRole : IdentityRole<string>, BaseEntity
-    where TUserRole : IdentityUserRole<string>, BaseEntity, new()
+    where TUser : IdentityUser
+    where TRole : IdentityRole<string>
+    where TUserRole : IdentityUserRole<string>, new()
   {
     private ISDHCCDbContext db { get; set; }
     private IRoleStore<TRole> roles { get; set; }
