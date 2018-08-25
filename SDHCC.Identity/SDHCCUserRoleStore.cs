@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SDHCC.Identity
 {
-  public class SDHCCUserRoleStore<TUser, TRole, TUserRole> :
+  public partial class SDHCCUserRoleStore<TUser, TRole, TUserRole> :
     IUserRoleStore<TUser>
     where TUser : IdentityUser, BaseEntity
     where TRole : IdentityRole<string>, BaseEntity
@@ -18,14 +18,10 @@ namespace SDHCC.Identity
   {
     private ISDHCCDbContext db { get; set; }
     private IRoleStore<TRole> roles { get; set; }
-    private string mRoleName { get; set; }
-    private string mUserRoleName { get; set; }
     public SDHCCUserRoleStore(ISDHCCDbContext db, IRoleStore<TRole> roles)
     {
       this.db = db;
       this.roles = roles;
-      this.mRoleName = typeof(TRole).Name;
-      this.mUserRoleName = typeof(TUserRole).Name;
     }
     public async Task AddToRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
     {

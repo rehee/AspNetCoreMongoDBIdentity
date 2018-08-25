@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SDHCC.Identity
 {
-  public class SDHCCUserStore<TUser> : IUserStore<TUser>,
+  public partial class SDHCCUserStore<TUser> : IUserStore<TUser>,
     IUserPasswordStore<TUser>,
     IUserLoginStore<TUser>,
     IUserRoleStore<TUser>,
