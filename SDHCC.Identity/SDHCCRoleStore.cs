@@ -31,6 +31,10 @@ namespace SDHCC.Identity
     {
       var task = new Task<IdentityResult>(() =>
       {
+        if (String.IsNullOrEmpty(role.Id))
+        {
+          role.Id = Guid.NewGuid().ToString();
+        }
         db.Add<TRole>(role, out var response);
         if (response.Success)
           return IdentityResult.Success;
@@ -185,6 +189,7 @@ namespace SDHCC.Identity
         ClaimType = claim.Type,
         ClaimValue = claim.Value,
         RoleId = role.Id,
+        Id = Guid.NewGuid().ToString()
       };
       db.Add<SDHCIdentityRoleClaim>(roleClaim, out var response);
     }

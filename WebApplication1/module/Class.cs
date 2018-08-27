@@ -6,7 +6,9 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
+using SDHCC.DB;
 using SDHCC.DB.Modules;
+using SDHCC.DB.Orms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +52,14 @@ namespace System
         return this.GetType().FullName;
       }
       set { }
+    }
+  }
+
+  public class CCC : SDHCOrm
+  {
+    public CCC(ISDHCCDbContext db) : base(db)
+    {
+
     }
   }
 }

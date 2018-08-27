@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace SDHCC.Identity
 {
-  partial class SDHCCUserStore<TUser> :
+  partial class SDHCCUserStore<TUser, TRole, TUserRole> :
     IUserSecurityStampStore<TUser>,
      IUserPhoneNumberStore<TUser>
-    where TUser : IdentityUser
+    where TUser : IdentityUser<string>
+    where TRole : IdentityRole<string>
+    where TUserRole : IdentityUserRole<string>, BaseEntity, new()
   {
     public async Task SetSecurityStampAsync(TUser user, string stamp, CancellationToken cancellationToken)
     {

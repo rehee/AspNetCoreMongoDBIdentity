@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using SDHCC.DB;
 using SDHCC.DB.Modules;
 using SDHCC.Identity.Modules.Claims;
+using SDHCC.Identity.Modules.ClaimS;
 using SDHCC.Identity.Modules.UserLogins;
+using SDHCC.Identity.Modules.UserTokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,24 +16,30 @@ using System.Threading.Tasks;
 
 namespace SDHCC.Identity
 {
-  public partial class SDHCCUserStore<TUser> : IUserStore<TUser>,
+  public partial class SDHCCUserStore<TUser, TRole, TUserRole> : 
+    IUserStore<TUser>,
     IUserPasswordStore<TUser>,
     IUserLoginStore<TUser>,
-    IUserRoleStore<TUser>,
     IUserEmailStore<TUser>,
     IUserAuthenticatorKeyStore<TUser>,
     IUserTwoFactorStore<TUser>,
     IUserTwoFactorRecoveryCodeStore<TUser>,
     IUserLockoutStore<TUser>,
-    IUserClaimStore<TUser>
-    where TUser : IdentityUser
+    IUserClaimStore<TUser>,
+    IQueryableUserStore<TUser>
+    where TUser : IdentityUser<string>
+    where TRole : IdentityRole<string>
+    where TUserRole : IdentityUserRole<string>, BaseEntity, new()
   {
     private ISDHCCDbContext db { get; set; }
-    private IUserRoleStore<TUser> userRole { get; set; }
-    public SDHCCUserStore(ISDHCCDbContext db, IUserRoleStore<TUser> userRole)
+
+    public IQueryable<TUser> Users => db.Where<TUser>();
+
+    //private IUserRoleStore<TUser> userRole { get; set; }
+    public SDHCCUserStore(ISDHCCDbContext db)
     {
       this.db = db;
-      this.userRole = userRole;
+      //this.userRole = userRole;
 
     }
     public Task<TUser> GetUserAsync(ClaimsPrincipal principal)
@@ -65,6 +73,10 @@ namespace SDHCC.Identity
           var insertUser = (TUser)u;
           insertUser.Email = insertUser.Email.Trim().ToLower();
           insertUser.NormalizedEmail = insertUser.NormalizedEmail.Trim().ToLower();
+          if (String.IsNullOrEmpty(insertUser.Id))
+          {
+            insertUser.Id = Guid.NewGuid().ToString();
+          }
           db.Add<TUser>(insertUser, out var response);
           if (response.Success != true)
           {
@@ -92,6 +104,29 @@ namespace SDHCC.Identity
       var task = new Task<IdentityResult>(() =>
       {
         db.Remove<TUser>(user, user.Id);
+        var userRole = db.Where<TUserRole>(
+            b => b.UserId == user.Id).ToList()
+            .Select(b => new UpdateEntity<TUserRole>() { Object = b, Key = b.Id })
+            .ToList();
+        db.Remove<TUserRole>(userRole);
+        var userClaims = db.Where<SDHCIdentityUserClaim>(
+          b => b.UserId == user.Id).ToList()
+          .Select(b => new UpdateEntity<SDHCIdentityUserClaim>() { Object = b, Key = b.Id })
+          .ToList();
+        db.Remove<SDHCIdentityUserClaim>(userClaims);
+
+        var userLogin = db.Where<SDHCIdentityUserLogin>(
+          b => b.UserId == user.Id).ToList()
+          .Select(b => new UpdateEntity<SDHCIdentityUserLogin>() { Object = b, Key = b.Id })
+          .ToList();
+        db.Remove<SDHCIdentityUserLogin>(userLogin);
+
+        var userToken = db.Where<SDHCIdentityUserToken>(
+          b => b.UserId == user.Id).ToList()
+          .Select(b => new UpdateEntity<SDHCIdentityUserToken>() { Object = b, Key = b.Id })
+          .ToList();
+        db.Remove<SDHCIdentityUserToken>(userToken);
+
         return IdentityResult.Success;
       });
       task.Start();
@@ -240,6 +275,7 @@ namespace SDHCC.Identity
           LoginProvider = login.LoginProvider,
           ProviderKey = login.ProviderKey,
           ProviderDisplayName = login.ProviderDisplayName,
+          Id = Guid.NewGuid().ToString()
         };
         db.Add<SDHCIdentityUserLogin>(sdhcLogin, out var response);
       });
@@ -266,7 +302,7 @@ namespace SDHCC.Identity
     {
       var task = new Task<IList<UserLoginInfo>>(() =>
       {
-        return db.Where<SDHCIdentityUserLogin>(b => b.UserId == user.Id)
+        return db.Where<SDHCIdentityUserLogin>(b => b.UserId == user.Id).ToList()
         .Select(b => new UserLoginInfo(b.LoginProvider, b.ProviderKey, b.ProviderDisplayName))
         .ToList();
       });
@@ -287,31 +323,6 @@ namespace SDHCC.Identity
       });
       task.Start();
       return task;
-    }
-
-    public Task AddToRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
-    {
-      return userRole.AddToRoleAsync(user, roleName, cancellationToken);
-    }
-
-    public Task RemoveFromRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
-    {
-      return userRole.RemoveFromRoleAsync(user, roleName, cancellationToken);
-    }
-
-    public Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken)
-    {
-      return userRole.GetRolesAsync(user, cancellationToken);
-    }
-
-    public Task<bool> IsInRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
-    {
-      return this.userRole.IsInRoleAsync(user, roleName, cancellationToken);
-    }
-
-    public Task<IList<TUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
-    {
-      return this.userRole.GetUsersInRoleAsync(roleName, cancellationToken);
     }
 
     public async Task SetEmailAsync(TUser user, string email, CancellationToken cancellationToken)
@@ -416,19 +427,59 @@ namespace SDHCC.Identity
 
     public Task ReplaceCodesAsync(TUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
     {
-
-      throw new NotImplementedException();
+      var task = new Task(() =>
+      {
+        var code = String.Join(";", recoveryCodes);
+        var newItem = new SDHCIdentityUserToken();
+        newItem.Id = Guid.NewGuid().ToString();
+        newItem.Value = code;
+        newItem.UserId = user.Id;
+        newItem.Name = "RecoveryCodes";
+        newItem.LoginProvider = "[AspNetUserStore]";
+        db.Add<SDHCIdentityUserToken>(newItem, out var response);
+      });
+      task.Start();
+      return task;
     }
 
     public Task<bool> RedeemCodeAsync(TUser user, string code, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      var task = new Task<bool>(() =>
+      {
+        var codes = db.Where<SDHCIdentityUserToken>(b => b.UserId == user.Id && b.Name == "RecoveryCodes").FirstOrDefault();
+        if (codes == null)
+        {
+          return false;
+        }
+        if (String.IsNullOrEmpty(codes.Value))
+        {
+          return false;
+        }
+        var codeString = codes.Value.Split(';').ToList().IndexOf(code);
+        return codeString >= 0;
+      });
+      task.Start();
+      return task;
     }
 
     public Task<int> CountCodesAsync(TUser user, CancellationToken cancellationToken)
     {
-      
-      throw new NotImplementedException();
+      var task = new Task<int>(() =>
+      {
+        var code = db.Where<SDHCIdentityUserToken>(b => b.UserId == user.Id && b.Name == "RecoveryCodes").FirstOrDefault();
+        if (code == null)
+        {
+          return 0;
+        }
+        if (String.IsNullOrEmpty(code.Value))
+        {
+          return 0;
+        }
+        var codes = code.Value.Split(';').Count();
+        return codes;
+      });
+      task.Start();
+      return task;
     }
 
 
@@ -497,8 +548,9 @@ namespace SDHCC.Identity
     {
       var task = new Task<IList<Claim>>(() =>
       {
-        var records = db.Where<SDHCIdentityUserClaim>(b => b.UserId == user.Id);
-        return records.Select(b => new Claim(b.ClaimType, b.ClaimValue)).ToList();
+        var records = db.Where<SDHCIdentityUserClaim>(b => b.UserId == user.Id).ToList();
+        var claims =  records.Select(b => new Claim(b.ClaimType, b.ClaimValue)).ToList();
+        return claims;
       });
       task.Start();
       return task;
@@ -518,6 +570,7 @@ namespace SDHCC.Identity
             UserId = user.Id,
             ClaimType = item.Type,
             ClaimValue = item.Value,
+            Id = Guid.NewGuid().ToString()
           };
           db.Add<SDHCIdentityUserClaim>(newClaims, out var response);
         }

@@ -12,9 +12,9 @@ namespace SDHCC.Identity
 {
   public partial class SDHCCUserRoleStore<TUser, TRole, TUserRole> :
     IUserRoleStore<TUser>
-    where TUser : IdentityUser
+    where TUser : IdentityUser<string>
     where TRole : IdentityRole<string>
-    where TUserRole : IdentityUserRole<string>, new()
+    where TUserRole : IdentityUserRole<string>, BaseEntity, new()
   {
     private ISDHCCDbContext db { get; set; }
     private IRoleStore<TRole> roles { get; set; }
@@ -32,6 +32,7 @@ namespace SDHCC.Identity
       var userRole = new TUserRole();
       userRole.RoleId = role.Id;
       userRole.UserId = user.Id;
+      userRole.Id = Guid.NewGuid().ToString();
       db.Add<TUserRole>(userRole, out var response);
     }
 
@@ -42,7 +43,17 @@ namespace SDHCC.Identity
 
     public Task<IdentityResult> DeleteAsync(TUser user, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      var task = new Task<IdentityResult>(() =>
+      {
+        var userRole = db.Where<TUserRole>(
+          b => b.UserId == user.Id).ToList()
+          .Select(b => new UpdateEntity<TUserRole>() { Object = b, Key = b.Id })
+          .ToList();
+        db.Remove<TUserRole>(userRole);
+        return IdentityResult.Success;
+      });
+      task.Start();
+      return task;
     }
 
     public void Dispose()

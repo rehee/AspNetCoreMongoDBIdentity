@@ -15,6 +15,7 @@ using MongoDB.Driver;
 using SDHCC.Identity;
 using SDHCC.DB;
 using SDHCC.DB.Modules;
+using SDHCC.DB.Orms;
 
 namespace WebApplication1
 {
@@ -45,17 +46,12 @@ namespace WebApplication1
         var database = client.GetDatabase("lalala");
         return database;
       };
-      //services.AddScoped<IUserStore<MUser>>(provider =>
-      //      {
-      //        var client = new MongoClient("mongodb://localhost:27017");
-      //        var database = client.GetDatabase("lalala");
-
-      //        return new MUserStore<MUser>(database);
-      //      });
+      
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
+      services.AddScoped<ISDHCOrm, CCC>();
       services.AddScoped<IRoleStore<MRole>, SDHCCRoleStore<MRole, MUserRole>>();
-      services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();
-      services.AddScoped<IUserStore<MUser>, SDHCCUserStore<MUser>>();
+      //services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();
+      services.AddScoped<IUserStore<MUser>, SDHCCUserStore<MUser, MRole, MUserRole>>();
 
 
       services.AddScoped<UserManager<MUser>>();
