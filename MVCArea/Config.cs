@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MVCArea
@@ -15,10 +16,18 @@ namespace MVCArea
     {
       services.AddMvc().ConfigureApplicationPartManager(m =>
       {
-        var homeType = typeof(MVCArea.Areas.Controllers.HomeController);
-        var controllerAssembly = homeType.Assembly;
+        string nspace = "MVCArea.Areas.Controllers";
+
+        var q = from t in Assembly.GetExecutingAssembly().GetTypes()
+                where t.IsClass && t.Namespace == nspace
+                select t;
         var feature = new ControllerFeature();
-        m.ApplicationParts.Add(new AssemblyPart(controllerAssembly));
+        foreach (var t in q)
+        {
+          //var homeType = typeof(MVCArea.Areas.Controllers.HomeController);
+          var controllerAssembly = t.Assembly;
+          m.ApplicationParts.Add(new AssemblyPart(controllerAssembly));
+        }
         m.PopulateFeature(feature);
         services.AddSingleton(feature.Controllers.Select(t => t.AsType()).ToArray());
       }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
