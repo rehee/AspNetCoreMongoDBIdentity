@@ -75,15 +75,7 @@ namespace MVCAuth
       services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders();
       //.AddEntityFrameworkStores<ApplicationDbContext>();
 
-      services.AddMvc().ConfigureApplicationPartManager(m =>
-      {
-        var homeType = typeof(MVCArea.Areas.admin.Controllers.HomeController);
-        var controllerAssembly = homeType.Assembly;
-        var feature = new ControllerFeature();
-        m.ApplicationParts.Add(new AssemblyPart(controllerAssembly));
-        m.PopulateFeature(feature);
-        services.AddSingleton(feature.Controllers.Select(t => t.AsType()).ToArray());
-      }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+      MVCArea.Config.Mvc(services);
     }
 
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)

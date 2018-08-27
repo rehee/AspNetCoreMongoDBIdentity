@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Areas\admin\Views\Home1\Index.cshtml">
+    <Content Update="Areas\admin\Views\Home\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
