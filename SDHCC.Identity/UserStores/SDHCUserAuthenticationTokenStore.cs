@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using SDHCC.DB.Modules;
-using SDHCC.Identity.Modules.UserTokens;
+using SDHCC.DB.Models;
+using SDHCC.Identity.Models.UserTokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;

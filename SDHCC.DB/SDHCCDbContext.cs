@@ -2,7 +2,7 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using SDHCC.Core.MethodResponse;
-using SDHCC.DB.Modules;
+using SDHCC.DB.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Text;
 
 namespace SDHCC.DB
 {
-  public class SDHCCDbContext : ISDHCCDbContext
+  public partial class SDHCCDbContext : ISDHCCDbContext
   {
     private IMongoDatabase db { get; set; }
     public SDHCCDbContext(IMongoDatabase db)
@@ -160,7 +160,7 @@ namespace SDHCC.DB
         return null;
       }
     }
-    
+
     public T Find<T>(object search, out MethodResponse response) where T : class
     {
       response = new MethodResponse();
@@ -245,11 +245,15 @@ namespace SDHCC.DB
     }
     public void Update<T>(T input, string id, out MethodResponse response) where T : class
     {
+      var name = typeof(T).Name;
+      Update<T>(input, id, name, out response);
+    }
+    public void Update<T>(T input, string id, string entityName, out MethodResponse response) where T : class
+    {
       response = new MethodResponse();
       try
       {
-        var name = typeof(T).Name;
-        var collection = db.GetCollection<T>(name);
+        var collection = db.GetCollection<T>(entityName);
         collection.UpdateOne(
           new { Id = id }.ToBsonDocument(),
           new BsonDocument { { "$set", input.ToBsonDocument() } }

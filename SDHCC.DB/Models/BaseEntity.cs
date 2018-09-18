@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SDHCC.DB.Modules
+namespace SDHCC.DB.Models
 {
   [BsonIgnoreExtraElements(ignoreExtraElements: true, Inherited = true)]
-  public class SDHCCBaseEntity : BaseEntity
+  public abstract class SDHCCBaseEntity : BaseEntity
   {
     public string Id { get; set; }
     public string FullType
@@ -20,7 +20,10 @@ namespace SDHCC.DB.Modules
     }
     [BsonIgnore]
     public static Func<IMongoDatabase> db { get; set; }
-
+    public void GenerateId()
+    {
+      this.Id = Guid.NewGuid().ToString();
+    }
   }
   public interface BaseEntity
   {

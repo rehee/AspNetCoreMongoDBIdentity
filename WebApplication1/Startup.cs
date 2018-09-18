@@ -14,7 +14,7 @@ using WebApplication1.Services;
 using MongoDB.Driver;
 using SDHCC.Identity;
 using SDHCC.DB;
-using SDHCC.DB.Modules;
+using SDHCC.DB.Models;
 using SDHCC.DB.Orms;
 
 namespace WebApplication1

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using SDHCC.DB;
-using SDHCC.DB.Modules;
-using SDHCC.Identity.Modules.Claims;
-using SDHCC.Identity.Modules.ClaimS;
-using SDHCC.Identity.Modules.UserLogins;
-using SDHCC.Identity.Modules.UserTokens;
+using SDHCC.DB.Models;
+using SDHCC.Identity.Models.Claims;
+using SDHCC.Identity.Models.ClaimS;
+using SDHCC.Identity.Models.UserLogins;
+using SDHCC.Identity.Models.UserTokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -329,7 +329,7 @@ namespace SDHCC.Identity
     {
       email = email.Trim().ToLower();
       var userFind = await this.FindByEmailAsync(email, cancellationToken);
-      if (userFind != null)
+      if (userFind == null)
         return;
       user.NormalizedEmail = email;
       user.Email = email;

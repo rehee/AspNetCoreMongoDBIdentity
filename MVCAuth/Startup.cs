@@ -13,10 +13,10 @@ using MVCAuth.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
-using SDHCC.DB.Modules;
+using SDHCC.DB.Models;
 using SDHCC.DB;
 using SDHCC.Identity;
-using SDHCC.Identity.Modules.UserRoles;
+using SDHCC.Identity.Models.UserRoles;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
@@ -80,16 +80,18 @@ namespace MVCAuth
 
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
-      if (env.IsDevelopment())
-      {
-        app.UseDeveloperExceptionPage();
-        app.UseDatabaseErrorPage();
-      }
-      else
-      {
-        app.UseExceptionHandler("/Home/Error");
-        app.UseHsts();
-      }
+      app.UseDeveloperExceptionPage();
+      app.UseDatabaseErrorPage();
+      //if (env.IsDevelopment())
+      //{
+      //  app.UseDeveloperExceptionPage();
+      //  app.UseDatabaseErrorPage();
+      //}
+      //else
+      //{
+      //  app.UseExceptionHandler("/Home/Error");
+      //  app.UseHsts();
+      //}
 
       app.UseHttpsRedirection();
       app.UseStaticFiles();

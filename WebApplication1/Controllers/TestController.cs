@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using SDHCC.DB;
-using SDHCC.DB.Modules;
+using SDHCC.DB.Models;
 using SDHCC.DB.Orms;
 using WebApplication1.Data;
 

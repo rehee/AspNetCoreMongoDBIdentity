@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using SDHCC.DB.Modules;
+using MongoDB.Bson.Serialization.Attributes;
+using SDHCC.DB.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SDHCC.Identity.Modules.UserLogins
+namespace SDHCC.Identity.Models.UserRoles
 {
-  public class SDHCIdentityUserLogin : IdentityUserLogin<string>, BaseEntity
+  [BsonIgnoreExtraElements(ignoreExtraElements: true, Inherited = true)]
+  public class SDHCUserRole : IdentityUserRole<string>, BaseEntity
   {
     public string Id { get; set; }
     public string FullType

@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 using SDHCC.DB;
-using SDHCC.DB.Modules;
+using SDHCC.DB.Models;
 using SDHCC.DB.Orms;
 using System;
 using System.Collections.Generic;

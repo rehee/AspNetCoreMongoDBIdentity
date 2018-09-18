@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SDHCC.DB;
-using SDHCC.DB.Modules;
-using SDHCC.Identity.Modules;
-using SDHCC.Identity.Modules.ClaimS;
+using SDHCC.DB.Models;
+using SDHCC.Identity.Models;
+using SDHCC.Identity.Models.ClaimS;
 using System;
 using System.Collections.Generic;
 using System.Linq;

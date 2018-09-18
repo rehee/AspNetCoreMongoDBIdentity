@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SDHCC.DB.Modules
+namespace SDHCC.DB.Models
 {
   public class UpdateEntity<T>
   {

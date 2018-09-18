@@ -1,9 +1,9 @@
-﻿using SDHCC.DB.Modules;
+﻿using SDHCC.DB.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SDHCC.Identity.Modules.UserTokens
+namespace SDHCC.Identity.Models.UserTokens
 {
   class SDHCIdentityUserToken : SDHCCBaseEntity
   {

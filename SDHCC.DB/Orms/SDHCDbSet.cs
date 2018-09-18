@@ -1,5 +1,5 @@
 ﻿using SDHCC.Core.MethodResponse;
-using SDHCC.DB.Modules;
+using SDHCC.DB.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
