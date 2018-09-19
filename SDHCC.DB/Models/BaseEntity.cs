@@ -20,6 +20,10 @@ namespace SDHCC.DB.Models
     }
     [BsonIgnore]
     public static Func<IMongoDatabase> db { get; set; }
+
+    [BsonIgnore]
+    public static ISDHCCDbContext context { get; set; }
+
     public void GenerateId()
     {
       this.Id = Guid.NewGuid().ToString();

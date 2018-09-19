@@ -20,11 +20,17 @@ namespace SDHCC.DB
     }
     public void Add<T>(T input, out MethodResponse response) where T : class
     {
+      var typeName = input.GetType().Name;
+      Add<T>(input, typeName, out response);
+
+    }
+    public void Add<T>(T input, string entityName, out MethodResponse response) where T : class
+    {
       response = new MethodResponse();
       try
       {
-        var typeName = input.GetType().Name;
-        var collection = db.GetCollection<T>(typeName);
+
+        var collection = db.GetCollection<T>(entityName);
         collection.InsertOne(input);
         response.Success = true;
       }
@@ -148,6 +154,10 @@ namespace SDHCC.DB
         {
           response.Success = true;
           return null;
+        }
+        if (String.IsNullOrEmpty(fullName))
+        {
+          fullName = obj["FullType"].ToString();
         }
         var returnObj = BsonSerializer.Deserialize(obj, Type.GetType(fullName));
         response.Success = true;
@@ -279,10 +289,14 @@ namespace SDHCC.DB
     }
     public void Remove<T>(T input, string id) where T : class
     {
+      var name = input.GetType().Name;
+      Remove<T>(input, name, id);
+    }
+    public void Remove<T>(T input, string entityName, string id) where T : class
+    {
       try
       {
-        var name = input.GetType().Name;
-        var collection = db.GetCollection<T>(name);
+        var collection = db.GetCollection<T>(entityName);
         collection.DeleteOne(new { Id = id }.ToBsonDocument());
       }
       catch { }
@@ -292,6 +306,13 @@ namespace SDHCC.DB
       foreach (var item in items)
       {
         this.Remove<T>(item.Object, item.Key);
+      }
+    }
+    public void Remove<T>(IEnumerable<UpdateEntity<T>> items, string entityName) where T : class
+    {
+      foreach (var item in items)
+      {
+        this.Remove<T>(item.Object, entityName, item.Key);
       }
     }
   }

@@ -57,6 +57,7 @@ namespace MVCAuth
         var database = client.GetDatabase("lalala");
         return database;
       };
+      SDHCCBaseEntity.context = new SDHCCDbContext(SDHCCBaseEntity.db());
 
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
       services.AddScoped<IRoleStore<IdentityRole>, SDHCCRoleStore<IdentityRole, SDHCUserRole>>();

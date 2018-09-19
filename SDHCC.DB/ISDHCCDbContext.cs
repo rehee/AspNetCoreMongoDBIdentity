@@ -11,6 +11,7 @@ namespace SDHCC.DB
   public partial interface ISDHCCDbContext
   {
     void Add<T>(T input, out MethodResponse response) where T : class;
+    void Add<T>(T input, string entityName, out MethodResponse response) where T : class;
     void Add(object input, out MethodResponse response);
     void AddRange<T>(IEnumerable<T> input, out MethodResponse response) where T : class;
     void AddRange(IEnumerable<object> input, out MethodResponse response);
@@ -25,6 +26,8 @@ namespace SDHCC.DB
     void Update<T>(T input, string id, string entityName, out MethodResponse response) where T : class;
     IQueryable<T> Where<T>(Expression<Func<T, bool>> where = null) where T : class;
     void Remove<T>(T input, string id) where T : class;
+    void Remove<T>(T input, string entityName, string id) where T : class;
     void Remove<T>(IEnumerable<UpdateEntity<T>> items) where T : class;
+    void Remove<T>(IEnumerable<UpdateEntity<T>> items,string entityName) where T : class;
   }
 }

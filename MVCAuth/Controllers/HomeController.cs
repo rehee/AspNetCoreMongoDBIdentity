@@ -25,11 +25,13 @@ namespace MVCAuth.Controllers
     public string Page()
     {
       var page = new Home();
-
-      page.Title = "Home";
-      page.ParentId = "845039c3-2492-4627-8214-ff656e9d404c";
-      page.GenerateId();
-      this.db.AddContent(page.ConvertToPassingModel());
+      var page2 = new Home2();
+      page.Title = "title1";
+      page2.Title2 = "title2";
+      page.AddContent();
+      page2.AddContent();
+      page.MoveTo(page2);
+      page = page.Refresh();
       return "";
     }
 

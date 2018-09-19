@@ -41,11 +41,10 @@ namespace SDHCC.DB.Content
           p.SetValue(result, value);
         }
         catch { }
-        
+
       }
       return result;
     }
-
     public static bool SkippedProperty(this string name)
     {
       if (string.IsNullOrEmpty(name))
@@ -61,6 +60,24 @@ namespace SDHCC.DB.Content
         default:
           return false;
       }
+    }
+
+    public static void AddContent(this ContentBase input)
+    {
+      ContentBase.context.AddContent(input);
+    }
+    public static void MoveTo(this ContentBase input, ContentBase target)
+    {
+      ContentBase.context.MoveContent(input, target);
+    }
+    public static T Refresh<T>(this T input) where T : ContentBase
+    {
+      var content = ContentBase.context.GetContent(input.Id);
+      if (content == null)
+      {
+        return default(T);
+      }
+      return (T)content;
     }
   }
 }
