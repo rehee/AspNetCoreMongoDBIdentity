@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +26,13 @@ namespace MVCAuth.Controllers
     public IActionResult Page()
     {
       var page = new Home();
+      var context = new ValidationContext(page, null, null);
+      var result = new List<ValidationResult>();
+
+      // Act
+      var valid = Validator.TryValidateObject(page, context, result, true);
+
+
       var model = ((ContentBase)page).ConvertToPassingModel();
       var page2 = db.GetContent("04d44aab-6afa-4d7b-b821-b6075c7628a7");
       return View(model);

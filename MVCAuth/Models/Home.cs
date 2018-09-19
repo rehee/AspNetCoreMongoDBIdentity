@@ -24,7 +24,7 @@ namespace MVCAuth.Models
     [Display(Name = "This is the Name")]
     [InputType(EnumInputType.Text)]
     public string Name { get; set; }
-
+    [Required]
     public string Title { get; set; }
 
     [InputType(EnumInputType.TextArea)]
