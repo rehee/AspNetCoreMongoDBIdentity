@@ -9,16 +9,6 @@ namespace SDHCC.DB.Content
   {
     public string ParentId { get; set; } = "";
     public List<string> Children { get; set; } = new List<string>();
-  }
-  
-  public class Home: ContentBase
-  {
-    public static string ppp { get; set; }
-    public string Title { get; set; }
-  }
-  public class Home2 : ContentBase
-  {
-    public static string ppp { get; set; }
-    public string Title2 { get; set; }
+    
   }
 }

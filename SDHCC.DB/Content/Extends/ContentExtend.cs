@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace SDHCC.DB.Content
 {
   public static class ContentExtend
   {
-    public static ContentPassingModel ConvertToPassingModel(this ContentBase input)
+    public static ContentPostModel ConvertToPassingModel(this ContentBase input)
     {
-      var result = new ContentPassingModel();
+      var result = new ContentPostModel();
       result.FullType = input.FullType;
       result.Id = input.Id;
       result.ParentId = input.ParentId;
@@ -16,15 +19,55 @@ namespace SDHCC.DB.Content
       var properties = input.GetType().GetProperties();
       foreach (var p in properties)
       {
-        if (p.Name.SkippedProperty())
+        if (p.SkippedProperty())
           continue;
-        result.Properties.Add(p.Name, p.GetValue(input));
+        var editorType = EnumInputType.Text;
+        var typeAttribute = p.CustomAttributes.Where(b => b.AttributeType == typeof(InputTypeAttribute)).FirstOrDefault();
+        if (typeAttribute != null)
+        {
+          editorType = (EnumInputType)typeAttribute.ConstructorArguments.FirstOrDefault().Value;
+        }
+        var propertyType = p.GetType();
+        var displayTitle = p.Name.SpacesFromCamel();
+        var displayAttribute = p.CustomAttributes.Where(b => b.AttributeType == typeof(DisplayAttribute)).FirstOrDefault();
+        if (displayAttribute != null)
+        {
+          foreach (var item in displayAttribute.NamedArguments)
+          {
+            switch (item.MemberName)
+            {
+              case "Name":
+                displayTitle = item.TypedValue.Value.ToString();
+                break;
+              default:
+                break;
+            }
+          }
+        }
+        string postValue = "";
+        if (ConvertTypeToStringDictionary.ContainsKey(p.GetType()))
+        {
+          postValue = ConvertTypeToStringDictionary[p.GetType()](p.GetValue(input));
+        }
+        else
+        {
+          postValue = p.GetValue(input) != null ? p.GetValue(input).ToString() : "";
+        }
+
+        result.Properties.Add(new ContentProperty()
+        {
+          Key = p.Name,
+          Value = postValue,
+          EditorType = editorType,
+          ValueType = propertyType.FullName,
+          Title = displayTitle,
+        });
       }
       return result;
     }
-    public static ContentBase ConvertToBaseModel(this ContentPassingModel input)
+    public static ContentBase ConvertToBaseModel(this ContentPostModel input)
     {
-      var type = Type.GetType(input.FullType);
+      var type = Type.GetType($"{input.FullType},MVCAuth");
       var result = (ContentBase)Activator.CreateInstance(type);
       result.FullType = input.FullType;
       result.Id = input.Id;
@@ -35,9 +78,29 @@ namespace SDHCC.DB.Content
       {
         try
         {
-          if (p.Name.SkippedProperty())
+          if (p.SkippedProperty())
             continue;
-          var value = input.Properties[p.Name];
+          var propertyPost = input.Properties.Find(b => b.Key == p.Name);
+          if (propertyPost == null)
+          {
+            continue;
+          }
+          dynamic value = null;
+          var stringValue = "";
+          if (!String.IsNullOrEmpty(propertyPost.Value))
+          {
+            stringValue = propertyPost.Value;
+          }
+          var keyType = p.PropertyType;
+          if (ConvertStringToTypeDictionary.ContainsKey(keyType))
+          {
+            value = ConvertStringToTypeDictionary[keyType](stringValue);
+          }
+          else
+          {
+            value = stringValue;
+          }
+
           p.SetValue(result, value);
         }
         catch { }
@@ -45,21 +108,26 @@ namespace SDHCC.DB.Content
       }
       return result;
     }
-    public static bool SkippedProperty(this string name)
+    public static bool SkippedProperty(this PropertyInfo property)
     {
-      if (string.IsNullOrEmpty(name))
-      {
-        return true;
-      }
-      switch (name.Trim())
+      switch (property.Name)
       {
         case "FullType":
         case "Id":
         case "ParentId":
+        case "Children":
+        case "AssemblyName":
           return true;
         default:
-          return false;
+          break;
       }
+      if (property.CustomAttributes.Where(b => b.AttributeType == typeof(IgnoreEditAttribute)).FirstOrDefault() != null)
+      {
+        return true;
+      }
+
+      var a = property;
+      return false;
     }
 
     public static void AddContent(this ContentBase input)
@@ -87,5 +155,33 @@ namespace SDHCC.DB.Content
       }
       return (T)content;
     }
+
+    public static Dictionary<Type, Func<string, dynamic>> ConvertStringToTypeDictionary { get; set; } = new Dictionary<Type, Func<string, dynamic>>()
+    {
+      [typeof(int)] = b =>
+      {
+        int.TryParse(b, out var result);
+        return result;
+      },
+    };
+    public static Dictionary<Type, Func<object, string>> ConvertTypeToStringDictionary { get; set; } = new Dictionary<Type, Func<object, string>>()
+    {
+      [typeof(string)] = b =>
+      {
+        if (b == null)
+        {
+          return "";
+        }
+        return b.ToString();
+      },
+      [typeof(int)] = b =>
+      {
+        if (b == null)
+        {
+          return "0";
+        }
+        return b.ToString();
+      },
+    };
   }
 }

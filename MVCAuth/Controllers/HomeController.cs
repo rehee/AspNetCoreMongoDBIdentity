@@ -22,19 +22,21 @@ namespace MVCAuth.Controllers
     {
       return View();
     }
-    public string Page()
+    public IActionResult Page()
     {
       var page = new Home();
-      var page2 = new Home2();
-      page.Title = "title1";
-      page2.Title2 = "title2";
-      page.AddContent();
-      page2.AddContent();
-      page.MoveTo(page2);
-      page2.Title2 = "new title 2";
-      page2.UpdatePageContent();
-      return "";
+      var model = ((ContentBase)page).ConvertToPassingModel();
+      var page2 = db.GetContent("04d44aab-6afa-4d7b-b821-b6075c7628a7");
+      return View(model);
     }
+    [HttpPost]
+    public IActionResult Page(ContentPostModel model)
+    {
+      var page = model.ConvertToBaseModel();
+      page.AddContent();
+      return View(model);
+    }
+
 
     public IActionResult About()
     {

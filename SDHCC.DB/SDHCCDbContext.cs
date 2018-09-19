@@ -157,7 +157,7 @@ namespace SDHCC.DB
         }
         if (String.IsNullOrEmpty(fullName))
         {
-          fullName = obj["FullType"].ToString();
+          fullName = $"{obj["FullType"].ToString()},{obj["AssemblyName"].ToString()}";
         }
         var returnObj = BsonSerializer.Deserialize(obj, Type.GetType(fullName));
         response.Success = true;
@@ -282,7 +282,7 @@ namespace SDHCC.DB
             deleteKeys = keys.Where(b => ignoreKeys.Contains(b));
           }
         }
-        foreach(var k in deleteKeys)
+        foreach (var k in deleteKeys)
         {
           updateDocument.Remove(k);
         }

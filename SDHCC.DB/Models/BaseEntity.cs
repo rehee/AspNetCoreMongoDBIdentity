@@ -18,6 +18,14 @@ namespace SDHCC.DB.Models
       }
       set { }
     }
+    public virtual string AssemblyName
+    {
+      get
+      {
+        return "SDHCC.DB";
+      }
+      set { }
+    }
     [BsonIgnore]
     public static Func<IMongoDatabase> db { get; set; }
 

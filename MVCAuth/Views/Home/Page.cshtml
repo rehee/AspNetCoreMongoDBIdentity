@@ -1,0 +1,36 @@
+﻿@model SDHCC.DB.Content.ContentPostModel
+
+@{
+    ViewData["Title"] = "Page";
+}
+
+<h2>Page</h2>
+
+<h4>ContentPassingModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @using (Html.BeginForm("Page", "Home", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+        {
+            @Html.HiddenFor(b => b.Id)
+            @Html.HiddenFor(b => b.ParentId)
+            @Html.HiddenFor(b => b.FullType)
+            var index = 0;
+            @foreach (var item in Model.Properties)
+            {
+                await Html.RenderPartialAsync("AdminInputs/_AdminInput", new ContentPropertyIndex(item, index));
+                index++;
+            }
+            <input type="submit" value="submit" />
+        }
+
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
