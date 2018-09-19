@@ -260,13 +260,37 @@ namespace SDHCC.DB
     }
     public void Update<T>(T input, string id, string entityName, out MethodResponse response) where T : class
     {
+      Update(input, id, entityName, null, null, out response);
+    }
+    public void Update<T>(T input, string id, string entityName, IEnumerable<string> ignoreKeys, IEnumerable<string> takeKeys, out MethodResponse response) where T : class
+    {
       response = new MethodResponse();
       try
       {
         var collection = db.GetCollection<T>(entityName);
+        var updateDocument = input.ToBsonDocument();
+        var keys = updateDocument.Elements.Select(b => b.Name).ToList();
+        IEnumerable<string> deleteKeys = Enumerable.Empty<string>();
+        if (takeKeys != null)
+        {
+          deleteKeys = keys.Where(b => !takeKeys.Contains(b));
+        }
+        else
+        {
+          if (ignoreKeys != null)
+          {
+            deleteKeys = keys.Where(b => ignoreKeys.Contains(b));
+          }
+        }
+        foreach(var k in deleteKeys)
+        {
+          updateDocument.Remove(k);
+        }
+        updateDocument.Remove("_t");
+        updateDocument.Remove("_id");
         collection.UpdateOne(
           new { Id = id }.ToBsonDocument(),
-          new BsonDocument { { "$set", input.ToBsonDocument() } }
+          new BsonDocument { { "$set", updateDocument } }
           );
         response.Success = true;
       }

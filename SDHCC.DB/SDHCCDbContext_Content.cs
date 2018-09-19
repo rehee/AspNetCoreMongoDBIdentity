@@ -27,7 +27,7 @@ namespace SDHCC.DB
       if (parent != null && response.Success)
       {
         parent.Children.Add(content.Id);
-        UpdateContent(parent);
+        UpdateContent(parent, null, new string[] { "Children" });
       }
     }
     public void RemoveContent(ContentBase content)
@@ -56,7 +56,7 @@ namespace SDHCC.DB
             parent.Children.Remove(contentId);
           }
           catch { }
-          UpdateContent(parent);
+          UpdateContent(parent, null, new string[] { "Children" });
         }
       }
       foreach (var child in content.Children)
@@ -114,7 +114,7 @@ namespace SDHCC.DB
             targetNode.Children.Add(content.Id);
           }
           catch { }
-          UpdateContent(targetNode);
+          UpdateContent(targetNode, null, new string[] { "Children" });
         }
       }
       var parentId = content.ParentId;
@@ -128,11 +128,11 @@ namespace SDHCC.DB
             parentNode.Children.Remove(content.Id);
           }
           catch { }
-          UpdateContent(parentNode);
+          UpdateContent(parentNode, null, new string[] { "Children" });
         }
       }
       content.ParentId = target;
-      UpdateContent(content);
+      UpdateContent(content, null, new string[] { "ParentId" });
     }
 
     public ContentBase GetContent(string id)
@@ -153,9 +153,9 @@ namespace SDHCC.DB
       return GetContents(node.Children);
     }
 
-    public void UpdateContent(ContentBase content)
+    public void UpdateContent(ContentBase content, IEnumerable<string> ignoreKeys = null, IEnumerable<string> takeKeys = null)
     {
-      Update(content, content.Id, BaseContentType, out var response);
+      Update(content, content.Id, BaseContentType, ignoreKeys, takeKeys, out var response);
     }
   }
 }

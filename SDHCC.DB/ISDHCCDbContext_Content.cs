@@ -18,6 +18,6 @@ namespace SDHCC.DB
     ContentBase GetContent(string id);
     IEnumerable<ContentBase> GetContents(IEnumerable<string> ids);
     IEnumerable<ContentBase> GetChildrenNode(string id);
-    void UpdateContent(ContentBase content);
+    void UpdateContent(ContentBase content, IEnumerable<string> ignoreKeys = null, IEnumerable<string> takeKeys = null);
   }
 }

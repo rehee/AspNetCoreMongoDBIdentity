@@ -70,6 +70,14 @@ namespace SDHCC.DB.Content
     {
       ContentBase.context.MoveContent(input, target);
     }
+    public static void UpdatePageContent(this ContentBase input)
+    {
+      var ignoreKeys = new List<string>()
+      {
+        "ParentId","Children","FullType",
+      };
+      ContentBase.context.UpdateContent(input, ignoreKeys);
+    }
     public static T Refresh<T>(this T input) where T : ContentBase
     {
       var content = ContentBase.context.GetContent(input.Id);

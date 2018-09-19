@@ -24,6 +24,7 @@ namespace SDHCC.DB
     IEnumerable<T> Filter<T>(FilterParam param, out MethodResponse response) where T : class;
     void Update<T>(T input, string id, out MethodResponse response) where T : class;
     void Update<T>(T input, string id, string entityName, out MethodResponse response) where T : class;
+    void Update<T>(T input, string id, string entityName, IEnumerable<string> ignoreKeys, IEnumerable<string> takeKeys, out MethodResponse response) where T : class;
     IQueryable<T> Where<T>(Expression<Func<T, bool>> where = null) where T : class;
     void Remove<T>(T input, string id) where T : class;
     void Remove<T>(T input, string entityName, string id) where T : class;

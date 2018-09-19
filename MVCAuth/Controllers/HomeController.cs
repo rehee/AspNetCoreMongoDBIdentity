@@ -31,7 +31,8 @@ namespace MVCAuth.Controllers
       page.AddContent();
       page2.AddContent();
       page.MoveTo(page2);
-      page = page.Refresh();
+      page2.Title2 = "new title 2";
+      page2.UpdatePageContent();
       return "";
     }
 
