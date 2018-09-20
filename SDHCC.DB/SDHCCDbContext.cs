@@ -313,11 +313,10 @@ namespace SDHCC.DB
         name = typeof(T).Name;
       }
       var collection = db.GetCollection<T>(name);
-      var list = collection.AsQueryable<T>().ToList();
       if (where != null)
       {
         var query = collection.AsQueryable<T>();
-        return query;
+        return query.Where(where);
       }
       return collection.AsQueryable<T>();
     }

@@ -1,3 +1,15 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+  ViewData["Title"] = "Home Page";
+  var startTime = DateTime.Now;
+  //for (var i = 0; i < 10000; i++)
+  //{
+  //  var page = new Home();
+  //  page.PageView = i;
+  //  page.AddContent();
+  //}
+  var root = ContentBase.context.GetChildrenNode("");
+  var search = ContentBase.context.Where<ContentBaseModel>(null, "ContentBase").ToList();
+  var endTime = DateTime.Now;
+  var timeSpend = endTime - startTime;
 }
+@timeSpend.TotalMilliseconds
