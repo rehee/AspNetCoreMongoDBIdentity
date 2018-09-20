@@ -270,24 +270,31 @@ namespace SDHCC.DB
         var collection = db.GetCollection<T>(entityName);
         var updateDocument = input.ToBsonDocument();
         var keys = updateDocument.Elements.Select(b => b.Name).ToList();
-        IEnumerable<string> deleteKeys = Enumerable.Empty<string>();
+        List<string> deleteKeys = new List<string>();
         if (takeKeys != null)
         {
-          deleteKeys = keys.Where(b => !takeKeys.Contains(b));
+          deleteKeys = keys.Where(b => !takeKeys.Contains(b)).ToList();
         }
         else
         {
           if (ignoreKeys != null)
           {
-            deleteKeys = keys.Where(b => ignoreKeys.Contains(b));
+            deleteKeys = keys.Where(b => ignoreKeys.Contains(b)).ToList();
           }
         }
+        deleteKeys.Add("_t");
+        deleteKeys.Add("_id");
+        deleteKeys.Add("FullType");
+        deleteKeys.Add("AssemblyName");
         foreach (var k in deleteKeys)
         {
-          updateDocument.Remove(k);
+          try
+          {
+            updateDocument.Remove(k);
+          }
+          catch { }
+          
         }
-        updateDocument.Remove("_t");
-        updateDocument.Remove("_id");
         collection.UpdateOne(
           new { Id = id }.ToBsonDocument(),
           new BsonDocument { { "$set", updateDocument } }

@@ -3,12 +3,12 @@
   var startTime = DateTime.Now;
   //for (var i = 0; i < 10000; i++)
   //{
-  //  var page = new Home();
-  //  page.PageView = i;
-  //  page.AddContent();
+  //    var page = new Home();
+  //    page.PageView = i;
+  //    page.AddContent();
   //}
-  var root = ContentBase.context.GetChildrenNode("");
-  var search = ContentBase.context.Where<ContentBaseModel>(null, "ContentBase").ToList();
+  //var root = ContentBase.context.GetContent("c2c50bff-8eda-4ac0-87f5-2ac952d46822");
+  //var search = ContentBase.context.Where<Home>(null, "ContentBase").OrderByDescending(b=>b.PageView).Count;
   var endTime = DateTime.Now;
   var timeSpend = endTime - startTime;
 }

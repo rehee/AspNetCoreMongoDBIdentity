@@ -18,11 +18,16 @@ namespace SDHCC.DB
       {
         content.GenerateId();
       }
+      content.CreateTime = DateTime.UtcNow;
       var parent = GetContent(content.ParentId);
       if (parent == null)
       {
         content.ParentId = "";
       }
+
+      var totalLevel = GetChildrenNode(content.ParentId).Count();
+      content.SortOrder = totalLevel + 1;
+
       Add<ContentBase>(content, BaseContentType, out response);
       if (parent != null && response.Success)
       {
@@ -156,6 +161,18 @@ namespace SDHCC.DB
         return Enumerable.Empty<ContentBase>();
       }
       return GetContents(node.Children);
+    }
+
+    public void UpdatePageContent(ContentBase content)
+    {
+      var ignoreKeys = new List<string>()
+      {
+        "ParentId",
+        "Children",
+        "CreateTime",
+        "SortOrder",
+      };
+      Update(content, content.Id, BaseContentType, ignoreKeys, null, out var response);
     }
 
     public void UpdateContent(ContentBase content, IEnumerable<string> ignoreKeys = null, IEnumerable<string> takeKeys = null)

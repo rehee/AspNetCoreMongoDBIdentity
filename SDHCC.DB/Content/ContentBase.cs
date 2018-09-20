@@ -9,11 +9,24 @@ namespace SDHCC.DB.Content
   {
     public string ParentId { get; set; } = "";
     public List<string> Children { get; set; } = new List<string>();
+    private string name { get; set; }
+    public string Name
+    {
+      get
+      {
+        return name;
+      }
+      set
+      {
+        name = value.Replace('/', '_');
+      }
+    }
 
-    public virtual string Name { get; set; }
+    public DateTime CreateTime { get; set; }
+    public int SortOrder { get; set; } = 0;
   }
 
-  public class ContentBaseModel: ContentBase
+  public class ContentBaseModel : ContentBase
   {
 
   }

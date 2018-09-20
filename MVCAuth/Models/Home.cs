@@ -1,4 +1,5 @@
-﻿using SDHCC;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using SDHCC;
 using SDHCC.DB.Content;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,10 @@ namespace MVCAuth.Models
     }
   }
 
+  [AllowChildren(ChildrenType = new Type[] { typeof(Page) })]
   public class Home : MVCAuthBase
   {
-
     [Display(Name = "This is the Name")]
-    [InputType(EnumInputType.Text)]
-    public override string Name { get; set; }
     [Required]
     public string Title { get; set; }
 
@@ -42,9 +41,6 @@ namespace MVCAuth.Models
   public class Page : MVCAuthBase
   {
 
-    [Display(Name = "This is the page Name")]
-    [InputType(EnumInputType.Text)]
-    public override string Name { get; set; }
     [Display(Name = "This is the page Title")]
     public string Title { get; set; }
   }

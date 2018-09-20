@@ -65,11 +65,11 @@ namespace MVCAuth.Controllers
       return View(model);
     }
 
-    public IActionResult PreCreate(string fullName)
+    public IActionResult PreCreate(string fullName, string parentId = "")
     {
       var type = Type.GetType(fullName);
       var newContent = (ContentBase)Activator.CreateInstance(type);
-
+      newContent.ParentId = parentId;
       return View("Create", newContent.ConvertToPassingModel());
     }
 

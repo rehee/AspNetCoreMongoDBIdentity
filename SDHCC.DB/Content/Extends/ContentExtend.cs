@@ -16,6 +16,8 @@ namespace SDHCC.DB.Content
       result.Id = input.Id;
       result.ParentId = input.ParentId;
       result.AssemblyName = input.AssemblyName;
+      result.CreateTime = input.CreateTime;
+      result.SortOrder = input.SortOrder;
 
       var properties = input.GetType().GetProperties();
       foreach (var p in properties)
@@ -74,6 +76,8 @@ namespace SDHCC.DB.Content
       result.Id = input.Id;
       result.ParentId = input.ParentId;
       result.AssemblyName = input.AssemblyName;
+      result.CreateTime = input.CreateTime;
+      result.SortOrder = input.SortOrder;
 
       var properties = result.GetType().GetProperties();
       foreach (var p in properties)
@@ -119,6 +123,8 @@ namespace SDHCC.DB.Content
         case "ParentId":
         case "Children":
         case "AssemblyName":
+        case "CreateTime":
+        case "SortOrder":
           return true;
         default:
           break;

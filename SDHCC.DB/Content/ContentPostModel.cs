@@ -10,6 +10,8 @@ namespace SDHCC.DB.Content
     public string ParentId { get; set; }
     public string FullType { get; set; }
     public string AssemblyName { get; set; }
+    public DateTime CreateTime { get; set; }
+    public int SortOrder { get; set; }
     public List<ContentProperty> Properties { get; set; } = new List<ContentProperty>();
   }
 
