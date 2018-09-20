@@ -15,6 +15,7 @@ namespace SDHCC.DB.Content
       result.FullType = input.FullType;
       result.Id = input.Id;
       result.ParentId = input.ParentId;
+      result.AssemblyName = input.AssemblyName;
 
       var properties = input.GetType().GetProperties();
       foreach (var p in properties)
@@ -72,6 +73,7 @@ namespace SDHCC.DB.Content
       result.FullType = input.FullType;
       result.Id = input.Id;
       result.ParentId = input.ParentId;
+      result.AssemblyName = input.AssemblyName;
 
       var properties = result.GetType().GetProperties();
       foreach (var p in properties)

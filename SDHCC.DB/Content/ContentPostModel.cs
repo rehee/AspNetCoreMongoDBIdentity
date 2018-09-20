@@ -9,6 +9,7 @@ namespace SDHCC.DB.Content
     public string Id { get; set; }
     public string ParentId { get; set; }
     public string FullType { get; set; }
+    public string AssemblyName { get; set; }
     public List<ContentProperty> Properties { get; set; } = new List<ContentProperty>();
   }
 

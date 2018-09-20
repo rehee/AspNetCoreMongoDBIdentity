@@ -145,6 +145,11 @@ namespace SDHCC.DB
     }
     public IEnumerable<ContentBase> GetChildrenNode(string id)
     {
+      if (id == "")
+      {
+        var query = Where<ContentBaseModel>(b => b.ParentId == "", BaseContentType);
+        return query.ToList();
+      }
       var node = GetContent(id);
       if (node == null)
       {

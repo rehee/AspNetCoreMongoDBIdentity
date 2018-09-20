@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace MVCAuth.Models
 {
-  public class Home : ContentBase
+  [AllowChildren(ChildrenType = new Type[] { typeof(Home), typeof(Page) })]
+  public abstract class MVCAuthBase : ContentBase
   {
     public override string AssemblyName
     {
@@ -21,9 +22,14 @@ namespace MVCAuth.Models
 
       }
     }
+  }
+
+  public class Home : MVCAuthBase
+  {
+
     [Display(Name = "This is the Name")]
     [InputType(EnumInputType.Text)]
-    public string Name { get; set; }
+    public override string Name { get; set; }
     [Required]
     public string Title { get; set; }
 
@@ -32,5 +38,14 @@ namespace MVCAuth.Models
 
 
     public int PageView { get; set; } = 10;
+  }
+  public class Page : MVCAuthBase
+  {
+
+    [Display(Name = "This is the page Name")]
+    [InputType(EnumInputType.Text)]
+    public override string Name { get; set; }
+    [Display(Name = "This is the page Title")]
+    public string Title { get; set; }
   }
 }

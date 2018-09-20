@@ -25,6 +25,9 @@ namespace MVCAuth.Controllers
     }
     public IActionResult Page()
     {
+      var homeType = typeof(Home);
+      var baseType = typeof(MVCAuthBase);
+
       var page = new Home();
       var context = new ValidationContext(page, null, null);
       var result = new List<ValidationResult>();

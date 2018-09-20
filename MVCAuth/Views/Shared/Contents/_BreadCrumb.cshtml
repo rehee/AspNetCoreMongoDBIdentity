@@ -1,0 +1,38 @@
+﻿@model string
+@{
+  var id = "";
+  if (!string.IsNullOrEmpty(Model))
+  {
+    id = Model;
+  }
+  var pages = new List<ContentBase>();
+  var page = ContentBase.context.GetContent(id);
+  if (id == "")
+  {
+    page = null;
+
+  }
+  while (page != null)
+  {
+    pages.Add(page);
+    if (page.ParentId != null)
+    {
+      page = ContentBase.context.GetContent(page.ParentId);
+    }
+    else
+    {
+      page = null;
+
+    }
+  };
+  pages.Reverse();
+}
+<p>
+  <a href="@Url.Action("Index","Page",new{ @id="" })">Root</a>
+  @foreach (var item in pages)
+  {
+  <a href="@Url.Action("Index","Page",new{ @id=item.Id })">
+    @(!String.IsNullOrEmpty(item.Name) ? item.Name : item.Id)
+  </a>
+  }
+</p>

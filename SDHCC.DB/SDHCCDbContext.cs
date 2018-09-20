@@ -303,11 +303,21 @@ namespace SDHCC.DB
     public IQueryable<T> Where<T>(Expression<Func<T, bool>> where = null) where T : class
     {
       var name = typeof(T).Name;
+      return Where<T>(where, name);
+    }
+    public IQueryable<T> Where<T>(Expression<Func<T, bool>> where = null, string entityName = "") where T : class
+    {
+      var name = entityName;
+      if (String.IsNullOrEmpty(entityName))
+      {
+        name = typeof(T).Name;
+      }
       var collection = db.GetCollection<T>(name);
+      var list = collection.AsQueryable<T>().ToList();
       if (where != null)
       {
         var query = collection.AsQueryable<T>();
-        return query.Where(where);
+        return query;
       }
       return collection.AsQueryable<T>();
     }

@@ -9,6 +9,16 @@ namespace SDHCC.DB.Content
   {
     public string ParentId { get; set; } = "";
     public List<string> Children { get; set; } = new List<string>();
-    
+
+    public virtual string Name { get; set; }
+  }
+
+  public class ContentBaseModel: ContentBase
+  {
+
+  }
+  public static class ContentE
+  {
+    public static Type RootType { get; set; }
   }
 }

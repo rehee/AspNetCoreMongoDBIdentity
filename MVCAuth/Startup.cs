@@ -19,6 +19,8 @@ using SDHCC.Identity;
 using SDHCC.Identity.Models.UserRoles;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using SDHCC.DB.Content;
+using MVCAuth.Models;
 
 namespace MVCAuth
 {
@@ -58,6 +60,8 @@ namespace MVCAuth
         return database;
       };
       SDHCCBaseEntity.context = new SDHCCDbContext(SDHCCBaseEntity.db());
+
+      ContentE.RootType = typeof(MVCAuthBase);
 
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
       services.AddScoped<IRoleStore<IdentityRole>, SDHCCRoleStore<IdentityRole, SDHCUserRole>>();
