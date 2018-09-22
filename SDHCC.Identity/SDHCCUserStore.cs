@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace SDHCC.Identity
 {
-  public partial class SDHCCUserStore<TUser, TRole, TUserRole> : 
+  public partial class SDHCCUserStore<TUser, TRole, TUserRole> :
     IUserStore<TUser>,
     IUserPasswordStore<TUser>,
     IUserLoginStore<TUser>,
@@ -54,7 +54,7 @@ namespace SDHCC.Identity
     }
     public Task<IdentityResult> CreateAsync(TUser user, CancellationToken cancellationToken)
     {
-      Task<IdentityResult> t = new Task<IdentityResult>((u) =>
+      Task<IdentityResult> t = new Task<IdentityResult>(() =>
       {
         try
         {
@@ -70,7 +70,7 @@ namespace SDHCC.Identity
               }
             });
           }
-          var insertUser = (TUser)u;
+          var insertUser = user;
           insertUser.Email = insertUser.Email.Trim().ToLower();
           insertUser.NormalizedEmail = insertUser.NormalizedEmail.Trim().ToLower();
           if (String.IsNullOrEmpty(insertUser.Id))
@@ -94,7 +94,7 @@ namespace SDHCC.Identity
           f.Description = ex.Message;
           return IdentityResult.Failed(f);
         }
-      }, user);
+      });
       t.Start();
       return t;
     }
@@ -384,6 +384,10 @@ namespace SDHCC.Identity
 
     public async Task SetNormalizedEmailAsync(TUser user, string normalizedEmail, CancellationToken cancellationToken)
     {
+      if (string.IsNullOrEmpty(normalizedEmail))
+      {
+        normalizedEmail = string.IsNullOrEmpty(user.Email) ? user.NormalizedUserName : user.Email;
+      }
       user.NormalizedEmail = normalizedEmail.Trim().ToLower();
       await this.UpdateAsync(user, cancellationToken);
     }
@@ -549,7 +553,7 @@ namespace SDHCC.Identity
       var task = new Task<IList<Claim>>(() =>
       {
         var records = db.Where<SDHCIdentityUserClaim>(b => b.UserId == user.Id).ToList();
-        var claims =  records.Select(b => new Claim(b.ClaimType, b.ClaimValue)).ToList();
+        var claims = records.Select(b => new Claim(b.ClaimType, b.ClaimValue)).ToList();
         return claims;
       });
       task.Start();

@@ -142,25 +142,15 @@ namespace SDHCC.DB
 
     public ContentBase GetContent(string id)
     {
-      return (ContentBase)Find(id, BaseContentType, null, out var response);
+      return Find<ContentBase>(id, BaseContentType, out var response);
     }
     public IEnumerable<ContentBase> GetContents(IEnumerable<string> ids)
     {
-      return ids.Select(b => GetContent(b));
+      return Find<ContentBase>(ids, BaseContentType, out var r).AsEnumerable();
     }
     public IEnumerable<ContentBase> GetChildrenNode(string id)
     {
-      if (id == "")
-      {
-        var query = Where<ContentBaseModel>(b => b.ParentId == "", BaseContentType);
-        return query.ToList();
-      }
-      var node = GetContent(id);
-      if (node == null)
-      {
-        return Enumerable.Empty<ContentBase>();
-      }
-      return GetContents(node.Children);
+      return Where<ContentBase>(b => b["ParentId"] == id, BaseContentType, ConvertBsonToGeneric<ContentBase>()).AsEnumerable();
     }
 
     public void UpdatePageContent(ContentBase content)
@@ -174,10 +164,30 @@ namespace SDHCC.DB
       };
       Update(content, content.Id, BaseContentType, ignoreKeys, null, out var response);
     }
-
     public void UpdateContent(ContentBase content, IEnumerable<string> ignoreKeys = null, IEnumerable<string> takeKeys = null)
     {
       Update(content, content.Id, BaseContentType, ignoreKeys, takeKeys, out var response);
     }
+    public IEnumerable<ContentBase> GetBreadcrumb(string id)
+    {
+      var result = new List<ContentBase>();
+      var content = this.GetContent(id);
+      if (content == null)
+      {
+        return result;
+      }
+      result.Add(content);
+      do
+      {
+        content = content.Parent();
+        if (content != null)
+        {
+          result.Add(content);
+        }
+      } while (result == null);
+      result.Reverse();
+      return result;
+    }
+
   }
 }

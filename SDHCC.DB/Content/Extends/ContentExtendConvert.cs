@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SDHCC.DB.Content
 {
-  public static class ContentExtend
+  public static partial class ContentExtend
   {
     public static ContentPostModel ConvertToPassingModel(this ContentBase input)
     {
@@ -137,33 +137,6 @@ namespace SDHCC.DB.Content
       var a = property;
       return false;
     }
-
-    public static void AddContent(this ContentBase input)
-    {
-      ContentBase.context.AddContent(input);
-    }
-    public static void MoveTo(this ContentBase input, ContentBase target)
-    {
-      ContentBase.context.MoveContent(input, target);
-    }
-    public static void UpdatePageContent(this ContentBase input)
-    {
-      var ignoreKeys = new List<string>()
-      {
-        "ParentId","Children","FullType",
-      };
-      ContentBase.context.UpdateContent(input, ignoreKeys);
-    }
-    public static T Refresh<T>(this T input) where T : ContentBase
-    {
-      var content = ContentBase.context.GetContent(input.Id);
-      if (content == null)
-      {
-        return default(T);
-      }
-      return (T)content;
-    }
-
     public static Dictionary<Type, Func<string, dynamic>> ConvertStringToTypeDictionary { get; set; } = new Dictionary<Type, Func<string, dynamic>>()
     {
       [typeof(int)] = b =>

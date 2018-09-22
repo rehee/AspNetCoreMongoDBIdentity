@@ -1,4 +1,6 @@
-﻿@{
+﻿@using MongoDB.Bson
+@using MongoDB.Bson.Serialization;
+@{
   ViewData["Title"] = "Home Page";
   var startTime = DateTime.Now;
   //for (var i = 0; i < 10000; i++)
@@ -7,6 +9,14 @@
   //    page.PageView = i;
   //    page.AddContent();
   //}
+  //var home = ContentBase.context.Find<ContentBase>("afbd199c-ce71-4b51-88ee-b0216fcc4834", "ContentBase", out var r);
+
+  //var homes = ContentBase.context.Where<BsonDocument>(b => b["_id"] == "000513c9-0848-4c79-b7fe-5bdadbf8eaa1", "ContentBase")
+  //    .Select(ContentE.bbb.Compile())
+  //    .ToList();
+  var ids = new List<string>() { "000513c9-0848-4c79-b7fe-5bdadbf8eaa1", "00086480-3ba0-4a7c-99b4-56151cf440e3" };
+  //var home = ContentBase.context.Where(b => ids.Contains(b["_id"]), "ContentBase", ContentBase.context.ConvertBsonToGeneric<ContentBase>()).ToList();
+  var home = ContentBase.context.Find<ContentBase>(ids, "ContentBase", out var r).ToList();
   //var root = ContentBase.context.GetContent("c2c50bff-8eda-4ac0-87f5-2ac952d46822");
   //var search = ContentBase.context.Where<Home>(null, "ContentBase").OrderByDescending(b=>b.PageView).Count;
   var endTime = DateTime.Now;

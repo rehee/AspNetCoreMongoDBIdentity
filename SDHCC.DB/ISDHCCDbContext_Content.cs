@@ -15,9 +15,11 @@ namespace SDHCC.DB
     void MoveContent(string contentId, ContentBase target);
     void MoveContent(string contentId, string target);
 
+    void UpdatePageContent(ContentBase content);
     ContentBase GetContent(string id);
     IEnumerable<ContentBase> GetContents(IEnumerable<string> ids);
     IEnumerable<ContentBase> GetChildrenNode(string id);
     void UpdateContent(ContentBase content, IEnumerable<string> ignoreKeys = null, IEnumerable<string> takeKeys = null);
+    IEnumerable<ContentBase> GetBreadcrumb(string id);
   }
 }

@@ -1,6 +1,8 @@
-﻿using SDHCC.DB.Models;
+﻿using MongoDB.Bson;
+using SDHCC.DB.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace SDHCC.DB.Content
@@ -18,7 +20,7 @@ namespace SDHCC.DB.Content
       }
       set
       {
-        name = value.Replace('/', '_');
+        name = String.IsNullOrEmpty(value) ? this.Id : value.Trim().Replace('/', '_');
       }
     }
 
@@ -33,5 +35,11 @@ namespace SDHCC.DB.Content
   public static class ContentE
   {
     public static Type RootType { get; set; }
+    public static ContentBase ConvertToContentBase(this BsonDocument b)
+    {
+      return (ContentBase)MongoDB.Bson.Serialization.BsonSerializer.Deserialize(b, Type.GetType($"{b["FullType"].ToString()},{b["AssemblyName"].ToString()}"));
+    }
+    public static Expression<Func<BsonDocument, ContentBase>> bbb = b => ContentE.ConvertToContentBase(b);
   }
+
 }
