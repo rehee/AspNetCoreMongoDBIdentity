@@ -1623,7 +1623,7 @@ html body .waves-notransition {
     width: 100%;
     padding: 30px;
     margin-top: 0px;
-    background: url(../../assets/images/background/megamenubg.jpg) no-repeat right bottom #fff
+    background: url(/lib/admin/assets/images/background/megamenubg.jpg) no-repeat right bottom #fff
 }
 .mega-dropdown ul {
     padding: 0px
