@@ -37,6 +37,8 @@ namespace SDHCC.DB
     }
     public void RemoveContent(ContentBase content)
     {
+      if (content == null)
+        return;
       RemoveContent(content.Id);
     }
     public void RemoveContent(string contentId)
@@ -51,22 +53,19 @@ namespace SDHCC.DB
       {
         return;
       }
-      if (!String.IsNullOrEmpty(content.ParentId))
+      var parent = content.Parent();
+      if (parent != null)
       {
-        var parent = GetContent(content.ParentId);
-        if (parent != null)
+        try
         {
-          try
-          {
-            parent.Children.Remove(contentId);
-          }
-          catch { }
+          parent.Children.Remove(contentId);
           UpdateContent(parent, null, new string[] { "Children" });
         }
+        catch { }
       }
       foreach (var child in content.Children)
       {
-        Remove<ContentBase>(null, BaseContentType, child);
+        RemoveContent(child);
       }
       Remove<ContentBase>(content, BaseContentType, content.Id);
     }
