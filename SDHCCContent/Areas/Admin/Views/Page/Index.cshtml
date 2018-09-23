@@ -1,0 +1,247 @@
+﻿@model ContentPostModel
+@{
+    ViewData["Title"] = "Content";
+    Layout = "_Layout_Content";
+    var contentId = Model != null ? Model.Id : "";
+    var contents = ContentBase.context.GetChildrenNode(contentId).ToList();
+    var a = "";
+}
+@section breadcrumb{
+    @{ await Html.RenderPartialAsync("_BreadCrumbContent", contentId);}
+}
+<link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.css" />
+<link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid-theme.min.css" />
+
+<div class="card">
+    <div class="card-block">
+        <h4 class="card-title">Static</h4>
+        <div id="staticgrid"></div>
+    </div>
+</div>
+
+
+
+<button type="button" class="btn btn-info btn-rounded" data-toggle="modal" data-target="#add-contact">Add New Contact</button>
+<div id="add-contact" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Add New Contact</h4>
+            </div>
+            <div class="modal-body">
+                <from class="form-horizontal form-material">
+                    <div class="form-group">
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Type name">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Email">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Phone">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Designation">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Age">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Date of joining">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Salary">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <div class="fileupload btn btn-danger btn-rounded waves-effect waves-light">
+                                <span><i class="ion-upload m-r-5"></i>Upload Contact Image</span>
+                                <input type="file" class="upload">
+                            </div>
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Type name">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Email">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Phone">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Designation">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Age">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Date of joining">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Salary">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <div class="fileupload btn btn-danger btn-rounded waves-effect waves-light">
+                                <span><i class="ion-upload m-r-5"></i>Upload Contact Image</span>
+                                <input type="file" class="upload">
+                            </div>
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Type name">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Email">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Phone">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Designation">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Age">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Date of joining">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Salary">
+                        </div>
+                        <div class="col-md-12 m-b-20">
+                            <div class="fileupload btn btn-danger btn-rounded waves-effect waves-light">
+                                <span><i class="ion-upload m-r-5"></i>Upload Contact Image</span>
+                                <input type="file" class="upload">
+                            </div>
+                        </div>
+                    </div>
+                </from>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section script{
+    <script src="/lib/admin/assets/plugins/jsgrid/db.js"></script>
+    <script type="text/javascript" src="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.js"></script>
+    <script>
+        window.contents = {};
+        contents.clients = [
+            @foreach(var item in contents)
+            {
+              <text>
+                {
+                    "Name": "Otto Clay",
+                    "Age": @contents.IndexOf(item),
+                    "Country": @item.SortOrder,
+                    "Address": "Ap #897-1459 Quam Avenue",
+                    "Married": false
+                },
+              </text>
+            }
+              ];
+        ! function (document, window, $) {
+            "use strict";
+            var Site = window.Site;
+            $(document).ready(function ($) {
+
+            }), jsGrid.setDefaults({
+                tableClass: "jsgrid-table table table-striped table-hover"
+            }), jsGrid.setDefaults("text", {
+                _createTextBox: function () {
+                    return $("<input>").attr("type", "text").attr("class", "form-control input-sm")
+                }
+            }), jsGrid.setDefaults("number", {
+                _createTextBox: function () {
+                    return $("<input>").attr("type", "number").attr("class", "form-control input-sm")
+                }
+            }), jsGrid.setDefaults("textarea", {
+                _createTextBox: function () {
+                    return $("<input>").attr("type", "textarea").attr("class", "form-control")
+                }
+            }), jsGrid.setDefaults("control", {
+                _createGridButton: function (cls, tooltip, clickHandler) {
+                    var grid = this._grid;
+                    return $("<button>").addClass(this.buttonClass).addClass(cls).attr({
+                        type: "button",
+                        title: tooltip
+                    }).on("click", function (e) {
+                        clickHandler(grid, e)
+                    })
+                }
+            }),
+                function () {
+                    $("#staticgrid").jsGrid({
+                        height: "500px",
+                        width: "100%",
+                        sorting: !0,
+                        paging: !0,
+                        data: contents.clients,
+                        rowClick: function(b){
+                            console.log(b);
+                        },
+                        fields: [{
+                            name: "Name",
+                            type: "text",
+                            width: 150
+                        }, {
+                            name: "Age",
+                            type: "number",
+                            width: 70
+                        }, {
+                            name: "Address",
+                            type: "text",
+                            width: 200
+                        }, {
+                            name: "Country",
+                            type: "number",
+                        }, {
+                            name: "Married",
+                            type: "checkbox",
+                            title: "Is Married"
+                        }]
+                    })
+                }(),
+                function () {
+                    var MyDateField = function (config) {
+                        jsGrid.Field.call(this, config)
+                    };
+                    MyDateField.prototype = new jsGrid.Field({
+                        sorter: function (date1, date2) {
+                            return new Date(date1) - new Date(date2)
+                        },
+                        itemTemplate: function (value) {
+                            return new Date(value).toDateString()
+                        },
+                        insertTemplate: function () {
+                            if (!this.inserting) return "";
+                            var $result = this.insertControl = this._createTextBox();
+                            return $result
+                        },
+                        editTemplate: function (value) {
+                            if (!this.editing) return this.itemTemplate(value);
+                            var $result = this.editControl = this._createTextBox();
+                            return $result.val(value), $result
+                        },
+                        insertValue: function () {
+                            return this.insertControl.datepicker("getDate")
+                        },
+                        editValue: function () {
+                            return this.editControl.datepicker("getDate")
+                        },
+                        _createTextBox: function () {
+                            return $("<input>").attr("type", "text").addClass("form-control input-sm").datepicker({
+                                autoclose: !0
+                            })
+                        }
+                    }), jsGrid.fields.myDateField = MyDateField
+                }()
+        }(document, window, jQuery);
+    </script>
+
+}

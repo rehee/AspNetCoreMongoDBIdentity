@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using SDHCC.Core.MethodResponse;
+using SDHCC.DB.Content;
 using SDHCC.DB.Models;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,10 @@ namespace SDHCC.DB
         finalType = Type.GetType(fullType);
       }
       catch { }
+      if (finalType == null)
+      {
+        return typeof(ContentBaseModel);
+      }
       return finalType;
     }
 

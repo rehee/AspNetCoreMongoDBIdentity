@@ -50,7 +50,7 @@ namespace SDHCCContent
       SDHCCBaseEntity.context = new SDHCCDbContext(SDHCCBaseEntity.db());
 
 
-
+      ContentE.RootType = typeof(ContentBaseModel);
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
       services.AddScoped<IRoleStore<IdentityRole>, SDHCCRoleStore<IdentityRole, SDHCUserRole>>();
       //services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();

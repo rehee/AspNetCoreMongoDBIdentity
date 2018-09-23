@@ -1,0 +1,22 @@
+﻿@model string
+@{
+    var id = "";
+    if (!string.IsNullOrEmpty(Model))
+    {
+        id = Model;
+    }
+    var breadcrumb = ContentBase.context.GetBreadcrumb(id).ToList();
+}
+<h3 class="text-themecolor m-b-0 m-t-0">@ViewData["Title"]</h3>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item @(breadcrumb.Count==0?"active":"")">
+        <a href="@Url.Action("Index","Page",new { area="admin" })">Root</a>
+    </li>
+    @foreach (var item in breadcrumb)
+    {
+        <li class="breadcrumb-item @(breadcrumb.IndexOf(item)==breadcrumb.Count-1?"active":"")">
+            <a href="@Url.Action("Index","Page",new { area="admin",@id = item.Id })">@item.GetType().Name</a>
+        </li>
+    }
+
+</ol>
