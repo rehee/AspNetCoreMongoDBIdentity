@@ -19,6 +19,7 @@ namespace SDHCCContent.Areas.Admin.Controllers
     //{
     //  //this.db = db;
     //}
+    [ResponseCache(Duration = 1)]
     public IActionResult Index(string id = "")
     {
       ContentPostModel model = null;
