@@ -5,7 +5,7 @@
   {
     id = Model;
   }
-  var pages = ContentBase.context.GetChildrenNode(id).ToList();
+  var pages = ContentBase.context.GetChildrenContent(id).ToList();
 }
 <p>
   @foreach (var item in pages)

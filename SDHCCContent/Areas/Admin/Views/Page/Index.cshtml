@@ -4,13 +4,26 @@
     Layout = "_Layout_Content";
     var contentId = Model != null ? Model.Id : "";
     var contents = ContentBase.context.GetChildrenNode(contentId).ToList();
-    var a = "";
 }
 @section breadcrumb{
     @{ await Html.RenderPartialAsync("_BreadCrumbContent", contentId);}
 }
 <link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.css" />
 <link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid-theme.min.css" />
+
+<div class="input-group">
+    <div class="input-group-btn">
+        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Create Content
+        </button>
+        <div class="dropdown-menu">
+            
+        </div>
+    </div>
+
+</div>
+
+<br />
 
 <div class="card">
     <div class="card-block">
@@ -20,25 +33,8 @@
 </div>
 
 
-<div class="col-lg-6">
-    <div class="input-group">
-        <div class="input-group-btn">
-            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Action
-            </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <a class="dropdown-item" href="#">Something else here</a>
-                <div role="separator" class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Separated link</a>
-            </div>
-        </div>
 
-    </div>
-    <button type="button" class="btn btn-info btn-rounded" data-toggle="modal" data-target="#add-contact">Add New Contact</button>
-
-</div>
+<button type="button" class="btn btn-info btn-rounded" data-toggle="modal" data-target="#add-contact">Add New Contact</button>
 <div id="add-contact" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -144,18 +140,19 @@
 </div>
 
 @section script{
-    <script src="/lib/admin/assets/plugins/jsgrid/db.js"></script>
+    @*<script src="/lib/admin/assets/plugins/jsgrid/db.js"></script>
     <script type="text/javascript" src="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.js"></script>
     <script>
         window.contents = {};
         contents.clients = [
             @foreach(var item in contents)
             {
-              <text>
+                <text>
                 {
-                    "Name": "Otto Clay",
-                    "Age": @contents.IndexOf(item),
-                    "Country": @item.SortOrder,
+                    "Id": "@item.GetValueByKey("_id")",
+                    "Name": "@item.GetValueByKey("Name")",
+                    "Age": 1,
+                    "Country": @item.GetValueByKey("SortOrder"),
                     "Address": "Ap #897-1459 Quam Avenue",
                     "Married": false
                 },
@@ -259,6 +256,8 @@
                     }), jsGrid.fields.myDateField = MyDateField
                 }()
         }(document, window, jQuery);
-    </script>
-
+    </script>*@
+    @{ 
+      contents = null;
+    }
 }

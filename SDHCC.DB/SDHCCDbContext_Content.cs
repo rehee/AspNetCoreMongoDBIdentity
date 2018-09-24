@@ -1,4 +1,5 @@
-﻿using SDHCC.Core.MethodResponse;
+﻿using MongoDB.Bson;
+using SDHCC.Core.MethodResponse;
 using SDHCC.DB.Content;
 using System;
 using System.Collections.Generic;
@@ -147,7 +148,11 @@ namespace SDHCC.DB
     {
       return Find<ContentBase>(ids, BaseContentType, out var r).AsEnumerable();
     }
-    public IEnumerable<ContentBase> GetChildrenNode(string id)
+    public IEnumerable<BsonDocument> GetChildrenNode(string id)
+    {
+      return Where(b => b["ParentId"] == id, BaseContentType).AsEnumerable();
+    }
+    public IEnumerable<ContentBase> GetChildrenContent(string id)
     {
       return Where<ContentBase>(b => b["ParentId"] == id, BaseContentType, ConvertBsonToGeneric<ContentBase>()).AsEnumerable();
     }

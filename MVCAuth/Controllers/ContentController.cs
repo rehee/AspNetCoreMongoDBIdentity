@@ -18,7 +18,7 @@ namespace MVCAuth.Controllers
       }
       if (urls.Count <= 0)
       {
-        var root = ContentBase.context.GetChildrenNode("").OrderBy(b => b.SortOrder).FirstOrDefault();
+        var root = ContentBase.context.GetChildrenContent("").OrderBy(b => b.SortOrder).FirstOrDefault();
         if (root != null)
         {
           var page = ContentBase.context.GetContent(root.Id);
@@ -26,7 +26,7 @@ namespace MVCAuth.Controllers
         }
         return Content("404");
       }
-      var rootPage = ContentBase.context.GetChildrenNode("").OrderBy(b => b.SortOrder).FirstOrDefault();
+      var rootPage = ContentBase.context.GetChildrenContent("").OrderBy(b => b.SortOrder).FirstOrDefault();
       if (rootPage == null)
       {
         return Content("404");
@@ -35,7 +35,7 @@ namespace MVCAuth.Controllers
       var checkRoot = false;
       foreach (var url in urls)
       {
-        var currentPage = ContentBase.context.GetChildrenNode(rootPage.Id)
+        var currentPage = ContentBase.context.GetChildrenContent(rootPage.Id)
           .Where(b => b.Name == url).OrderBy(b => b.SortOrder).FirstOrDefault();
 
         if (currentPage != null || checkRoot == false)
@@ -46,7 +46,7 @@ namespace MVCAuth.Controllers
         else
         {
           checkRoot = true;
-          currentPage = ContentBase.context.GetChildrenNode("")
+          currentPage = ContentBase.context.GetChildrenContent("")
             .Where(b => b.Name == url)
             .OrderBy(b => b.SortOrder).FirstOrDefault();
           if (currentPage == null)

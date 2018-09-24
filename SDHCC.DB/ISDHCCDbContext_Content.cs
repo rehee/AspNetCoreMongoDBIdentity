@@ -1,4 +1,5 @@
-﻿using SDHCC.DB.Content;
+﻿using MongoDB.Bson;
+using SDHCC.DB.Content;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +19,8 @@ namespace SDHCC.DB
     void UpdatePageContent(ContentBase content);
     ContentBase GetContent(string id);
     IEnumerable<ContentBase> GetContents(IEnumerable<string> ids);
-    IEnumerable<ContentBase> GetChildrenNode(string id);
+    IEnumerable<BsonDocument> GetChildrenNode(string id);
+    IEnumerable<ContentBase> GetChildrenContent(string id);
     void UpdateContent(ContentBase content, IEnumerable<string> ignoreKeys = null, IEnumerable<string> takeKeys = null);
     IEnumerable<ContentBase> GetBreadcrumb(string id);
   }

@@ -14,11 +14,11 @@ namespace SDHCCContent.Areas.Admin.Controllers
   [Area("Admin")]
   public class PageController : Controller
   {
-    ISDHCCDbContext db { get; set; }
-    public PageController(ISDHCCDbContext db)
-    {
-      this.db = db;
-    }
+    //ISDHCCDbContext db { get; set; }
+    //public PageController(ISDHCCDbContext db)
+    //{
+    //  //this.db = db;
+    //}
     public IActionResult Index(string id = "")
     {
       ContentPostModel model = null;
@@ -64,6 +64,14 @@ namespace SDHCCContent.Areas.Admin.Controllers
       }
       ViewBag.allowChildrenType = allowChildrenType;
       return View(model);
+    }
+
+    public JsonResult GetChildren(string id = "")
+    {
+      var children = ContentBase.context.GetChildrenNode(id)
+        .Select(b => new { id = b.GetValueByKey("_id"), sortOrder = b.GetValueByKey("SortOrder") })
+        .ToList();
+      return Json(children);
     }
   }
 }

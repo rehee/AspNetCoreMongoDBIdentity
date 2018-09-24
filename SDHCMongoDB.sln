@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MVCAuth", "MVCAuth\MVCAuth.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MVCArea", "MVCArea\MVCArea.csproj", "{D9EBBBC1-13A5-4DB5-9C76-F878FE915663}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHCCContent", "SDHCCContent\SDHCCContent.csproj", "{7BB67277-D6B0-46C1-BAC3-004ABB902ED6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDHCCContent", "SDHCCContent\SDHCCContent.csproj", "{7BB67277-D6B0-46C1-BAC3-004ABB902ED6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHCC.NoSleep", "SDHCC.NoSleep\SDHCC.NoSleep.csproj", "{95FEBAFC-FAD0-4AF7-B020-F5C26FCAAB7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{7BB67277-D6B0-46C1-BAC3-004ABB902ED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BB67277-D6B0-46C1-BAC3-004ABB902ED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BB67277-D6B0-46C1-BAC3-004ABB902ED6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95FEBAFC-FAD0-4AF7-B020-F5C26FCAAB7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95FEBAFC-FAD0-4AF7-B020-F5C26FCAAB7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95FEBAFC-FAD0-4AF7-B020-F5C26FCAAB7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95FEBAFC-FAD0-4AF7-B020-F5C26FCAAB7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

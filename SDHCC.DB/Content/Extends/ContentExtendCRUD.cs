@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -46,9 +47,15 @@ namespace SDHCC.DB.Content
     }
     public static IQueryable<ContentBase> Children(this ContentBase input)
     {
-      if(input==null)
+      if (input == null)
         return Enumerable.Empty<ContentBase>().AsQueryable();
       return ContentBase.context.Find<ContentBase>(input.Children, "ContentBase", out var r);
+    }
+    public static IQueryable<BsonDocument> ChildrenNode(this ContentBase input)
+    {
+      if (input == null)
+        return Enumerable.Empty<BsonDocument>().AsQueryable();
+      return ContentBase.context.Where(b => b["_id"] == input.Id, "ContentBase");
     }
     public static IEnumerable<ContentBase> Breadcrumb(this ContentBase input)
     {
