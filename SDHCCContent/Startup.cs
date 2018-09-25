@@ -39,13 +39,13 @@ namespace SDHCCContent
 
       services.AddSingleton<IMongoDatabase>(s =>
       {
-        var client = new MongoClient(@"mongodb://rehee-mongo:3eYR0nrGz6RzPnmVdL0Wv5WzTd9axMFgymqyaN92WmxTgd3jeNL90EipqYKzpV3nluegE71BOnEOwD7l9eH65A==@rehee-mongo.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
+        var client = new MongoClient(@"mongodb+srv://rehee_1:rehee_1_psw@cluster0-igkz0.gcp.mongodb.net/test?retryWrites=true");
         var database = client.GetDatabase("lalala");
         return database;
       });
       SDHCCBaseEntity.db = () =>
       {
-        var client = new MongoClient(@"mongodb://rehee-mongo:3eYR0nrGz6RzPnmVdL0Wv5WzTd9axMFgymqyaN92WmxTgd3jeNL90EipqYKzpV3nluegE71BOnEOwD7l9eH65A==@rehee-mongo.documents.azure.com:10255/?ssl=true&replicaSet=globaldb";);
+        var client = new MongoClient(@"mongodb+srv://rehee_1:rehee_1_psw@cluster0-igkz0.gcp.mongodb.net/test?retryWrites=true");
         var database = client.GetDatabase("lalala");
         return database;
       };

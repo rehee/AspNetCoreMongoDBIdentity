@@ -69,8 +69,9 @@ namespace SDHCCContent.Areas.Admin.Controllers
 
     public JsonResult GetChildren(string id = "")
     {
+      var c = db.GetChildrenNode(id).Count();
       var children = db.GetChildrenNode(id)
-        .Select(b => new { id = b.GetValueByKey("_id"), sortOrder = b.GetValueByKey("SortOrder") })
+        .Select(b => new { id = b.GetValueByKey("_id"), sortOrder = b.GetValueByKey("SortOrder") }).OrderByDescending(b=>b.sortOrder).Skip(100)
         .ToList();
       return Json(children);
     }
