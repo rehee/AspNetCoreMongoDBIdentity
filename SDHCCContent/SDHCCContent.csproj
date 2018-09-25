@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <ServerGarbageCollection>false</ServerGarbageCollection>
+    <UserSecretsId>c9ca802f-04c7-443b-8109-289f0eea47b7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

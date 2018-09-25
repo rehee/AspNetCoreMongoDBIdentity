@@ -29,7 +29,7 @@ namespace SDHCCContent
 
     public void ConfigureServices(IServiceCollection services)
     {
-      TelemetryConfiguration.Active.DisableTelemetry = true;
+      //TelemetryConfiguration.Active.DisableTelemetry = true;
       //services.Configure<CookiePolicyOptions>(options =>
       //{
       //  // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -39,13 +39,13 @@ namespace SDHCCContent
 
       services.AddSingleton<IMongoDatabase>(s =>
       {
-        var client = new MongoClient("mongodb://localhost:27017");
+        var client = new MongoClient(@"mongodb://rehee-mongo:3eYR0nrGz6RzPnmVdL0Wv5WzTd9axMFgymqyaN92WmxTgd3jeNL90EipqYKzpV3nluegE71BOnEOwD7l9eH65A==@rehee-mongo.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
         var database = client.GetDatabase("lalala");
         return database;
       });
       SDHCCBaseEntity.db = () =>
       {
-        var client = new MongoClient("mongodb://localhost:27017");
+        var client = new MongoClient(@"mongodb://rehee-mongo:3eYR0nrGz6RzPnmVdL0Wv5WzTd9axMFgymqyaN92WmxTgd3jeNL90EipqYKzpV3nluegE71BOnEOwD7l9eH65A==@rehee-mongo.documents.azure.com:10255/?ssl=true&replicaSet=globaldb";);
         var database = client.GetDatabase("lalala");
         return database;
       };

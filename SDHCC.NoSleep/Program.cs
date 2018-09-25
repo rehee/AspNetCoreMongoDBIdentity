@@ -13,10 +13,13 @@ namespace SDHCC.NoSleep
         Console.WriteLine($"read line {i}");
         var t = new Task(async ()=>
         {
-          HttpClient client = new HttpClient();
+          
           try
           {
-            var b = await client.GetStringAsync("http://localhost:5000/admin/page");
+            HttpClient client = new HttpClient();
+            var b = await client.GetAsync("http://localhost:888/admin/page");
+            //var s = await b.Content.ReadAsStringAsync();
+            Console.WriteLine(b.ToString());
           }
           catch { }
           //Console.Write($"finish");
@@ -25,9 +28,7 @@ namespace SDHCC.NoSleep
         t.Start();
         
       }
-      
-
-      Console.WriteLine("Hello World!");
+      Console.ReadLine();
     }
   }
 }
