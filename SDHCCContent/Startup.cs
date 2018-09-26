@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +8,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using MongoDB.Driver;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SDHCC.DB;
 using SDHCC.DB.Content;
 using SDHCC.DB.Models;
@@ -52,7 +57,7 @@ namespace SDHCCContent
       SDHCCBaseEntity.context = new SDHCCDbContext(SDHCCBaseEntity.db());
 
 
-      ContentE.RootType = typeof(ContentBaseModel);
+      ContentE.RootType = typeof(SDHCCContent.Models.ContentBaseModel);
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
       services.AddScoped<IRoleStore<IdentityRole>, SDHCCRoleStore<IdentityRole, SDHCUserRole>>();
       //services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();
@@ -70,6 +75,8 @@ namespace SDHCCContent
       services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders();
       //.AddEntityFrameworkStores<ApplicationDbContext>();
 
+      services.AddMvc()
+        .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
     }
 
@@ -107,6 +114,14 @@ namespace SDHCCContent
                   name: "default",
                   template: "{controller=Home}/{action=Index}/{id?}");
       });
+    }
+  }
+  public class PascalCaseJsonProfileFormatter : JsonOutputFormatter
+  {
+    public PascalCaseJsonProfileFormatter() : base(new JsonSerializerSettings { ContractResolver = new DefaultContractResolver() }, ArrayPool<char>.Shared)
+    {
+      SupportedMediaTypes.Clear();
+      SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("application/json;profile=\"https://en.wikipedia.org/wiki/PascalCase\""));
     }
   }
 }

@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
@@ -64,6 +65,41 @@ namespace SDHCC.DB.Content
         return Enumerable.Empty<ContentBase>();
       }
       return ContentBase.context.GetBreadcrumb(input.Id);
+    }
+
+    public static IEnumerable<Type> GetAllowChild(this string id)
+    {
+      Type contentType;
+      if (String.IsNullOrEmpty(id))
+      {
+        contentType = ContentE.RootType;
+      }
+      else
+      {
+        var content = ContentBase.context.Find(id, "ContentBase", out var r);
+        contentType = Type.GetType($"{content.GetValueByKey("FullType")},{content.GetValueByKey("AssemblyName")}");
+      }
+      if (contentType == null)
+      {
+        contentType = ContentE.RootType;
+      }
+      var attr = contentType.CustomAttributes.Where(b => b.AttributeType == typeof(AllowChildrenAttribute)).FirstOrDefault();
+      if (attr == null)
+      {
+        return Enumerable.Empty<Type>();
+      }
+      var childList = attr.NamedArguments.Where(b => b.MemberName == "ChildrenType").FirstOrDefault();
+      if (childList == null)
+      {
+        return Enumerable.Empty<Type>();
+      }
+      var result = new List<Type>();
+      foreach (var t in (ReadOnlyCollection<CustomAttributeTypedArgument>)childList.TypedValue.Value)
+      {
+        var items = t.Value;
+        result.Add((Type)items);
+      }
+      return result;
     }
   }
 }

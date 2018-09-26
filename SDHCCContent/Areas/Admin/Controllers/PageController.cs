@@ -19,61 +19,112 @@ namespace SDHCCContent.Areas.Admin.Controllers
     {
       this.db = db;
     }
-    [ResponseCache(Duration = 1)]
     public IActionResult Index(string id = "")
     {
       ContentPostModel model = null;
-      var allowChildrenType = new List<Type>();
       if (!string.IsNullOrEmpty(id))
       {
-        var page = ContentBase.context.GetContent(id);
-        if (page != null)
+        var content = db.GetContent(id);
+        if (content != null)
         {
-          var currentType = Type.GetType($"{page.FullType},{page.AssemblyName}");
-          var allowChildren = currentType.CustomAttributes.Where(b => b.AttributeType == typeof(AllowChildrenAttribute)).FirstOrDefault();
-          if (allowChildren != null)
-          {
-            var childList = allowChildren.NamedArguments.Where(b => b.MemberName == "ChildrenType").FirstOrDefault();
-            if (childList != null)
-            {
-              foreach (var t in (ReadOnlyCollection<CustomAttributeTypedArgument>)childList.TypedValue.Value)
-              {
-                var items = t.Value;
-                allowChildrenType.Add((Type)items);
-              }
-            }
-          }
-          model = page.ConvertToPassingModel();
+          model = content.ConvertToPassingModel();
         }
       }
-      else
-      {
-        var currentType = ContentE.RootType;
-        var allowChildren = currentType.CustomAttributes.Where(b => b.AttributeType == typeof(AllowChildrenAttribute)).FirstOrDefault();
-        if (allowChildren != null)
-        {
-          var childList = allowChildren.NamedArguments.Where(b => b.MemberName == "ChildrenType").FirstOrDefault();
-          if (childList != null)
-          {
-            foreach (var t in (ReadOnlyCollection<CustomAttributeTypedArgument>)childList.TypedValue.Value)
-            {
-              var items = t.Value;
-              allowChildrenType.Add((Type)items);
-            }
-          }
-        }
-      }
-      ViewBag.allowChildrenType = allowChildrenType;
       return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult PreCreate(string ContentId, string FullType)
+    {
+      if (string.IsNullOrEmpty(FullType))
+      {
+        return RedirectToAction("Index", "Page", new { area = "Admin", id = ContentId });
+      }
+      try
+      {
+
+        var contentType = Type.GetType(FullType);
+        var contentPage = (ContentBase)Activator.CreateInstance(contentType);
+        var parent = db.GetContent(ContentId);
+        contentPage.ParentId = parent == null ? "" : parent.Id;
+
+        return View("Create", contentPage.ConvertToPassingModel());
+      }
+      catch (Exception ex)
+      {
+        return RedirectToAction("Index", "Page", new { area = "Admin", id = ContentId });
+      }
+
+    }
+    [HttpPost]
+    public IActionResult Create(ContentPostModel model)
+    {
+      var content = model.ConvertToBaseModel();
+      content.AddContent();
+      return RedirectToAction("Index", "Page", new { area = "Admin", id = content.Id });
+    }
+
+    public IActionResult Edit(string id)
+    {
+      if (string.IsNullOrEmpty(id))
+      {
+        return RedirectToAction("Index", "Page", new { area = "Admin", id = "" });
+      }
+      var content = db.GetContent(id);
+      if (content == null)
+      {
+        return RedirectToAction("Index", "Page", new { area = "Admin", id = "" });
+      }
+      return View(content.ConvertToPassingModel());
+    }
+    [HttpPost]
+    public IActionResult Edit(ContentPostModel model)
+    {
+      if (model == null)
+      {
+        return RedirectToAction("Index", "Page", new { area = "Admin", id = "" });
+      }
+      var content = model.ConvertToBaseModel();
+      content.UpdatePageContent();
+      return RedirectToAction("Index", "Page", new { area = "Admin", id = content.Id });
+    }
+
+    public IActionResult Sort(string id)
+    {
+      if (string.IsNullOrEmpty(id))
+      {
+        return View(null);
+      }
+      var content = db.GetContent(id);
+      if (content == null)
+      {
+        return View(null);
+      }
+      return View(content.ConvertToPassingModel());
     }
 
     public JsonResult GetChildren(string id = "")
     {
       var c = db.GetChildrenNode(id).Count();
       var children = db.GetChildrenNode(id)
-        .Select(b => new { id = b.GetValueByKey("_id"), sortOrder = b.GetValueByKey("SortOrder") }).OrderByDescending(b=>b.sortOrder).Skip(100)
+        .Select(b => new { id = b.GetValueByKey("_id"), sortOrder = b.GetValueByKey("SortOrder") }).OrderByDescending(b => b.sortOrder).Skip(100)
         .ToList();
       return Json(children);
+    }
+    public JsonResult GetSortChildren(string id = "")
+    {
+      var c = db.GetChildrenNode(id).Count();
+      var children = db.GetChildrenNode(id)
+        .Select(b =>
+          new
+          {
+            DT_RowId = "row_"+ b.GetValueByKey("SortOrder").ToString(),
+            title = b.GetValueByKey("_id") + "_1",
+            readingOrder = b.GetValueByKey("SortOrder").ToString()
+          }).OrderBy(b => b.readingOrder).ToList();
+      var result = new { data = children };
+      var json = Json(result);
+      return json;
     }
   }
 }

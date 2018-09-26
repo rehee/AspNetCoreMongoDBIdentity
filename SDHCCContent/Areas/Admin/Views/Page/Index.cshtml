@@ -11,16 +11,29 @@
 <link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.css" />
 <link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid-theme.min.css" />
 
-<div class="input-group">
-    <div class="input-group-btn">
+<div class="button-box">
+    <div class="btn-group">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Create Content
+            Create
         </button>
         <div class="dropdown-menu">
-            
+            @{
+                var avaliableChild = contentId.GetAllowChild();
+            }
+            @foreach (var child in avaliableChild)
+            {
+                <form action="@Url.Action("PreCreate","Page",new { @area="Admin" })" method="post">
+                    @Html.Hidden("ContentId", contentId)
+                    @Html.Hidden("FullType", child.FullName + "," + child.Assembly)
+                    <input type="submit" class="dropdown-item" name="name" value="@child.Name" />
+                </form>
+
+            }
         </div>
     </div>
-
+    <a href="@Url.Action("Edit","Page",new { @area="Admin",@id=contentId })" class="btn btn-success">Edit</a>
+    <a href="@Url.Action("Sort","Page",new { @area="Admin",@id=contentId })" class="btn btn-warning">Sort</a>
+    <a href="#" class="btn btn-danger">Delete</a>
 </div>
 
 <br />
@@ -30,113 +43,6 @@
         <h4 class="card-title">Static</h4>
         <div id="staticgrid"></div>
     </div>
-</div>
-
-
-
-<button type="button" class="btn btn-info btn-rounded" data-toggle="modal" data-target="#add-contact">Add New Contact</button>
-<div id="add-contact" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="myModalLabel">Add New Contact</h4>
-            </div>
-            <div class="modal-body">
-                <from class="form-horizontal form-material">
-                    <div class="form-group">
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Type name">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Email">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Phone">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Designation">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Age">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Date of joining">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Salary">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <div class="fileupload btn btn-danger btn-rounded waves-effect waves-light">
-                                <span><i class="ion-upload m-r-5"></i>Upload Contact Image</span>
-                                <input type="file" class="upload">
-                            </div>
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Type name">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Email">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Phone">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Designation">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Age">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Date of joining">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Salary">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <div class="fileupload btn btn-danger btn-rounded waves-effect waves-light">
-                                <span><i class="ion-upload m-r-5"></i>Upload Contact Image</span>
-                                <input type="file" class="upload">
-                            </div>
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Type name">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Email">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Phone">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Designation">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Age">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Date of joining">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <input type="text" class="form-control" placeholder="Salary">
-                        </div>
-                        <div class="col-md-12 m-b-20">
-                            <div class="fileupload btn btn-danger btn-rounded waves-effect waves-light">
-                                <span><i class="ion-upload m-r-5"></i>Upload Contact Image</span>
-                                <input type="file" class="upload">
-                            </div>
-                        </div>
-                    </div>
-                </from>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Save</button>
-                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
 </div>
 
 @section script{
@@ -149,12 +55,10 @@
             {
                 <text>
                 {
-                    "Id": "@item.GetValueByKey("_id")",
+                    "id": "@item.GetValueByKey("_id")",
                     "Name": "@item.GetValueByKey("Name")",
-                    "Age": 1,
-                    "Country": "@item.GetValueByKey("SortOrder")" ,
-                    "Address": "Ap #897-1459 Quam Avenue",
-                    "Married": false
+                    "SortOrder": "@item.GetValueByKey("SortOrder")",
+                    "Type": "@item.GetValueByKey("FullType").ToString().Split('.').LastOrDefault()",
                 },
               </text>
             }
@@ -197,27 +101,20 @@
                         paging: !0,
                         data: contents.clients,
                         rowClick: function(b){
-                            console.log(b);
+                            window.location.href = "@Url.Action("Index","Page",new { @area="Admin",@id=""})/Index/" + b.item.id;
                         },
-                        fields: [{
+                        fields: [ {
+                            name: "SortOrder",
+                            type: "number",
+                            width: 5
+                        },{
                             name: "Name",
                             type: "text",
                             width: 150
                         }, {
-                            name: "Age",
-                            type: "number",
-                            width: 70
-                        }, {
-                            name: "Address",
+                            name: "Type",
                             type: "text",
-                            width: 200
-                        }, {
-                            name: "Country",
-                            type: "number",
-                        }, {
-                            name: "Married",
-                            type: "checkbox",
-                            title: "Is Married"
+                            width: 100
                         }]
                     })
                 }(),
@@ -257,7 +154,7 @@
                 }()
         }(document, window, jQuery);
     </script>
-    @{ 
-      contents = null;
+    @{
+        contents = null;
     }
 }

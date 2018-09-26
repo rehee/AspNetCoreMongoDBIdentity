@@ -2,15 +2,19 @@
 @Html.Hidden("Properties[" + Model.Index.ToString() + "].Key", Model.Property.Key)
 @Html.Hidden("Properties[" + Model.Index.ToString() + "].ValueType", Model.Property.ValueType)
 @Html.Hidden("Properties[" + Model.Index.ToString() + "].EditorType", Model.Property.EditorType)
-<p>
-    @Model.Property.Title
-    @if(Model.Property.EditorType == SDHCC.EnumInputType.TextArea)
+@{
+    var inputName = "Properties[" + @Model.Index.ToString() + "].Value";
+}
+<div class="form-group">
+    <label>@Model.Property.Title</label>
+
+
+    @if (Model.Property.EditorType == SDHCC.EnumInputType.TextArea)
     {
-        <textarea name="Properties[@Model.Index.ToString()].Value">@Model.Property.Value</textarea>
+        <textarea class="form-control" rows="5" name="@inputName">@Model.Property.Value</textarea>
     }
-    @if(Model.Property.EditorType == SDHCC.EnumInputType.Text)
+    @if (Model.Property.EditorType == SDHCC.EnumInputType.Text)
     {
-    <input type="text" name="Properties[@Model.Index.ToString()].Value" value="@Model.Property.Value" />
+        <input type="text" class="form-control" name="@inputName" value="@Model.Property.Value" />
     }
-</p>
-@**@
+</div>
