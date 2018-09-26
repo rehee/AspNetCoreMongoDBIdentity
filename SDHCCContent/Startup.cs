@@ -113,6 +113,8 @@ namespace SDHCCContent
         routes.MapRoute(
                   name: "default",
                   template: "{controller=Home}/{action=Index}/{id?}");
+        routes.MapRoute("content", "{*names}",
+            defaults: new { controller = "Content", action = "Index" });
       });
     }
   }

@@ -8,45 +8,27 @@
 @section breadcrumb{
     @{ await Html.RenderPartialAsync("_BreadCrumbContent", contentId);}
 }
-<link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.17/css/jquery.dataTables.min.css" />
-<link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" />
-<link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/select/1.2.6/css/select.dataTables.min.css" />
-<link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/rowreorder/1.2.4/css/rowReorder.dataTables.min.css" />
-
 <h1>Sortable table</h1>
-
-@*<table id="example" class="display" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th>Order</th>
-                <th>Title</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th>Order</th>
-                <th>Title</th>
-            </tr>
-        </tfoot>
-    </table>*@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.15.0/vuedraggable.min.js"></script>
-<div id="main">
-    <h1>Vue Dragable For</h1>
 
-    <div class="drag">
-        <h2>Draggable</h2>
-        <draggable :list="list" class="dragArea">
-            <div v-for="element in list">{{element.name}}</div>
-        </draggable>
+<div class="card" id="main">
+    <div class="card-block">
+        <div class="row">
+            <h2>Draggable</h2>
+            <!-- Column -->
+            <div class="col-lg-12 col-md-12">
+                <draggable :list="list" class="dragArea">
+                    <div v-for="element in list" class="alert alert-success">{{element.name}}</div>
+                </draggable>
+
+            </div>
+        </div>
     </div>
-
-    <button @@click="console">console</button>
-    
-
-
 </div>
+
+
 <script>
         var vm = new Vue({
             el: "#main",
@@ -58,7 +40,7 @@
                         { name: "@item.GetValueByKey("_id")" },
                       </text>
                     }
-                    
+
                 ]
             },
             methods: {
@@ -73,70 +55,6 @@
 </script>
 
 @section script{
-    @*<script src="https://cdn.datatables.net/1.10.17/js/jquery.dataTables.js"></script>
-        <script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdn.datatables.net/select/1.2.6/js/dataTables.select.min.js"></script>
-        <script src="https://cdn.datatables.net/rowreorder/1.2.4/js/dataTables.rowReorder.min.js"></script>
-        <script src="/lib/admin/js/dataTables.editor.min.js"></script>
 
-        <script>
-            var editor; // use a global for the submit and return data rendering in the examples
-
-            $(document).ready(function () {
-                editor = new $.fn.dataTable.Editor({
-                    ajax: '/admin/page/getsortchildren',
-                    table: '#example',
-                    fields: [{
-                        label: 'Order:',
-                        name: 'readingOrder',
-                        fieldInfo: 'This field can only be edited via click and drag row reordering.'
-                    }, {
-                        label: 'Title:',
-                        name: 'title'
-                    }]
-                });
-
-                var table = $('#example').DataTable({
-                    dom: 'Bfrtip',
-                    ajax: '/admin/page/getsortchildren',
-                    //rowId: 'dT_RowId',
-                    idSrc: 'dT_RowId',
-                    pageLength:50,
-                    columns: [
-                        { data: 'readingOrder', className: 'reorder' },
-                        { data: 'title' }
-
-                    ],
-                    columnDefs: [
-                        { orderable: false, targets: [1] }
-                    ],
-                    rowReorder: {
-                        dataSrc: 'readingOrder',
-                        editor: editor
-                    },
-                    select: true,
-                    buttons: [
-                        { extend: 'create', editor: editor },
-                        { extend: 'edit', editor: editor },
-                        { extend: 'remove', editor: editor }
-                    ]
-                });
-
-                editor
-                    .on('postCreate postRemove', function () {
-                        // After create or edit, a number of other rows might have been effected -
-                        // so we need to reload the table, keeping the paging in the current position
-                        table.ajax.reload(null, false);
-                    })
-                    .on('initCreate', function () {
-                        // Enable order for create
-                        editor.field('readingOrder').enable();
-                    })
-                    .on('initEdit', function () {
-                        // Disable for edit (re-ordering is performed by click and drag)
-                        editor.field('readingOrder').disable();
-                    });
-            });
-        </script>*@
 
 }

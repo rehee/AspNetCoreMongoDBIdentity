@@ -33,7 +33,10 @@
     </div>
     <a href="@Url.Action("Edit","Page",new { @area="Admin",@id=contentId })" class="btn btn-success">Edit</a>
     <a href="@Url.Action("Sort","Page",new { @area="Admin",@id=contentId })" class="btn btn-warning">Sort</a>
-    <a href="#" class="btn btn-danger">Delete</a>
+    <a href="#" onclick="deleteCurrent()" class="btn btn-danger">Delete</a>
+    <form id="ContentDeleteForm" action="@Url.Action("Delete","Page",new { @area="Admin" })" method="post">
+        @Html.Hidden("ContentId", contentId)
+    </form>
 </div>
 
 <br />
@@ -153,8 +156,27 @@
                     }), jsGrid.fields.myDateField = MyDateField
                 }()
         }(document, window, jQuery);
+
+        function deleteCurrent() {
+            swal({
+                title: "Confirm delete content?",
+                text: "You will delete this content and all other content under it. and will not recovered",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel plx!",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    swal("Deleted!", "Content has been deleted", "success");
+                    $("#ContentDeleteForm").submit();
+                } else {
+                    swal("Cancelled", "Canceled", "error");
+                }
+            });
+        }
     </script>
-    @{
-        contents = null;
-    }
+
 }

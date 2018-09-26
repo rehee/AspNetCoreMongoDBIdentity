@@ -102,6 +102,21 @@ namespace SDHCCContent.Areas.Admin.Controllers
       }
       return View(content.ConvertToPassingModel());
     }
+    [HttpPost]
+    public IActionResult Delete(string ContentId)
+    {
+      if (string.IsNullOrEmpty(ContentId))
+      {
+        return RedirectToAction("Index", "Page", new { area = "Admin", id = "" });
+      }
+      var content = db.GetContent(ContentId);
+      if (content == null)
+      {
+        return RedirectToAction("Index", "Page", new { area = "Admin", id = "" });
+      }
+      db.RemoveContent(content);
+      return RedirectToAction("Index", "Page", new { area = "Admin", id = content.ParentId });
+    }
 
     public JsonResult GetChildren(string id = "")
     {
@@ -118,7 +133,7 @@ namespace SDHCCContent.Areas.Admin.Controllers
         .Select(b =>
           new
           {
-            DT_RowId = "row_"+ b.GetValueByKey("SortOrder").ToString(),
+            DT_RowId = "row_" + b.GetValueByKey("SortOrder").ToString(),
             title = b.GetValueByKey("_id") + "_1",
             readingOrder = b.GetValueByKey("SortOrder").ToString()
           }).OrderBy(b => b.readingOrder).ToList();
