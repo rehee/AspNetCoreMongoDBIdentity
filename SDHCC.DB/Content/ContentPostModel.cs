@@ -12,6 +12,8 @@ namespace SDHCC.DB.Content
     public string AssemblyName { get; set; }
     public DateTime CreateTime { get; set; }
     public int SortOrder { get; set; }
+    public string Name { get; set; }
+
     public List<ContentProperty> Properties { get; set; } = new List<ContentProperty>();
   }
 
@@ -23,6 +25,7 @@ namespace SDHCC.DB.Content
     public string Title { get; set; } = "";
     public EnumInputType EditorType { get; set; } = EnumInputType.Text;
   }
+
   public class ContentPropertyIndex
   {
     public ContentProperty Property { get; set; }

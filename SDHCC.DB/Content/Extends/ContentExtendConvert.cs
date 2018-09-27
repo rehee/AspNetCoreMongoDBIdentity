@@ -18,8 +18,10 @@ namespace SDHCC.DB.Content
       result.AssemblyName = input.AssemblyName;
       result.CreateTime = input.CreateTime;
       result.SortOrder = input.SortOrder;
+      result.Name = input.Name;
 
       var properties = input.GetType().GetProperties();
+
       foreach (var p in properties)
       {
         if (p.SkippedProperty())
@@ -48,9 +50,11 @@ namespace SDHCC.DB.Content
           }
         }
         string postValue = "";
-        if (ConvertTypeToStringDictionary.ContainsKey(p.GetType()))
+        var type = p.PropertyType;
+        var datetimeType = typeof(DateTime);
+        if (ConvertTypeToStringDictionary.ContainsKey(type))
         {
-          postValue = ConvertTypeToStringDictionary[p.GetType()](p.GetValue(input));
+          postValue = ConvertTypeToStringDictionary[type](p.GetValue(input));
         }
         else
         {
@@ -80,6 +84,8 @@ namespace SDHCC.DB.Content
       result.AssemblyName = input.AssemblyName;
       result.CreateTime = input.CreateTime;
       result.SortOrder = input.SortOrder;
+      result.Name = input.Name;
+
       var properties = result.GetType().GetProperties();
 
       foreach (var p in properties)
@@ -127,6 +133,7 @@ namespace SDHCC.DB.Content
         case "AssemblyName":
         case "CreateTime":
         case "SortOrder":
+        case "Name":
           return true;
         default:
           break;
@@ -139,32 +146,5 @@ namespace SDHCC.DB.Content
       var a = property;
       return false;
     }
-    public static Dictionary<Type, Func<string, dynamic>> ConvertStringToTypeDictionary { get; set; } = new Dictionary<Type, Func<string, dynamic>>()
-    {
-      [typeof(int)] = b =>
-      {
-        int.TryParse(b, out var result);
-        return result;
-      },
-    };
-    public static Dictionary<Type, Func<object, string>> ConvertTypeToStringDictionary { get; set; } = new Dictionary<Type, Func<object, string>>()
-    {
-      [typeof(string)] = b =>
-      {
-        if (b == null)
-        {
-          return "";
-        }
-        return b.ToString();
-      },
-      [typeof(int)] = b =>
-      {
-        if (b == null)
-        {
-          return "0";
-        }
-        return b.ToString();
-      },
-    };
   }
 }

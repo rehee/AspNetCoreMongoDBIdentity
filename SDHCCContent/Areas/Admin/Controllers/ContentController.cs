@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SDHCC.DB;
 using SDHCC.DB.Content;
 
 namespace SDHCCContent.Areas.Admin.Controllers
@@ -11,58 +12,52 @@ namespace SDHCCContent.Areas.Admin.Controllers
   {
     public IActionResult Index(string names)
     {
-      var urls = new List<string>();
-      if (!String.IsNullOrEmpty(names))
+      try
       {
-        urls = names.Split('/').ToList();
-      }
-      if (urls.Count <= 0)
-      {
+        ContentBase selectPage = null;
         var root = ContentBase.context.GetChildrenContent("").OrderBy(b => b.SortOrder).FirstOrDefault();
-        if (root != null)
+        if (String.IsNullOrEmpty(names))
         {
-          var page = ContentBase.context.GetContent(root.Id);
-          return View($"Views/{page.GetType().Name}.cshtml");
-        }
-        return Content("404");
-      }
-      var rootPage = ContentBase.context.GetChildrenContent("").OrderBy(b => b.SortOrder).FirstOrDefault();
-      if (rootPage == null)
-      {
-        return Content("404");
-      }
-      ContentBase selectPage = null;
-      var checkRoot = false;
-      foreach (var url in urls)
-      {
-        var urlTrim = url.Trim();
-        var currentPage = ContentBase.context.GetChildrenContent(rootPage.Id)
-          .Where(b => b.Name.Equals(urlTrim, StringComparison.CurrentCultureIgnoreCase)).OrderBy(b => b.SortOrder).FirstOrDefault();
-
-        if (currentPage != null || checkRoot == false)
-        {
-          selectPage = currentPage;
-          rootPage = currentPage;
-        }
-        else
-        {
-          checkRoot = true;
-          currentPage = ContentBase.context.GetChildrenContent("")
-            .Where(b => b.Name.Equals(urlTrim,StringComparison.CurrentCultureIgnoreCase))
-            .OrderBy(b => b.SortOrder).FirstOrDefault();
-          if (currentPage == null)
+          selectPage = root;
+          if (selectPage == null)
           {
-            return Content("404");
+            goto GoTO404;
           }
-          rootPage = currentPage;
-          selectPage = currentPage;
+          else
+          {
+            goto GoTOView;
+          }
         }
-      }
-      if (selectPage == null)
-      {
+        var urls = names.Split('/').Select(b => b.Trim()).ToList();
+        var contains = new List<ContentBase>();
+        var rootId = "";
+        var parentId = root.Id;
+        foreach (var url in urls)
+        {
+          var content = ContentBase.context.Where<ContentBase>(b => b.Name.ToLower() == url.ToLower(), "ContentBase")
+            .OrderBy(b => b.SortOrder).FirstOrDefault();
+          if (content == null)
+          {
+            goto GoTO404;
+          }
+          if (content.ParentId != rootId && content.ParentId != parentId)
+          {
+            goto GoTO404;
+          }
+          rootId = parentId;
+          parentId = content.Id;
+          contains.Add(content);
+        }
+        selectPage = contains.LastOrDefault();
+        GoTOView:
+        return View($"Views/{selectPage.GetType().Name}.cshtml");
+        GoTO404:
         return Content("404");
       }
-      return View($"Views/{selectPage.GetType().Name}.cshtml");
+      catch(Exception ex)
+      {
+        return Content("");
+      }
     }
   }
 }

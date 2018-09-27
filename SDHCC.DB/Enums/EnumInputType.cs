@@ -10,5 +10,6 @@ namespace SDHCC
     TextArea,
     Hidden,
     Number,
+    DateTime,
   }
 }

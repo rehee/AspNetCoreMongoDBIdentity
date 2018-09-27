@@ -30,9 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Areas\Admin\Views\Shared\AdminInputs\TextInput.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="Areas\Admin\Views\Shared\AdminInputs\_AdminInput.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

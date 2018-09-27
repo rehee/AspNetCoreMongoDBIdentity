@@ -11,22 +11,7 @@
     <div class="card-block">
         <h4>Default Basic Forms</h4>
         <form action="@Url.Action("Edit","Page",new { @area="Admin" })" class="form-horizontal m-t-40" method="post" enctype="multipart/form-data">
-            @Html.Hidden("Id", Model.Id)
-            @Html.Hidden("ParentId", Model.ParentId)
-            @Html.Hidden("FullType", Model.FullType)
-            @Html.Hidden("AssemblyName", Model.AssemblyName)
-            @Html.Hidden("CreateTime", Model.CreateTime)
-            @Html.Hidden("SortOrder", Model.SortOrder)
-            @{
-                var index = 0;
-            }
-            @foreach (var property in Model.Properties)
-            {
-                await Html.RenderPartialAsync("AdminInputs/_AdminInput", new ContentPropertyIndex(property, index));
-                index++;
-            }
-
-            <button type="submit" class="btn btn-success waves-effect waves-light m-r-10">Submit</button>
+           @{ await Html.RenderPartialAsync("_CreateOrEdit", Model);}
         </form>
 
     </div>
