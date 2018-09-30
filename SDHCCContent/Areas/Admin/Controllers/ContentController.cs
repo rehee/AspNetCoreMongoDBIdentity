@@ -15,7 +15,7 @@ namespace SDHCCContent.Areas.Admin.Controllers
       try
       {
         ContentBase selectPage = null;
-        var root = ContentBase.context.GetChildrenContent("").OrderBy(b => b.SortOrder).FirstOrDefault();
+        var root = ContentBase.context.Where(b => b["ParentId"] == "", "ContentBase").OrderBy(b => b["SortOrder"]).FirstOrDefault().ConvertToContentBase();
         if (String.IsNullOrEmpty(names))
         {
           selectPage = root;
@@ -28,14 +28,15 @@ namespace SDHCCContent.Areas.Admin.Controllers
             goto GoTOView;
           }
         }
-        var urls = names.Split('/').Select(b => b.Trim()).ToList();
+        var urls = names.Split('/').Select(b => b.Trim().ToLower()).ToList();
         var contains = new List<ContentBase>();
         var rootId = "";
         var parentId = root.Id;
         foreach (var url in urls)
         {
-          var content = ContentBase.context.Where<ContentBase>(b => b.Name.ToLower() == url.ToLower(), "ContentBase")
-            .OrderBy(b => b.SortOrder).FirstOrDefault();
+          var content = ContentBase.context
+            .Where(b => b["Name"] == url, "ContentBase")
+            .OrderBy(b => b["SortOrder"]).FirstOrDefault().ConvertToContentBase();
           if (content == null)
           {
             goto GoTO404;
@@ -54,7 +55,7 @@ namespace SDHCCContent.Areas.Admin.Controllers
         GoTO404:
         return Content("404");
       }
-      catch(Exception ex)
+      catch (Exception ex)
       {
         return Content("");
       }
