@@ -35,7 +35,7 @@ namespace SDHCCContent.Areas.Admin.Controllers
         foreach (var url in urls)
         {
           var content = ContentBase.context
-            .Where(b => b["Name"] == url, "ContentBase")
+            .Where(b => b["Name"] == url &&(b["ParentId"]==rootId || b["ParentId"] == parentId), "ContentBase")
             .OrderBy(b => b["SortOrder"]).FirstOrDefault().ConvertToContentBase();
           if (content == null)
           {

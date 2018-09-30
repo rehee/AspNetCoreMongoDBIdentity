@@ -20,7 +20,7 @@ namespace SDHCC.DB.Content
       }
       set
       {
-        name = String.IsNullOrEmpty(value) ? this.Id : value.Trim().Replace('/', '_');
+        name = String.IsNullOrEmpty(value) ? this.Id : value.Trim().Replace('/', '_').ToLower();
       }
     }
 
