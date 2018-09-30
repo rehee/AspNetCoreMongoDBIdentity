@@ -1,15 +1,1 @@
-﻿@model string
-@{
-  var id = "";
-  if (!string.IsNullOrEmpty(Model))
-  {
-    id = Model;
-  }
-  var pages = ContentBase.context.GetChildrenNode(id).ToList();
-}
-<p>
-  @foreach (var item in pages)
-  {
-    <a href="@Url.Action("Index","Page",new{ @id=item.Id })">@(!String.IsNullOrEmpty(item.Name) ? item.Name : item.Id)</a>
-  }
-</p>
+﻿

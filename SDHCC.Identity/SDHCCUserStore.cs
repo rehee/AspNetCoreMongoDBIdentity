@@ -329,11 +329,16 @@ namespace SDHCC.Identity
     {
       email = email.Trim().ToLower();
       var userFind = await this.FindByEmailAsync(email, cancellationToken);
-      if (userFind == null)
-        return;
       user.NormalizedEmail = email;
       user.Email = email;
-      await this.UpdateAsync(user, cancellationToken);
+      if (userFind == null)
+      {
+        
+      }
+      else
+      {
+        await this.UpdateAsync(user, cancellationToken);
+      }
     }
 
     public Task<string> GetEmailAsync(TUser user, CancellationToken cancellationToken)

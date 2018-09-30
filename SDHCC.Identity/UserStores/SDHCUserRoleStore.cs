@@ -23,6 +23,8 @@ namespace SDHCC.Identity
       if (roleExist)
         return;
       var role = db.Where<TRole>(b => b.NormalizedName == roleName.ToLower()).FirstOrDefault();
+      if (role == null)
+        return;
       var userRole = new TUserRole();
       userRole.RoleId = role.Id;
       userRole.UserId = user.Id;

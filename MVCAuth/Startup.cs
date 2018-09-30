@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using SDHCC.DB.Content;
 using MVCAuth.Models;
+using SDHCC.Identity.Services;
 
 namespace MVCAuth
 {
@@ -66,10 +67,11 @@ namespace MVCAuth
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
       services.AddScoped<IRoleStore<IdentityRole>, SDHCCRoleStore<IdentityRole, SDHCUserRole>>();
       //services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();
-      services.AddScoped<IUserStore<IdentityUser>, SDHCCUserStore<IdentityUser, IdentityRole, SDHCUserRole>>();
+      services.AddScoped<IUserStore<Muser>, SDHCCUserStore<Muser, IdentityRole, SDHCUserRole>>();
 
-      services.AddScoped<UserManager<IdentityUser>>();
+      services.AddScoped<UserManager<Muser>>();
       services.AddScoped<RoleManager<IdentityRole>>();
+      services.AddScoped<ISDHCCIdentity, SDHCCIdentity<Muser>>();
       //services.AddIdentity<IdentityUser, IdentityRole>(option =>
       //{
 
@@ -77,7 +79,7 @@ namespace MVCAuth
 
 
 
-      services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders();
+      services.AddDefaultIdentity<Muser>().AddDefaultTokenProviders();
       //.AddEntityFrameworkStores<ApplicationDbContext>();
 
       MVCArea.Config.Mvc(services);
