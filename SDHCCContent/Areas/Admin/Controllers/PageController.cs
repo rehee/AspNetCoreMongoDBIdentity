@@ -4,23 +4,38 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using SDHCC;
 using SDHCC.DB;
 using SDHCC.DB.Content;
+using SDHCC.Identity.Models.UserModels;
+using SDHCC.Identity.Services;
 
 namespace SDHCCContent.Areas.Admin.Controllers
 {
   [Area("Admin")]
+  [Authorize]
   public class PageController : Controller
   {
     ISDHCCDbContext db { get; set; }
-    public PageController(ISDHCCDbContext db)
+    private IConfiguration configuration;
+    private ISDHCCIdentity users;
+    DefaultUserSetting setting;
+    public PageController(ISDHCCDbContext db, IConfiguration configuration, ISDHCCIdentity users)
     {
       this.db = db;
+      this.configuration = configuration;
+      setting = configuration.GetSection("DefaultUserSetting").Get<DefaultUserSetting>();
+      this.users = users;
     }
     public IActionResult Index(string id = "")
     {
+      if (!users.IsUserInRole(User, setting.BackUser))
+      {
+        return Redirect(setting.Login);
+      }
       ContentPostModel model = null;
       if (!string.IsNullOrEmpty(id))
       {

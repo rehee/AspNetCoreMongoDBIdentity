@@ -27,28 +27,37 @@ namespace SDHCC.Identity
     }
     public IQueryable<TRole> Roles => db.Where<TRole>();
 
-    public Task<IdentityResult> CreateAsync(TRole role, CancellationToken cancellationToken)
+    public async Task<IdentityResult> CreateAsync(TRole role, CancellationToken cancellationToken)
     {
-      var task = new Task<IdentityResult>(() =>
+      role.Name = role.Name.Trim();
+      role.NormalizedName = role.Name.ToLower();
+      var checkRole = await this.FindByNameAsync(role.NormalizedName, cancellationToken);
+      if (checkRole != null)
       {
-        if (String.IsNullOrEmpty(role.Id))
-        {
-          role.Id = Guid.NewGuid().ToString();
-        }
-        db.Add<TRole>(role, out var response);
-        if (response.Success)
-          return IdentityResult.Success;
         return IdentityResult.Failed(new IdentityError[1]
         {
+            new IdentityError()
+            {
+              Code = "0",
+              Description = "Role exist",
+            }
+        });
+      }
+      if (String.IsNullOrEmpty(role.Id))
+      {
+        role.Id = Guid.NewGuid().ToString();
+      }
+      db.Add<TRole>(role, out var response);
+      if (response.Success)
+        return IdentityResult.Success;
+      return IdentityResult.Failed(new IdentityError[1]
+      {
           new IdentityError()
           {
             Code = response.ResponseCode.ToString(),
             Description = response.ResponseMessage,
           }
-        });
       });
-      task.Start();
-      return task;
     }
 
     public Task<IdentityResult> DeleteAsync(TRole role, CancellationToken cancellationToken)

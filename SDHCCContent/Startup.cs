@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +20,9 @@ using SDHCC.DB;
 using SDHCC.DB.Content;
 using SDHCC.DB.Models;
 using SDHCC.Identity;
+using SDHCC.Identity.Models.UserModels;
 using SDHCC.Identity.Models.UserRoles;
+using SDHCC.Identity.Services;
 
 namespace SDHCCContent
 {
@@ -34,6 +37,7 @@ namespace SDHCCContent
 
     public void ConfigureServices(IServiceCollection services)
     {
+      var setting = Configuration.GetSection("DefaultUserSetting").Get<DefaultUserSetting>();
       //TelemetryConfiguration.Active.DisableTelemetry = true;
       //services.Configure<CookiePolicyOptions>(options =>
       //{
@@ -41,17 +45,20 @@ namespace SDHCCContent
       //  options.CheckConsentNeeded = context => true;
       //  options.MinimumSameSitePolicy = SameSiteMode.None;
       //});
+      var dbConnect = @"mongodb+srv://rehee_1:rehee_1_psw@cluster0-igkz0.gcp.mongodb.net/test?retryWrites=true";
+      dbConnect = Configuration.GetConnectionString("DefaultConnection");
+      var dbName = Configuration["DatabaseName"];
 
       services.AddSingleton<IMongoDatabase>(s =>
       {
-        var client = new MongoClient(@"mongodb+srv://rehee_1:rehee_1_psw@cluster0-igkz0.gcp.mongodb.net/test?retryWrites=true");
-        var database = client.GetDatabase("lalala");
+        var client = new MongoClient(dbConnect);
+        var database = client.GetDatabase(dbName);
         return database;
       });
       SDHCCBaseEntity.db = () =>
       {
-        var client = new MongoClient(@"mongodb+srv://rehee_1:rehee_1_psw@cluster0-igkz0.gcp.mongodb.net/test?retryWrites=true");
-        var database = client.GetDatabase("lalala");
+        var client = new MongoClient(dbConnect);
+        var database = client.GetDatabase(dbName);
         return database;
       };
       SDHCCBaseEntity.context = new SDHCCDbContext(SDHCCBaseEntity.db());
@@ -65,19 +72,27 @@ namespace SDHCCContent
 
       services.AddScoped<UserManager<IdentityUser>>();
       services.AddScoped<RoleManager<IdentityRole>>();
-      //services.AddIdentity<IdentityUser, IdentityRole>(option =>
-      //{
+      services.AddScoped<ISDHCCIdentity, SDHCCIdentity<IdentityUser>>();
+      services.AddIdentity<IdentityUser, IdentityRole>(options =>
+      {
+        
+      }).AddDefaultTokenProviders();
+      services.Configure<CookieAuthenticationOptions>(options =>
+      {
+        options.LoginPath = new PathString("/login");
+      });
 
-      //}).AddDefaultTokenProviders();
 
-
-
-      services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders();
+      //services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders();
       //.AddEntityFrameworkStores<ApplicationDbContext>();
 
       services.AddMvc()
         .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
-
+      services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+          options.LoginPath = setting.Login;
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
