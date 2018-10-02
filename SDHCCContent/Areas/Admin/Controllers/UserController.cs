@@ -15,9 +15,19 @@ namespace SDHCCContent.Areas.Admin.Controllers
     {
       this.users = users;
     }
-    public IActionResult Index()
+    public IActionResult Index(string id)
     {
-      return View();
+      if (string.IsNullOrEmpty(id))
+      {
+        var allUser = users.GetUserRoles().ToList();
+        return View(allUser);
+      }
+      else
+      {
+        var allUser = users.GetUserRoles().ToList().Where(b => users.IsUserInRole(b.Name, id));
+        return View(allUser);
+      }
+
     }
     public IActionResult Login()
     {
@@ -38,6 +48,7 @@ namespace SDHCCContent.Areas.Admin.Controllers
     {
       return View();
     }
+
 
     public IActionResult Logout()
     {

@@ -186,7 +186,5 @@ namespace SDHCC.DB.Content
         return ((DateTime)b).ToString(G.DateTimeFormat);
       },
     };
-
-
   }
 }

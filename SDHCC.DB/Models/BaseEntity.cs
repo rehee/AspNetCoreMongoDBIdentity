@@ -5,7 +5,7 @@ using System;
 namespace SDHCC.DB.Models
 {
   [BsonIgnoreExtraElements(ignoreExtraElements: true, Inherited = true)]
-  public abstract class SDHCCBaseEntity : BaseEntity
+  public abstract class SDHCCBaseEntity : BaseTypeEntity
   {
     [BaseProperty]
     public string Id { get; set; }
@@ -21,7 +21,7 @@ namespace SDHCC.DB.Models
     }
     private string assemblyName { get; set; }
     [BaseProperty]
-    public virtual string AssemblyName
+    public string AssemblyName
     {
       get
       {
@@ -39,6 +39,10 @@ namespace SDHCC.DB.Models
     {
       this.Id = Guid.NewGuid().ToString();
     }
+  }
+  public interface BaseTypeEntity: BaseEntity
+  {
+    string AssemblyName { get; set; }
   }
   public interface BaseEntity
   {

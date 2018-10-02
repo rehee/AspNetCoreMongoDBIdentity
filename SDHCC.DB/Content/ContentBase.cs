@@ -6,31 +6,9 @@ using System.Linq.Expressions;
 
 namespace SDHCC.DB.Content
 {
-  public abstract class ContentBaseProperty : SDHCCBaseEntity
-  {
-    [BaseProperty]
-    public string ParentId { get; set; } = "";
-    [BaseProperty]
-    public List<string> Children { get; set; } = new List<string>();
-    private string name { get; set; }
-    [BaseProperty]
-    public string Name
-    {
-      get
-      {
-        return name;
-      }
-      set
-      {
-        name = String.IsNullOrEmpty(value) ? this.Id : value.Trim().Replace('/', '_').ToLower();
-      }
-    }
-    [BaseProperty]
-    public DateTime CreateTime { get; set; }
-    [BaseProperty]
-    public int SortOrder { get; set; } = 0;
-  }
-  public abstract class ContentBase : ContentBaseProperty
+
+
+  public abstract class ContentBase : BaseProperty
   {
     
   }

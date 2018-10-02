@@ -1,0 +1,15 @@
+﻿@model IEnumerable<SDHCC.Identity.Models.UserModels.UserRoleView>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Users</h2>
+@{ await Html.RenderPartialAsync("Users/_RolesLink"); }
+<ul>
+    @foreach (var user in Model)
+    {
+        <li>@user.Name [@(String.Join(",", user.Roles))]</li>
+    }
+
+</ul>

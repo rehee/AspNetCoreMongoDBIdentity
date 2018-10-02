@@ -1,14 +1,19 @@
-﻿using System;
+﻿using SDHCC.DB.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SDHCC.DB.Content
 {
-  public class ContentPostModel: ContentBaseProperty
+  public class ContentPostModel : BaseProperty, IPassModel
   {
     public List<ContentProperty> Properties { get; set; } = new List<ContentProperty>();
   }
 
+  public interface IPassModel
+  {
+    List<ContentProperty> Properties { get; set; }
+  }
   public class ContentProperty
   {
     public string Key { get; set; } = "";

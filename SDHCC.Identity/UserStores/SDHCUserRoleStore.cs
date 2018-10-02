@@ -39,22 +39,12 @@ namespace SDHCC.Identity
 
     public Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken)
     {
-      var task = new Task<IList<string>>((u) =>
+      var task = new Task<IList<string>>(() =>
       {
-        var thisUser = (TUser)u;
-        var userRoles = this.db.Filter<TUserRole>(
-          new FilterParam()
-          {
-            Filters = new List<SearchFilter>() { new SearchFilter() { Compare = CompareOption.Eq, Property = "UserId", Value = thisUser.Id } }
-          }, out var response).ToList().Select(b => b.RoleId).ToList();
-
-        if (userRoles.Count == 0)
-        {
-          return new List<string>();
-        }
-        var roleCollection = db.Find<TRole>(userRoles, out var res);
-        return roleCollection.Select(b => b.Name).ToList();
-      }, user);
+        var roleIds = this.db.Where<TUserRole>(b => b.UserId == user.Id).Select(b => (object)b.RoleId).ToList();
+        var roles = this.db.Where<TRole>(b => roleIds.Contains(b.Id)).Select(b => b.NormalizedName).ToList();
+        return roles;
+      });
       task.Start();
       return task;
     }
@@ -64,7 +54,7 @@ namespace SDHCC.Identity
       var task = new Task<bool>(() =>
       {
         var roleNameLow = roleName.ToLower();
-        var role = db.Where<TRole>(b=>b.NormalizedName == roleNameLow).FirstOrDefault();
+        var role = db.Where<TRole>(b => b.NormalizedName == roleNameLow).FirstOrDefault();
         if (role == null)
           return false;
         return db.Where<TUserRole>(b => b.UserId == user.Id && b.RoleId == role.Id).Count() > 0;

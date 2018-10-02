@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using SDHCC.Identity.Models.UserModels;
 using System;
 using System.Collections.Generic;
@@ -28,16 +29,15 @@ namespace SDHCC.Identity.Services
       this.roleManager = roleManager;
       this.signInManager = signInManager;
       this.configuration = configuration;
-      var setting = configuration.GetSection("DefaultUserSetting").Get<DefaultUserSetting>();
       if (isInit)
       {
         isInit = false;
-        initUserAndRole(setting);
+        initUserAndRole(E.Setting);
       }
-        
+
     }
     #region
-    private void initUserAndRole(DefaultUserSetting setting)
+    private void initUserAndRole(SiteSetting setting)
     {
       AddRole(setting.AdminRole, out var result);
       AddRole(setting.BackUser, out result);
@@ -87,6 +87,45 @@ namespace SDHCC.Identity.Services
       var result = userManager.IsInRoleAsync(user, role).GetAsyncValue();
       return result;
     }
+    public bool IsUserInRoles(ClaimsPrincipal user, IEnumerable<string> roles, bool isBackSite = true)
+    {
+      if (user == null)
+        return false;
+      if (!user.Identity.IsAuthenticated)
+        return false;
+      var checkUser = userManager.FindByNameAsync(user.Identity.Name).GetAsyncValue();
+      if (checkUser == null)
+        return false;
+      if (isBackSite)
+      {
+        var isAdmin = userManager.IsInRoleAsync(checkUser, E.Setting.AdminRole).GetAsyncValue();
+        if (isAdmin)
+        {
+          return true;
+        }
+        var isBackUser = userManager.IsInRoleAsync(checkUser, E.Setting.BackUser).GetAsyncValue();
+        if (!isBackUser)
+        {
+          return false;
+        }
+      }
+      foreach (var role in roles)
+      {
+        var checkRoles = userManager.IsInRoleAsync(checkUser, role).GetAsyncValue();
+        if (!checkRoles)
+          return false;
+      }
+      return true;
+    }
+    public bool IsUserInRoles(ClaimsPrincipal user, BsonArray roles, bool isBackSite = true)
+    {
+      var list = new List<string>();
+      foreach (var item in roles)
+      {
+        list.Add(item.ToString());
+      }
+      return IsUserInRoles(user, list, isBackSite);
+    }
     public IQueryable<UserRoleView> GetUserRoles(Expression<Func<IdentityUser<string>, bool>> where = null)
     {
       var query = userManager.Users;
@@ -94,13 +133,19 @@ namespace SDHCC.Identity.Services
       {
         query = query.Where(where).Select(b => (TUser)b);
       }
-
-      return query.Select(b => new UserRoleView()
+      var user = query.ToList();
+      var result = new List<UserRoleView>();
+      foreach (var b in user)
       {
-        Id = b.Id,
-        Name = b.UserName,
-        Roles = userManager.GetRolesAsync(b).GetAsyncValue()
-      });
+        var r = userManager.GetRolesAsync(b).GetAsyncValue();
+        result.Add(new UserRoleView()
+        {
+          Id = b.Id,
+          Name = b.UserName,
+          Roles = r
+        });
+      }
+      return result.AsQueryable<UserRoleView>();
     }
     public IQueryable<IdentityRole> GetRoles()
     {

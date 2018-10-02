@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SDHCC.Identity.Models.UserModels
+namespace System
 {
-  public class DefaultUserSetting
+  public class SiteSetting
   {
     public string Name { get; set; }
     public string Password { get; set; }
@@ -12,4 +12,5 @@ namespace SDHCC.Identity.Models.UserModels
     public string BackUser { get; set; } = "BackUser";
     public string Login { get; set; } = "/Account/Login/";
   }
+  
 }

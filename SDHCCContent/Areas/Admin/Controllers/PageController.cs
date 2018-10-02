@@ -20,19 +20,17 @@ namespace SDHCCContent.Areas.Admin.Controllers
   public class PageController : Controller
   {
     ISDHCCDbContext db { get; set; }
-    private IConfiguration configuration;
     private ISDHCCIdentity users;
-    DefaultUserSetting setting;
-    public PageController(ISDHCCDbContext db, IConfiguration configuration, ISDHCCIdentity users)
+    SiteSetting setting;
+    public PageController(ISDHCCDbContext db, ISDHCCIdentity users)
     {
       this.db = db;
-      this.configuration = configuration;
-      setting = configuration.GetSection("DefaultUserSetting").Get<DefaultUserSetting>();
+      setting = E.Setting;
       this.users = users;
     }
     public IActionResult Index(string id = "")
     {
-      if (!users.IsUserInRole(User, setting.BackUser))
+      if (!(users.IsUserInRoles(User, Enumerable.Empty<string>())))
       {
         return Redirect(setting.Login);
       }
@@ -40,7 +38,7 @@ namespace SDHCCContent.Areas.Admin.Controllers
       if (!string.IsNullOrEmpty(id))
       {
         var content = db.GetContent(id);
-        if (content != null)
+        if (content != null && users.IsUserInRoles(User, content.AdminReadRoles))
         {
           model = content.ConvertToPassingModel();
         }

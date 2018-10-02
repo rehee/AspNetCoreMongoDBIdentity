@@ -1,9 +1,45 @@
 ﻿@model ContentPostModel
+@inject ISDHCCIdentity users
 @{
     ViewData["Title"] = "Content";
     Layout = "_Layout_Content";
     var contentId = Model != null ? Model.Id : "";
-    var contents = ContentBase.context.GetChildrenNode(contentId).ToList();
+    var contents = ContentBase.context.GetChildrenNode(contentId)
+        .Where(b => users.IsUserInRoles(User, (BsonArray)b["AdminReadRoles"])).ToList();
+    IEnumerable<string> CreateRole;
+    IEnumerable<string> ReadRole;
+    IEnumerable<string> UpdateRole;
+    IEnumerable<string> DeleteRole;
+    if (Model == null)
+    {
+        CreateRole = Enumerable.Empty<string>();
+        ReadRole = Enumerable.Empty<string>();
+        UpdateRole = Enumerable.Empty<string>();
+        DeleteRole = Enumerable.Empty<string>();
+        var type = ContentE.RootType.CustomAttributes.Where(b => b.AttributeType == typeof(SDHCC.AllowChildrenAttribute)).FirstOrDefault();
+        if (type != null)
+        {
+            var createRoles = type.NamedArguments.Where(b => b.MemberName == "CreateRoles").FirstOrDefault();
+            if (createRoles != null)
+            {
+                var role = (System.Collections.ObjectModel.ReadOnlyCollection<System.Reflection.CustomAttributeTypedArgument>)createRoles.TypedValue.Value;
+                CreateRole = role.Select(b => b.Value.ToString()).ToList();
+            }
+            var editRoles = type.NamedArguments.Where(b => b.MemberName == "EditRoles").FirstOrDefault();
+            if (editRoles != null)
+            {
+                var eRoles = (System.Collections.ObjectModel.ReadOnlyCollection<System.Reflection.CustomAttributeTypedArgument>)editRoles.TypedValue.Value;
+                UpdateRole = eRoles.Select(b => b.Value.ToString()).ToList();
+            }
+        }
+    }
+    else
+    {
+        CreateRole = Model.AdminCreateRoles;
+        ReadRole = Model.AdminReadRoles;
+        UpdateRole = Model.AdminUpdateRoles;
+        DeleteRole = Model.AdminDeleteRoles;
+    }
 }
 @section breadcrumb{
     @{ await Html.RenderPartialAsync("_BreadCrumbContent", contentId);}
@@ -12,31 +48,44 @@
 <link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid-theme.min.css" />
 
 <div class="button-box">
-    <div class="btn-group">
-        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Create
-        </button>
-        <div class="dropdown-menu">
-            @{
-                var avaliableChild = contentId.GetAllowChild();
-            }
-            @foreach (var child in avaliableChild)
-            {
-                <form action="@Url.Action("PreCreate","Page",new { @area="Admin" })" method="post">
-                    @Html.Hidden("ContentId", contentId)
-                    @Html.Hidden("FullType", child.FullName + "," + child.Assembly)
-                    <input type="submit" class="dropdown-item" name="name" value="@child.Name" />
-                </form>
+    @if (users.IsUserInRoles(User, CreateRole))
+    {
+        <div class="btn-group">
+            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Create
+            </button>
+            <div class="dropdown-menu">
+                @{
+                    var avaliableChild = contentId.GetAllowChild();
+                }
+                @foreach (var child in avaliableChild)
+                {
+                    <form action="@Url.Action("PreCreate","Page",new { @area="Admin" })" method="post">
+                        @Html.Hidden("ContentId", contentId)
+                        @Html.Hidden("FullType", child.FullName + "," + child.Assembly)
+                        <input type="submit" class="dropdown-item" name="name" value="@child.Name" />
+                    </form>
 
-            }
+                }
+            </div>
         </div>
-    </div>
-    <a href="@Url.Action("Edit","Page",new { @area="Admin",@id=contentId })" class="btn btn-success">Edit</a>
-    <a href="@Url.Action("Sort","Page",new { @area="Admin",@id=contentId })" class="btn btn-warning">Sort</a>
-    <a href="#" onclick="deleteCurrent()" class="btn btn-danger">Delete</a>
-    <form id="ContentDeleteForm" action="@Url.Action("Delete","Page",new { @area="Admin" })" method="post">
-        @Html.Hidden("ContentId", contentId)
-    </form>
+    }
+    @if (Model != null && users.IsUserInRoles(User, UpdateRole))
+    {
+        <a href="@Url.Action("Edit","Page",new { @area="Admin",@id=contentId })" class="btn btn-success">Edit</a>
+    }
+    @if (users.IsUserInRoles(User, UpdateRole))
+    {
+        <a href="@Url.Action("Sort","Page",new { @area="Admin",@id=contentId })" class="btn btn-warning">Sort</a>
+    }
+    @if (Model != null && users.IsUserInRoles(User, DeleteRole))
+    {
+        <a href="#" onclick="deleteCurrent()" class="btn btn-danger">Delete</a>
+        <form id="ContentDeleteForm" action="@Url.Action("Delete","Page",new { @area="Admin" })" method="post">
+            @Html.Hidden("ContentId", contentId)
+        </form>
+    }
+
 </div>
 
 <br />

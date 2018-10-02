@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace SDHCCContent.Models
 {
-  [AllowChildren(ChildrenType = new Type[] { typeof(Home), typeof(Page) })]
+  [AllowChildren(
+    ChildrenType = new Type[] { typeof(Home), typeof(Page) },
+    CreateRoles = new string[] { "Admin" },
+    EditRoles = new string[] { "Admin" })]
   public abstract class ContentBaseModel : ContentBase
   {
 

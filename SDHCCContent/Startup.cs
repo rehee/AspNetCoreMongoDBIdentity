@@ -37,7 +37,7 @@ namespace SDHCCContent
 
     public void ConfigureServices(IServiceCollection services)
     {
-      var setting = Configuration.GetSection("DefaultUserSetting").Get<DefaultUserSetting>();
+      E.Setting = Configuration.GetSection("SiteSetting").Get<SiteSetting>();
       //TelemetryConfiguration.Active.DisableTelemetry = true;
       //services.Configure<CookiePolicyOptions>(options =>
       //{
@@ -91,7 +91,7 @@ namespace SDHCCContent
       services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
         .AddCookie(options =>
         {
-          options.LoginPath = setting.Login;
+          options.LoginPath = E.Setting.Login;
         });
     }
 

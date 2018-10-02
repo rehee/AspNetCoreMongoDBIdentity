@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="2.9.0" />
     <ProjectReference Include="..\SDHCC.Core\SDHCC.Core.csproj" />
     <ProjectReference Include="..\SDHCC.DB\SDHCC.DB.csproj" />
+    <ProjectReference Include="..\SDHCC.E\SDHCC.E.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MongoDB.Bson;
 using SDHCC.Identity.Models.UserModels;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace SDHCC.Identity.Services
   {
     bool IsUserInRole(ClaimsPrincipal user, string role);
     bool IsUserInRole(string userName, string role);
+    bool IsUserInRoles(ClaimsPrincipal user, IEnumerable<string> roles, bool isBackSite = true);
+    bool IsUserInRoles(ClaimsPrincipal user, BsonArray roles, bool isBackSite = true);
     IQueryable<UserRoleView> GetUserRoles(Expression<Func<IdentityUser<string>, bool>> where = null);
     IQueryable<IdentityRole> GetRoles();
     void AddRole(string roleName, out IdentityRole result);

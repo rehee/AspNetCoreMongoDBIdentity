@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SDHCC.Core\SDHCC.Core.csproj" />
     <ProjectReference Include="..\SDHCC.DB\SDHCC.DB.csproj" />
+    <ProjectReference Include="..\SDHCC.E\SDHCC.E.csproj" />
     <ProjectReference Include="..\SDHCC.Identity\SDHCC.Identity.csproj" />
   </ItemGroup>
 
