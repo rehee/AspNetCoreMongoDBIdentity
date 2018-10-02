@@ -44,7 +44,7 @@ namespace SDHCC.DB.Content
     {
       if (input == null)
         return null;
-      return ContentBase.context.Find<ContentBase>(input.ParentId, "ContentBase", out var r);
+      return ContentBase.context.Where(b => b["_id"] == input.ParentId, "ContentBase").FirstOrDefault().ConvertToContentBase();
     }
     public static IQueryable<ContentBase> Children(this ContentBase input)
     {

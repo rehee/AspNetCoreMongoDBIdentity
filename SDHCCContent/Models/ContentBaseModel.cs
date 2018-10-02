@@ -8,18 +8,8 @@ using System.Threading.Tasks;
 namespace SDHCCContent.Models
 {
   [AllowChildren(ChildrenType = new Type[] { typeof(Home), typeof(Page) })]
-  public abstract class ContentBaseModel: ContentBase
+  public abstract class ContentBaseModel : ContentBase
   {
-    public override string AssemblyName
-    {
-      get
-      {
-        return "SDHCCContent";
-      }
-      set
-      {
 
-      }
-    }
   }
 }

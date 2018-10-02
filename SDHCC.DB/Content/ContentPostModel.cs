@@ -4,16 +4,8 @@ using System.Text;
 
 namespace SDHCC.DB.Content
 {
-  public class ContentPostModel
+  public class ContentPostModel: ContentBaseProperty
   {
-    public string Id { get; set; }
-    public string ParentId { get; set; }
-    public string FullType { get; set; }
-    public string AssemblyName { get; set; }
-    public DateTime CreateTime { get; set; }
-    public int SortOrder { get; set; }
-    public string Name { get; set; }
-
     public List<ContentProperty> Properties { get; set; } = new List<ContentProperty>();
   }
 

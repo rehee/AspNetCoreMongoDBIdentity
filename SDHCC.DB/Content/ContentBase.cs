@@ -3,15 +3,17 @@ using SDHCC.DB.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace SDHCC.DB.Content
 {
-  public abstract class ContentBase : SDHCCBaseEntity
+  public abstract class ContentBaseProperty : SDHCCBaseEntity
   {
+    [BaseProperty]
     public string ParentId { get; set; } = "";
+    [BaseProperty]
     public List<string> Children { get; set; } = new List<string>();
     private string name { get; set; }
+    [BaseProperty]
     public string Name
     {
       get
@@ -23,9 +25,14 @@ namespace SDHCC.DB.Content
         name = String.IsNullOrEmpty(value) ? this.Id : value.Trim().Replace('/', '_').ToLower();
       }
     }
-
+    [BaseProperty]
     public DateTime CreateTime { get; set; }
+    [BaseProperty]
     public int SortOrder { get; set; } = 0;
+  }
+  public abstract class ContentBase : ContentBaseProperty
+  {
+    
   }
 
   public class ContentBaseModel : ContentBase
@@ -37,7 +44,12 @@ namespace SDHCC.DB.Content
     public static Type RootType { get; set; }
     public static ContentBase ConvertToContentBase(this BsonDocument b)
     {
-      return (ContentBase)MongoDB.Bson.Serialization.BsonSerializer.Deserialize(b, Type.GetType($"{b["FullType"].ToString()},{b["AssemblyName"].ToString()}"));
+      if (b == null)
+        return null;
+      var fullType = b.GetValue("FullType").ToString();
+      var assemblyName = b.GetValue("AssemblyName").ToString();
+      var type = Type.GetType($"{fullType},{assemblyName}");
+      return (ContentBase)MongoDB.Bson.Serialization.BsonSerializer.Deserialize(b, type);
     }
     public static Expression<Func<BsonDocument, ContentBase>> bbb = b => ContentE.ConvertToContentBase(b);
   }

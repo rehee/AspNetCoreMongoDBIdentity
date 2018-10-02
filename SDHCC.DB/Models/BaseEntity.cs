@@ -1,30 +1,33 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SDHCC.DB.Models
 {
   [BsonIgnoreExtraElements(ignoreExtraElements: true, Inherited = true)]
   public abstract class SDHCCBaseEntity : BaseEntity
   {
+    [BaseProperty]
     public string Id { get; set; }
+    private string fullType { get; set; }
+    [BaseProperty]
     public string FullType
     {
       get
       {
-        return this.GetType().FullName;
+        return string.IsNullOrEmpty(fullType) ? this.GetType().FullName : fullType;
       }
-      set { }
+      set { fullType = value; }
     }
+    private string assemblyName { get; set; }
+    [BaseProperty]
     public virtual string AssemblyName
     {
       get
       {
-        return "SDHCC.DB";
+        return string.IsNullOrEmpty(assemblyName) ? this.GetType().Assembly.GetName().Name : assemblyName;
       }
-      set { }
+      set { assemblyName = value; }
     }
     [BsonIgnore]
     public static Func<IMongoDatabase> db { get; set; }

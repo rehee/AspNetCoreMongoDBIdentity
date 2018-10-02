@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace SDHCC.DB.Content
 {
@@ -12,18 +10,16 @@ namespace SDHCC.DB.Content
     public static ContentPostModel ConvertToPassingModel(this ContentBase input)
     {
       var result = new ContentPostModel();
-      result.FullType = input.FullType;
-      result.Id = input.Id;
-      result.ParentId = input.ParentId;
-      result.AssemblyName = input.AssemblyName;
-      result.CreateTime = input.CreateTime;
-      result.SortOrder = input.SortOrder;
-      result.Name = input.Name;
-
+      var resultProperty = result.GetType().GetProperties().Where(b => b.BaseProperty()).ToList();
       var properties = input.GetType().GetProperties();
-
       foreach (var p in properties)
       {
+        if (p.BaseProperty())
+        {
+          var baseP = resultProperty.Where(b => b.Name == p.Name).FirstOrDefault();
+          baseP.SetValue(result, p.GetValue(input));
+          continue;
+        }
         if (p.SkippedProperty())
           continue;
         var editorType = EnumInputType.Text;
@@ -75,13 +71,23 @@ namespace SDHCC.DB.Content
     public static ContentBase ConvertToBaseModel(this ContentPostModel input)
     {
       var typeName = input.FullType.Split(',').FirstOrDefault().Trim();
-      var typeString = $"{typeName},{input.AssemblyName}";
+      var assemblyNames = input.AssemblyName.Split(',').ToList();
+      var assemblyName = "";
+      if (assemblyNames.Count == 1)
+      {
+        assemblyName = assemblyNames[0];
+      }
+      else
+      {
+        assemblyName = assemblyNames[1];
+      }
+      var typeString = $"{typeName},{assemblyName}";
       var type = Type.GetType(typeString);
       var result = (ContentBase)Activator.CreateInstance(type);
       result.FullType = typeName;
       result.Id = input.Id;
       result.ParentId = input.ParentId;
-      result.AssemblyName = input.AssemblyName;
+      result.AssemblyName = assemblyName;
       result.CreateTime = input.CreateTime;
       result.SortOrder = input.SortOrder;
       result.Name = input.Name;
@@ -92,6 +98,7 @@ namespace SDHCC.DB.Content
       {
         try
         {
+
           if (p.SkippedProperty())
             continue;
           var propertyPost = input.Properties.Find(b => b.Key == p.Name);
@@ -124,26 +131,20 @@ namespace SDHCC.DB.Content
     }
     public static bool SkippedProperty(this PropertyInfo property)
     {
-      switch (property.Name)
-      {
-        case "FullType":
-        case "Id":
-        case "ParentId":
-        case "Children":
-        case "AssemblyName":
-        case "CreateTime":
-        case "SortOrder":
-        case "Name":
-          return true;
-        default:
-          break;
-      }
+
       if (property.CustomAttributes.Where(b => b.AttributeType == typeof(IgnoreEditAttribute)).FirstOrDefault() != null)
       {
         return true;
       }
+      return false;
+    }
+    public static bool BaseProperty(this PropertyInfo property)
+    {
 
-      var a = property;
+      if (property.CustomAttributes.Where(b => b.AttributeType == typeof(BasePropertyAttribute)).FirstOrDefault() != null)
+      {
+        return true;
+      }
       return false;
     }
   }
