@@ -21,5 +21,7 @@ namespace SDHCC.Identity.Services
     void AddRole(string roleName, out IdentityRole result);
     string CheckPassword(string login, string password);
     void SignOut();
+
+    SDHCCUserBase GetUserByName(string userName);
   }
 }

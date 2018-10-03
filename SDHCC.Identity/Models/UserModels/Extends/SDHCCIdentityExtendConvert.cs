@@ -32,8 +32,24 @@ namespace SDHCC.Identity.Models.UserModels
 
     public static SDHCCUserBase ConvertPassToUser(this SDHCCUserPass input)
     {
-
-      return null;
+      var result = (SDHCCUserBase)input.ConvertBaseTypeToT(out var typeName, out var assemblyName);
+      var inputProperties = input.GetType().GetProperties();
+      var resultProperties = result.GetType().GetProperties();
+      foreach (var p in resultProperties)
+      {
+        if (!p.CustomProperty())
+        {
+          var targetPropertyInfo = inputProperties.Where(b => b.Name == p.Name).FirstOrDefault();
+          if (targetPropertyInfo == null)
+            continue;
+          p.SetValue(result, targetPropertyInfo.GetValue(input));
+          continue;
+        }
+        p.SetPropertyValue(input, result);
+      }
+      result.AssemblyName = assemblyName;
+      result.FullType = typeName;
+      return result;
     }
 
 

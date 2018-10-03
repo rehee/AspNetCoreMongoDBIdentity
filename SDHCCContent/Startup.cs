@@ -23,6 +23,7 @@ using SDHCC.Identity;
 using SDHCC.Identity.Models.UserModels;
 using SDHCC.Identity.Models.UserRoles;
 using SDHCC.Identity.Services;
+using SDHCCContent.Controllers;
 
 namespace SDHCCContent
 {
@@ -68,12 +69,12 @@ namespace SDHCCContent
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
       services.AddScoped<IRoleStore<IdentityRole>, SDHCCRoleStore<IdentityRole, SDHCUserRole>>();
       //services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();
-      services.AddScoped<IUserStore<IdentityUser>, SDHCCUserStore<IdentityUser, IdentityRole, SDHCUserRole>>();
+      services.AddScoped<IUserStore<TestUser>, SDHCCUserStore<TestUser, IdentityRole, SDHCUserRole>>();
 
-      services.AddScoped<UserManager<IdentityUser>>();
+      services.AddScoped<UserManager<TestUser>>();
       services.AddScoped<RoleManager<IdentityRole>>();
-      services.AddScoped<ISDHCCIdentity, SDHCCIdentity<IdentityUser>>();
-      services.AddIdentity<IdentityUser, IdentityRole>(options =>
+      services.AddScoped<ISDHCCIdentity, SDHCCIdentity<TestUser>>();
+      services.AddIdentity<TestUser, IdentityRole>(options =>
       {
         
       }).AddDefaultTokenProviders();

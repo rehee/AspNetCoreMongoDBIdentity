@@ -17,17 +17,23 @@ namespace SDHCCContent.Areas.Admin.Controllers
     }
     public IActionResult Index(string id)
     {
+      var allUser = users.GetUserRoles();
       if (string.IsNullOrEmpty(id))
       {
-        var allUser = users.GetUserRoles().ToList();
-        return View(allUser);
+        return View(allUser.ToList());
       }
       else
       {
-        var allUser = users.GetUserRoles().ToList().Where(b => users.IsUserInRole(b.Name, id));
-        return View(allUser);
+        return View(allUser.Where(b => users.IsUserInRole(b.Name, id)).ToList());
       }
+    }
 
+    public IActionResult Detail(string id)
+    {
+      if (string.IsNullOrEmpty(id))
+        return RedirectToAction("Index");
+      var user = users.GetUserByName(id);
+      return Content("");
     }
     public IActionResult Login()
     {

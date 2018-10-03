@@ -196,5 +196,28 @@ namespace SDHCC.Identity.Services
     {
       signInManager.SignOutAsync().GetAsyncValue();
     }
+
+    public T GetUserByName<T>(string userName) where T:IdentityUser<string>
+    {
+      if (String.IsNullOrEmpty(userName))
+        return default(T);
+      var userCheck = userManager.FindByNameAsync(userName).GetAsyncValue();
+      if (userCheck == null)
+      {
+        return default(T);
+      }
+      return (T)Convert.ChangeType(userCheck, typeof(T));
+    }
+    public SDHCCUserBase GetUserByName(string userName)
+    {
+      if (String.IsNullOrEmpty(userName))
+        return null;
+      var userCheck = userManager.FindByNameAsync(userName).GetAsyncValue();
+      if (userCheck == null)
+      {
+        return null;
+      }
+      return (SDHCCUserBase)(object)userCheck;
+    }
   }
 }
