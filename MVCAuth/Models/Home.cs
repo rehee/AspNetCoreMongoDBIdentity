@@ -12,17 +12,7 @@ namespace MVCAuth.Models
   [AllowChildren(ChildrenType = new Type[] { typeof(Home), typeof(Page) })]
   public abstract class MVCAuthBase : ContentBase
   {
-    public override string AssemblyName
-    {
-      get
-      {
-        return "MVCAuth";
-      }
-      set
-      {
 
-      }
-    }
   }
 
   [AllowChildren(ChildrenType = new Type[] { typeof(Page) })]

@@ -31,7 +31,7 @@ namespace SDHCC.DB
 
     IEnumerable<object> Find(IEnumerable<string> keys, string entityName, string fullName, out MethodResponse response);
     object Find(SearchParam search, out MethodResponse response);
-    IEnumerable<T> Filter<T>(FilterParam param, out MethodResponse response) where T : class;
+    //IEnumerable<T> Filter<T>(FilterParam param, out MethodResponse response) where T : class;
     void Update<T>(T input, string id, out MethodResponse response) where T : class;
     void Update<T>(T input, string id, string entityName, out MethodResponse response) where T : class;
     void Update<T>(T input, string id, string entityName, IEnumerable<string> ignoreKeys, IEnumerable<string> takeKeys, out MethodResponse response) where T : class;

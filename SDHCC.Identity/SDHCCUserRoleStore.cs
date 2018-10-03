@@ -78,22 +78,16 @@ namespace SDHCC.Identity
 
     public Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken)
     {
-      var task = new Task<IList<string>>((u) =>
+      var task = new Task<IList<string>>(() =>
       {
-        var thisUser = (TUser)u;
-        var userRoles = this.db.Filter<TUserRole>(
-          new FilterParam()
-          {
-            Filters = new List<SearchFilter>() { new SearchFilter() { Compare = CompareOption.Eq, Property = "UserId", Value = thisUser.Id } }
-          }, out var response).ToList().Select(b => b.RoleId).ToList();
-
+        var userRoles = this.db.Where<TUserRole>(b => b.UserId == user.Id).Select(b => b.RoleId).ToList();
         if (userRoles.Count == 0)
         {
           return new List<string>();
         }
         var roleCollection = db.Find<TRole>(userRoles, out var res);
         return roleCollection.Select(b => b.Name).ToList();
-      }, user);
+      });
       task.Start();
       return task;
     }
