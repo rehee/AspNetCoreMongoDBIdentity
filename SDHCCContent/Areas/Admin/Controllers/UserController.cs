@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SDHCC.Identity.Models.UserModels;
 using SDHCC.Identity.Services;
 
 namespace SDHCCContent.Areas.Admin.Controllers
@@ -35,6 +36,23 @@ namespace SDHCCContent.Areas.Admin.Controllers
       var user = users.GetUserByName(id);
       return Content("");
     }
+    [HttpPost]
+    public IActionResult Detail(SDHCCUserPass model)
+    {
+      return Content("");
+    }
+    public IActionResult UserRoles(string id)
+    {
+      return Content("");
+    }
+    public IActionResult UserAddRoles(string id)
+    {
+      return Content("");
+    }
+    public IActionResult UserRemoveRoles(string id)
+    {
+      return Content("");
+    }
     public IActionResult Login()
     {
       return View();
@@ -49,6 +67,16 @@ namespace SDHCCContent.Areas.Admin.Controllers
       var r = role;
       return Content("");
     }
+
+    public IActionResult AssignRoles()
+    {
+      return Json(users.GetRoles().ToList());
+    }
+    public IActionResult UnAssignRoles()
+    {
+      return Json(users.GetRoles().ToList());
+    }
+
     [HttpPost]
     public IActionResult Login(string loginName, string password)
     {
