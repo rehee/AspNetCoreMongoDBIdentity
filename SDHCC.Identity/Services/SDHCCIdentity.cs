@@ -219,5 +219,16 @@ namespace SDHCC.Identity.Services
       }
       return (SDHCCUserBase)(object)userCheck;
     }
+    public SDHCCUserBase GetUserById(string userId)
+    {
+      if (String.IsNullOrEmpty(userId))
+        return null;
+      var userCheck = userManager.FindByIdAsync(userId).GetAsyncValue();
+      if (userCheck == null)
+      {
+        return null;
+      }
+      return (SDHCCUserBase)(object)userCheck;
+    }
   }
 }

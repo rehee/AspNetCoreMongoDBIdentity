@@ -5,17 +5,11 @@
 @Html.Hidden("AssemblyName", Model.AssemblyName)
 @Html.Hidden("CreateTime", Model.CreateTime)
 @Html.Hidden("SortOrder", Model.SortOrder)
-@{
-    var index = 0;
-}
-<div class="form-group">
-    <label>Name</label>
-    <input type="text" class="form-control" name="Name" value="@Model.Name" required />
-</div>
-@foreach (var property in Model.Properties)
-{
-    await Html.RenderPartialAsync("AdminInputs/_AdminInput", new ContentPropertyIndex(property, index));
-    index++;
-}
 
+<div class="form-group">
+  <label>Name</label>
+  <input type="text" class="form-control" name="Name" value="@Model.Name" required />
+</div>
+
+@{ await Html.RenderPartialAsync("AdminInputs/_PropertiesEdit", Model);}
 <button type="submit" class="btn btn-success waves-effect waves-light m-r-10">Submit</button>

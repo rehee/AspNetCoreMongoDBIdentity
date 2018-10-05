@@ -1,0 +1,21 @@
+﻿@model SDHCC.Identity.Models.UserModels.SDHCCUserPass
+@Html.Hidden("Id", Model.Id)
+
+
+<div class="form-group">
+  @if (String.IsNullOrEmpty(Model.Id))
+  {
+    <label>Name</label>
+    <input type="text" class="form-control" name="Name" value="@Model.UserName" required />
+
+  }
+  else
+  {
+    <label>Name</label>
+    <input type="text" class="form-control" name="Name" readonly value="@Model.UserName" />
+  }
+
+</div>
+
+@{ await Html.RenderPartialAsync("AdminInputs/_PropertiesEdit", Model);}
+<button type="submit" class="btn btn-success waves-effect waves-light m-r-10">Submit</button>

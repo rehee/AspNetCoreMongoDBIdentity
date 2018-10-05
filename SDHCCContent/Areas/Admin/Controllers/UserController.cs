@@ -34,11 +34,14 @@ namespace SDHCCContent.Areas.Admin.Controllers
       if (string.IsNullOrEmpty(id))
         return RedirectToAction("Index");
       var user = users.GetUserByName(id);
-      return Content("");
+      if (user == null)
+        return RedirectToAction("Index");
+      return View(user.ConvertUserToPass());
     }
     [HttpPost]
     public IActionResult Detail(SDHCCUserPass model)
     {
+      var user = users.GetUserByName();
       return Content("");
     }
     public IActionResult UserRoles(string id)
