@@ -32,9 +32,19 @@ namespace SDHCC.Identity
       db.Add<TUserRole>(userRole, out var response);
     }
 
-    public Task RemoveFromRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
+    public async Task RemoveFromRoleAsync(TUser user, string roleName, CancellationToken cancellationToken)
     {
-      throw new NotImplementedException();
+      var roleExist = await this.IsInRoleAsync(user, roleName, cancellationToken);
+      if (!roleExist)
+        return;
+      var role = db.Where<TRole>(b => b.NormalizedName == roleName.ToLower()).FirstOrDefault();
+      if (role == null)
+        return;
+      var thisUserRole = db.Where<TUserRole>(b => b.UserId == user.Id && b.RoleId == role.Id).FirstOrDefault();
+      if (thisUserRole == null)
+        return;
+      db.Remove<TUserRole>(thisUserRole, thisUserRole.Id);
+
     }
 
     public Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken)

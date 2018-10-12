@@ -147,8 +147,17 @@ namespace SDHCC.Identity.Services
       }
       return result.AsQueryable<UserRoleView>();
     }
-    public IQueryable<IdentityRole> GetRoles()
+    public IQueryable<IdentityRole> GetRoles(bool noSystemRole = false)
     {
+      if (noSystemRole)
+      {
+        var systemRole = new List<string>();
+        if (!string.IsNullOrEmpty(E.Setting.AdminRole))
+          systemRole.Add(E.Setting.AdminRole.ToLower());
+        if (!string.IsNullOrEmpty(E.Setting.BackUser))
+          systemRole.Add(E.Setting.BackUser.ToLower());
+        return roleManager.Roles.Where(b => !systemRole.Contains(b.NormalizedName));
+      }
       return roleManager.Roles;
     }
     public void AddRole(string roleName, out IdentityRole result)
@@ -172,7 +181,30 @@ namespace SDHCC.Identity.Services
         result = null;
       }
     }
-
+    public void AddRoles(IEnumerable<string> roleNames)
+    {
+      foreach(var r in roleNames)
+      {
+        this.AddRole(r, out var res);
+      }
+    }
+    public void RemoveRole(string roleName)
+    {
+      if (string.IsNullOrEmpty(roleName))
+        return;
+      roleName = roleName.Trim().Replace(" ", "");
+      var role = roleManager.FindByNameAsync(roleName).GetAsyncValue();
+      if (role == null)
+        return;
+      this.roleManager.DeleteAsync(role).GetAsyncValue();
+    }
+    public void RemoveRoles(IEnumerable<string> roleNames)
+    {
+      foreach(var r in roleNames)
+      {
+        this.RemoveRole(r);
+      }
+    }
     public string CheckPassword(string login, string password)
     {
       var user = this.userManager.FindByNameAsync(login).GetAsyncValue();
@@ -197,7 +229,7 @@ namespace SDHCC.Identity.Services
       signInManager.SignOutAsync().GetAsyncValue();
     }
 
-    public T GetUserByName<T>(string userName) where T:IdentityUser<string>
+    public T GetUserByName<T>(string userName) where T : IdentityUser<string>
     {
       if (String.IsNullOrEmpty(userName))
         return default(T);
@@ -229,6 +261,33 @@ namespace SDHCC.Identity.Services
         return null;
       }
       return (SDHCCUserBase)(object)userCheck;
+    }
+    public SDHCCUserBase GetEmptyUser()
+    {
+      var newUser = new TUser();
+      return newUser as SDHCCUserBase;
+    }
+    public void CreateUser(SDHCCUserBase model)
+    {
+      var user = model as TUser;
+      this.userManager.SetEmailAsync(user, model.Email);
+      this.userManager.SetUserNameAsync(user, model.UserName);
+      var result = this.userManager.CreateAsync(user, model.PasswordHash).GetAsyncValue();
+    }
+    public void UpdateUserRole(SDHCCUserBase model, IEnumerable<string> roles)
+    {
+      var user = model as TUser;
+      var userRoles = this.GetUserRoles(b => b.Id == model.Id).Select(b => b.Roles).FirstOrDefault().ToList();
+
+      var deletedRoles = userRoles.Where(b => !roles.Contains(b)).ToList();
+      userManager.RemoveFromRolesAsync(user, deletedRoles).GetAsyncValue();
+      var addRoles = roles.Where(b => !userRoles.Contains(b)).ToList();
+      userManager.AddToRolesAsync(user, addRoles).GetAsyncValue();
+
+    }
+    public void UpdateUser(SDHCCUserBase model)
+    {
+      var result = this.userManager.UpdateAsync(model as TUser).GetAsyncValue();
     }
   }
 }

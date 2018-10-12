@@ -29,6 +29,26 @@ namespace SDHCCContent.Areas.Admin.Controllers
       }
     }
 
+    public IActionResult Create()
+    {
+      var model = users.GetEmptyUser().ConvertUserToPass();
+      return View(model);
+    }
+    [HttpPost]
+    public IActionResult Create(SDHCCUserPass model, IEnumerable<string> selectRoles)
+    {
+      var user = model.ConvertPassToUser();
+      users.CreateUser(user);
+      if (!String.IsNullOrEmpty(user.Id))
+      {
+        users.UpdateUserRole(user, selectRoles);
+      }
+      else
+      {
+        return View(model);
+      }
+      return RedirectToAction("Detail", "User", new { @area = "Admin", @id = user.Id });
+    }
     public IActionResult Detail(string id)
     {
       if (string.IsNullOrEmpty(id))
@@ -39,10 +59,15 @@ namespace SDHCCContent.Areas.Admin.Controllers
       return View(user.ConvertUserToPass());
     }
     [HttpPost]
-    public IActionResult Detail(SDHCCUserPass model)
+    public IActionResult Detail(SDHCCUserPass model, IEnumerable<string> selectRoles)
     {
-      var user = users.GetUserByName();
-      return Content("");
+      var user = users.GetUserById(model.Id);
+      var userModel = user.ConvertUserToPass();
+      userModel.Properties = model.Properties;
+      var userUpdate = userModel.ConvertPassToUser();
+      users.UpdateUser(userUpdate);
+      users.UpdateUserRole(userUpdate, selectRoles);
+      return RedirectToAction("Detail", "User", new { @area = "Admin", @id = user.NormalizedUserName });
     }
     public IActionResult UserRoles(string id)
     {
@@ -64,11 +89,25 @@ namespace SDHCCContent.Areas.Admin.Controllers
     {
       return Json(users.GetRoles().ToList());
     }
-    public IActionResult CreateRole()
+    public IActionResult Roles()
     {
-      users.AddRole("Admin", out var role);
-      var r = role;
-      return Content("");
+      return View();
+    }
+    [HttpPost]
+    public IActionResult CreateRole(string roles)
+    {
+      if (string.IsNullOrEmpty(roles))
+        goto gotoRolePage;
+      var roleList = roles.Trim().Split(',').Select(b => b.Replace(" ", ""));
+      users.AddRoles(roleList);
+      gotoRolePage:
+      return RedirectToAction("Roles");
+    }
+    [HttpPost]
+    public IActionResult RemoveRole(IEnumerable<string> roles)
+    {
+      users.RemoveRoles(roles);
+      return RedirectToAction("Roles");
     }
 
     public IActionResult AssignRoles()

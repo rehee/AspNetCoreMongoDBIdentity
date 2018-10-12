@@ -64,10 +64,13 @@ namespace SDHCC.Identity
     {
       var task = new Task<IdentityResult>(() =>
       {
-        var userRoles = db.Where<TUserRole>(b => b.UserId == role.Id).Select(b => new UpdateEntity<TUserRole>() { Object = b, Key = b.Id }).ToList();
+        var userRoles = db.Where<TUserRole>(b => b.RoleId == role.Id).ToList();
         if (userRoles.Count > 0)
         {
-          db.Remove<TUserRole>(userRoles);
+          userRoles.ForEach(b =>
+          {
+            db.Remove<TUserRole>(b, b.Id);
+          });
         }
         db.Remove<TRole>(role, role.Id);
         return IdentityResult.Success;

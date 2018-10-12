@@ -1,18 +1,23 @@
 ﻿@model SDHCC.Identity.Models.UserModels.SDHCCUserPass
-@Html.Hidden("Id", Model.Id)
-
-
+<input type="hidden" name="Id" value="@Model.Id" />
+@Html.HiddenFor(b => b.AssemblyName)
+@Html.HiddenFor(b => b.FullType)
+@{ await Html.RenderPartialAsync("Users/_RolesCheck", Model.Id); }
 <div class="form-group">
   @if (String.IsNullOrEmpty(Model.Id))
   {
     <label>Name</label>
-    <input type="text" class="form-control" name="Name" value="@Model.UserName" required />
+    <input type="text" class="form-control" name="UserName" value="@Model.UserName" required />
+    <label>Email</label>
+    <input type="text" class="form-control" name="Email" value="@Model.Email" required />
+    <label>Password</label>
+    <input type="text" class="form-control" name="PasswordHash" value="" required />
 
   }
   else
   {
     <label>Name</label>
-    <input type="text" class="form-control" name="Name" readonly value="@Model.UserName" />
+    <input type="text" class="form-control" name="UserName" readonly value="@Model.UserName" />
   }
 
 </div>

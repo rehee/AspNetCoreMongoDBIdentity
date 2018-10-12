@@ -1,0 +1,13 @@
+﻿@inject ISDHCCIdentity users
+@model string
+@{
+  var roles = users.GetRoles(true);
+}
+<div>
+  @foreach (var role in roles)
+  {
+    <spam>
+      <input type="checkbox" name="roles" value="@role.NormalizedName" />@role.Name
+    </spam>
+  }
+</div>
