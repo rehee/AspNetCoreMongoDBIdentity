@@ -66,6 +66,8 @@ namespace SDHCCContent
 
 
       ContentE.RootType = typeof(SDHCCContent.Models.ContentBaseModel);
+      ContentE.RootDropDown = typeof(Models.DropDowns.DropDownBaseModel);
+
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
       services.AddScoped<IRoleStore<IdentityRole>, SDHCCRoleStore<IdentityRole, SDHCUserRole>>();
       //services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();

@@ -1,0 +1,25 @@
+﻿@model IEnumerable<string>
+@{
+    var index = 1;
+    var count = Model.Count();
+}
+<h3 class="text-themecolor m-b-0 m-t-0">@ViewData["Title"]</h3>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item @(count==0?"active":"")">
+        <a href="@Url.Action("Index","DropDown",new { area="admin",id="" })">All List</a>
+    </li>
+    @foreach (var item in Model)
+    {
+        index++;
+        <li class="breadcrumb-item @(count == index?"active":"")">
+            @if (index == 2)
+            {
+                <a href="@Url.Action("List","DropDown",new { @area="admin",@id=item })">@item</a>
+            }
+            else
+            {
+                <span>@item</span>
+            }
+        </li>
+    }
+</ol>

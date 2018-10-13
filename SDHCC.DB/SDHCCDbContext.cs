@@ -26,11 +26,7 @@ namespace SDHCC.DB
     }
     private T BsonConvertTo<T>(BsonDocument bson)
     {
-      if (bson == null)
-      {
-        return default(T);
-      }
-      return (T)BsonSerializer.Deserialize(bson, GetType<T>(bson));
+      return bson.ConvertToGeneric<T>();
     }
     private Type GetType<T>(BsonDocument bson)
     {
@@ -367,19 +363,7 @@ namespace SDHCC.DB
     }
     public IQueryable<T> Where<T>(Expression<Func<T, bool>> where = null, string entityName = "") where T : class
     {
-      var t = typeof(T);
-      var name = entityName;
-      if (String.IsNullOrEmpty(entityName))
-      {
-        name = typeof(T).Name;
-      }
-      var collection = db.GetCollection<T>(name);
-      if (where != null)
-      {
-        var query = collection.AsQueryable<T>();
-        return query.Where(where);
-      }
-      return collection.AsQueryable<T>();
+      return Where<T>(b => true, entityName, this.ConvertBsonToGeneric<T>()).Where(where);
     }
     public IQueryable<BsonDocument> Where(Expression<Func<BsonDocument, bool>> where, string entityName)
     {
