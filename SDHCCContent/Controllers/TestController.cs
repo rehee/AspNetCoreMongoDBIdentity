@@ -10,6 +10,7 @@ using SDHCC;
 using SDHCC.DB.Content;
 using SDHCC.DB.Models;
 using SDHCC.Identity.Models.UserModels;
+using SDHCCContent.Models.Enums;
 
 namespace SDHCCContent.Controllers
 {
@@ -17,26 +18,25 @@ namespace SDHCCContent.Controllers
   {
     public string Index()
     {
-      var type = typeof(AAA);
-      var value = Enum.GetValues(type);
-      var value2 = type.GetEnumValues();
-      //var property = type.GetProperties();
-      var t = Enum.TryParse(type, "a", out var tt);
-      var c = AAA.a == (AAA)tt;
-      var p = type.GetEnumValues();
-      foreach (var item in value2)
-      {
-        var order = item.GetObjectAttribute<int>("DisplayAttribute", "Order");
-        Console.WriteLine("1");
-      }
+      var tPage = new TestPage();
+      var testPagePass = tPage.ConvertToPassingModel();
 
 
       return "";
     }
   }
+  public class TestPage : ContentBaseModel
+  {
+    [InputType(EditorType = EnumInputType.DropDwon, MultiSelect = true, RelatedType = typeof(EnumGender))]
+    public IEnumerable<EnumGender> Gender { get; set; } =
+      new List<EnumGender>()
+      {
+        EnumGender.Female, EnumGender.Male
+      };
+  }
   public enum AAA
   {
-    [Display(Name = "111",Order =1)]
+    [Display(Name = "111", Order = 1)]
     [AllowChildren(ChildrenType = new Type[] { typeof(ttt) }, CreateRoles = new string[] { "a", "b", "c" })]
     a = 1,
     [Display(Name = "222")]

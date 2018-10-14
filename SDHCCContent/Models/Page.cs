@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace SDHCCContent.Models
 {
-  public class Page: ContentBaseModel
+  public class Page : ContentBaseModel
   {
     [Display(Name = "This is the Name")]
     public string Title { get; set; }
 
-    [InputType(EnumInputType.TextArea)]
+    [InputType(EditorType = EnumInputType.TextArea)]
     public string BriefContent { get; set; }
   }
 }

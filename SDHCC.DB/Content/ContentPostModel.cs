@@ -1,6 +1,7 @@
 ﻿using SDHCC.DB.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SDHCC.DB.Content
@@ -14,6 +15,7 @@ namespace SDHCC.DB.Content
   {
     List<ContentProperty> Properties { get; set; }
   }
+
   public class ContentProperty
   {
     public string Key { get; set; } = "";
@@ -22,7 +24,7 @@ namespace SDHCC.DB.Content
     public string Title { get; set; } = "";
     public EnumInputType EditorType { get; set; } = EnumInputType.Text;
     public bool MultiSelect { get; set; } = false;
-    public Type RelatedType { get; set; } = null;
+    public IEnumerable<DropDownViewModel> SelectItems { get; set; } = Enumerable.Empty<DropDownViewModel>();
   }
 
   public class ContentPropertyIndex

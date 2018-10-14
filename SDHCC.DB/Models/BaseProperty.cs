@@ -33,16 +33,15 @@ namespace SDHCC.DB.Models
     [BaseProperty]
     public bool RequireLogin { get; set; } = false;
     [BaseProperty]
-    public IList<string> PublicAccessRoles { get; set; } = new List<string>();
+    public List<string> PublicAccessRoles { get; set; } = new List<string>();
     [BaseProperty]
-    public IList<string> AdminCreateRoles { get; set; } = new List<string>();
+    public List<string> AdminCreateRoles { get; set; } = new List<string>();
     [BaseProperty]
-    public IList<string> AdminReadRoles { get; set; } = new List<string>();
+    public List<string> AdminReadRoles { get; set; } = new List<string>();
     [BaseProperty]
-    public IList<string> AdminUpdateRoles { get; set; } = new List<string>();
+    public List<string> AdminUpdateRoles { get; set; } = new List<string>();
     [BaseProperty]
-    public IList<string> AdminDeleteRoles { get; set; } = new List<string>();
-
+    public List<string> AdminDeleteRoles { get; set; } = new List<string>();
   }
 }
 

@@ -44,9 +44,10 @@ namespace System
         return;
       }
     }
-    public static T GetObjectDisplayAttribute<T>(this Object o, bool getField = true) where T : Attribute, new()
+    public static T GetObjectCustomAttribute<T>(this Object o, bool getField = true) where T : Attribute, new()
     {
-      var customeAttribute = o.GetObjectCustomAttribute(getField)
+      var cAttributes = o.GetObjectCustomAttribute(getField);
+      var customeAttribute = cAttributes
         .Where(b => b.AttributeType == typeof(T)).FirstOrDefault();
       if (customeAttribute == null)
         return default(T);
@@ -75,7 +76,7 @@ namespace System
     }
     public static DisplayAttribute GetObjectDisplayAttribute(this Object o, bool getField = true)
     {
-      return o.GetObjectDisplayAttribute<DisplayAttribute>(getField);
+      return o.GetObjectCustomAttribute<DisplayAttribute>(getField);
     }
     public static object GetObjectAttribute(this Object o, string attributeName, string name, bool getField = true)
     {

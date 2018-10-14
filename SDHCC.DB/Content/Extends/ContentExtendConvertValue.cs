@@ -10,7 +10,8 @@ namespace SDHCC.DB.Content
 {
   public static partial class ContentExtend
   {
-    public static Dictionary<Type, Func<string, dynamic>> ConvertStringToTypeDictionary { get; set; } = new Dictionary<Type, Func<string, dynamic>>()
+    public static Dictionary<Type, Func<string, dynamic>> ConvertStringToTypeDictionary { get; set; } = 
+      new Dictionary<Type, Func<string, dynamic>>()
     {
       [typeof(string)] = b =>
       {
@@ -103,7 +104,8 @@ namespace SDHCC.DB.Content
         return r;
       },
     };
-    public static Dictionary<Type, Func<object, string>> ConvertTypeToStringDictionary { get; set; } = new Dictionary<Type, Func<object, string>>()
+    public static Dictionary<Type, Func<object, string>> ConvertTypeToStringDictionary { get; set; } = 
+      new Dictionary<Type, Func<object, string>>()
     {
       [typeof(string)] = b =>
       {
