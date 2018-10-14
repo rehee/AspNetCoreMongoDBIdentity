@@ -21,6 +21,8 @@ namespace SDHCC.DB.Content
     public string ValueType { get; set; } = "";
     public string Title { get; set; } = "";
     public EnumInputType EditorType { get; set; } = EnumInputType.Text;
+    public bool MultiSelect { get; set; } = false;
+    public Type RelatedType { get; set; } = null;
   }
 
   public class ContentPropertyIndex

@@ -11,5 +11,6 @@ namespace SDHCC
     Hidden,
     Number,
     DateTime,
+    DropDwon
   }
 }
