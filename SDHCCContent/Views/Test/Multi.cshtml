@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewData["Title"] = "Multi";
+}
+
+<h2>Multi</h2>
+
+<form action="@Url.Action("Multi","Test")" method="post">
+  <select multiple name="select">
+    <option value="value1">text</option>
+    <option value="value2">text</option>
+  </select>
+  <input type="submit" name="name" value="sss" />
+</form>

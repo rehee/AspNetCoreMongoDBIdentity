@@ -1,5 +1,6 @@
 ﻿using SDHCC.DB.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -50,10 +51,13 @@ namespace SDHCC.DB.Content
           }
           if (p.SkippedProperty())
             continue;
-
+          
           p.SetPropertyValue(input, result);
         }
-        catch { }
+        catch(Exception ex)
+        {
+          Console.WriteLine(ex.Message);
+        }
 
       }
       result.FullType = typeName;
@@ -83,57 +87,31 @@ namespace SDHCC.DB.Content
       string postValue = "";
       var type = p.PropertyType;
       var datetimeType = typeof(DateTime);
+      var postMultiValue = new List<string>();
       List<DropDownViewModel> selector = new List<DropDownViewModel>();
       if (editorType == EnumInputType.DropDwon)
       {
-        if (type == null)
-          return null;
         if (!multiSelect)
         {
           postValue = p.GetValue(input) != null ? p.GetValue(input).ToString() : "";
-          if (p.PropertyType.IsEnum)
-          {
-            var enumValues = p.PropertyType.GetEnumValues();
-            foreach(var item in enumValues)
-            {
-              var select = new DropDownViewModel();
-              select.Name = item.ToString();
-              select.Value = item.ToString();
-              select.Select = postValue == select.Value;
-              selector.Add(select);
-            }
-          }
-          else
-          {
-            var allSelect = ContentBase.context.GetDropDownsByName(relatedType.Name);
-            var selects = new List<DropDownViewModel>();
-            foreach (var item in allSelect)
-            {
-              var select = new DropDownViewModel();
-              select.Name = item.Name;
-              select.Value = item.Id;
-              select.Select = postValue == select.Value;
-              selector.Add(select);
-            }
-          }
-          
         }
         else
         {
+          postValue = "";
           var selectValues = (dynamic)p.GetValue(input);
-          var selectStrings = new List<string>();
           if (selectValues != null)
           {
             foreach (object item in selectValues)
             {
-              selectStrings.Add(item.ToString());
+              postMultiValue.Add(item.ToString());
             }
           }
-          postValue = selectStrings.Count > 0 ? String.Join(",", selectStrings) : "";
         }
+        p.SetDropDownSelect(selector, relatedType, postValue, postMultiValue);
       }
       else
       {
+        //notmal value
         if (ConvertTypeToStringDictionary.ContainsKey(type))
         {
           postValue = ConvertTypeToStringDictionary[type](p.GetValue(input));
@@ -152,7 +130,8 @@ namespace SDHCC.DB.Content
         ValueType = propertyType.FullName,
         Title = displayTitle,
         MultiSelect = multiSelect,
-        SelectItems = editorType == EnumInputType.DropDwon? selector:Enumerable.Empty<DropDownViewModel>()
+        SelectItems = editorType == EnumInputType.DropDwon ? selector : Enumerable.Empty<DropDownViewModel>(),
+        MultiValue = multiSelect ? postMultiValue : Enumerable.Empty<string>(),
       };
     }
     public static Type GetTypeFromContent(this BaseTypeEntity input, out string typeName, out string assemblyName)
@@ -195,6 +174,53 @@ namespace SDHCC.DB.Content
       }
       return result;
     }
+    public static void SetDropDownSelect(this PropertyInfo p, List<DropDownViewModel> selector, Type relatedType, string postValue, IEnumerable<string> postValues = null)
+    {
+      List<String> values;
+      if (postValues != null && postValues.Count() > 0)
+      {
+        values = postValues.ToList();
+      }
+      else
+      {
+        values = !String.IsNullOrEmpty(postValue) ? new List<string>() { postValue } : new List<string>();
+      }
+      if (p.PropertyType.IsEnum || p.PropertyType.GenericTypeArguments.Where(b => b.IsEnum).FirstOrDefault() != null)
+      {
+        Array enumValues;
+        if (p.PropertyType.IsEnum)
+        {
+          enumValues = p.PropertyType.GetEnumValues();
+        }
+        else
+        {
+
+          enumValues = p.PropertyType.GenericTypeArguments.Where(b => b.IsEnum).FirstOrDefault().GetEnumValues();
+        }
+        foreach (var item in enumValues)
+        {
+          var select = new DropDownViewModel();
+          select.Name = item.ToString();
+          select.Value = item.ToString();
+          select.Select = values.Contains(select.Value);
+          selector.Add(select);
+        }
+      }
+      else
+      {
+        //dropdown Classes
+        var allSelect = ContentBase.context.GetDropDownsByName(relatedType.Name).ToList();
+        var selects = new List<DropDownViewModel>();
+        foreach (var item in allSelect)
+        {
+          var select = new DropDownViewModel();
+          select.Name = item.Name;
+          select.Value = item.Id;
+          select.Select = values.Contains(select.Value);
+          selector.Add(select);
+        }
+      }
+    }
     public static void SetPropertyValue(this PropertyInfo p, IPassModel input, object result)
     {
       var propertyPost = input.Properties.Find(b => b.Key == p.Name);
@@ -233,27 +259,42 @@ namespace SDHCC.DB.Content
         }
         else
         {
-          if (p.PropertyType.IsEnum)
+          if (p.PropertyType.IsEnum || p.PropertyType.GenericTypeArguments.Where(b => b.IsEnum).FirstOrDefault() != null)
           {
-            var enumValue = p.PropertyType.GetEnumValues();
-            var stringValues = stringValue.Split(',').ToList();
+            Array enumValue;
+            Type enumType;
+            if(p.PropertyType.IsEnum)
+            {
+              enumType = p.PropertyType;
+              enumValue = p.PropertyType.GetEnumValues();
+            }
+            else
+            {
+              enumType = p.PropertyType.GenericTypeArguments.Where(b => b.IsEnum).FirstOrDefault();
+              enumValue = enumType.GetEnumValues();
+
+            }
+            var stringValues = propertyPost.MultiValue.ToList();
             var values = new List<dynamic>();
+            //var t = Activator.CreateInstance(p.PropertyType);
+            var listType = typeof(List<>);
+            var constructedListType = listType.MakeGenericType(enumType);
+            var instance = (IList)Activator.CreateInstance(constructedListType);
             stringValues.ForEach(s =>
             {
-              foreach (var item in enumValue)
+              try
               {
-                if (item.ToString() == s)
-                {
-                  values.Add(item);
-                  break;
-                }
+                instance.Add(Enum.Parse(enumType, s));
               }
+              catch { }
             });
-            value = values;
+            
+            p.SetValue(result, instance);
+            return;
           }
           else
           {
-            value = stringValue.Split(',').ToList();
+            value = propertyPost.MultiValue.ToList();
           }
         }
       }

@@ -60,8 +60,8 @@ namespace SDHCCContent.Areas.Admin.Controllers
         var contentPage = (ContentBase)Activator.CreateInstance(contentType);
         var parent = db.GetContent(ContentId);
         contentPage.ParentId = parent == null ? "" : parent.Id;
-
-        return View("Create", contentPage.ConvertToPassingModel());
+        var model = contentPage.ConvertToPassingModel();
+        return View("Create", model);
       }
       catch (Exception ex)
       {
@@ -70,7 +70,7 @@ namespace SDHCCContent.Areas.Admin.Controllers
 
     }
     [HttpPost]
-    public IActionResult Create(ContentPostModel model)
+    public IActionResult Create(ContentPostModel model, IEnumerable<string> multi)
     {
       var content = model.ConvertToBaseModel();
       content.AddContent();
@@ -91,7 +91,7 @@ namespace SDHCCContent.Areas.Admin.Controllers
       return View(content.ConvertToPassingModel());
     }
     [HttpPost]
-    public IActionResult Edit(ContentPostModel model)
+    public IActionResult Edit(ContentPostModel model, IEnumerable<string> multi)
     {
       if (model == null)
       {

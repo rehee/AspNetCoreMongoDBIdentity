@@ -24,6 +24,15 @@ namespace SDHCCContent.Controllers
 
       return "";
     }
+    public IActionResult Multi()
+    {
+      return View();
+    }
+    [HttpPost]
+    public IActionResult Multi(IEnumerable<string> select)
+    {
+      return View();
+    }
   }
   public class TestPage : ContentBaseModel
   {
