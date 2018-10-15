@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -297,6 +298,23 @@ namespace SDHCC.DB.Content
             value = propertyPost.MultiValue.ToList();
           }
         }
+      }
+      else if(inputAttribute != null && inputAttribute.EditorType == EnumInputType.FileUpload)
+      {
+        var files = propertyPost;
+        if (files.File == null)
+        {
+          return;
+        }
+        //var path = ContentE.RootPath;
+        var path = Path.Combine(Directory.GetCurrentDirectory(),
+                           "wwwroot", "123.jpg");
+        using (var stream = new FileStream(path, FileMode.Create))
+        {
+          files.File.CopyToAsync(stream).GetAsyncValue();
+        }
+        
+        Console.WriteLine("123");
       }
       else if (ConvertStringToTypeDictionary.ContainsKey(keyType))
       {

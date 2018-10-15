@@ -34,6 +34,8 @@ namespace SDHCCContent.Models
 
     [InputType(EditorType = EnumInputType.DropDwon, RelatedType = typeof(DropDownGender), MultiSelect = true)]
     public List<string> Gendersss { get; set; }
+    [InputType(EditorType = EnumInputType.FileUpload)]
+    public string UploadFile { get; set; }
 
   }
 }
