@@ -29,13 +29,14 @@ namespace SDHCCContent
 {
   public class Startup
   {
-    public Startup(IConfiguration configuration)
+    public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
     {
       Configuration = configuration;
+      HostingEnvironment = hostingEnvironment;
     }
 
     public IConfiguration Configuration { get; }
-
+    public IHostingEnvironment HostingEnvironment { get; }
     public void ConfigureServices(IServiceCollection services)
     {
       E.Setting = Configuration.GetSection("SiteSetting").Get<SiteSetting>();
@@ -63,8 +64,8 @@ namespace SDHCCContent
         return database;
       };
       SDHCCBaseEntity.context = new SDHCCDbContext(SDHCCBaseEntity.db());
-
-
+      E.RootPath = HostingEnvironment.WebRootPath;
+      ContentE.RootPath = HostingEnvironment.WebRootPath;
       ContentE.RootType = typeof(SDHCCContent.Models.ContentBaseModel);
       ContentE.RootDropDown = typeof(Models.DropDowns.DropDownBaseModel);
 

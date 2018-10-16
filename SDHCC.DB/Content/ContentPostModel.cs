@@ -1,4 +1,5 @@
-﻿using SDHCC.DB.Models;
+﻿using Microsoft.AspNetCore.Http;
+using SDHCC.DB.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,9 @@ namespace SDHCC.DB.Content
     public EnumInputType EditorType { get; set; } = EnumInputType.Text;
     public bool MultiSelect { get; set; } = false;
     public IEnumerable<DropDownViewModel> SelectItems { get; set; } = Enumerable.Empty<DropDownViewModel>();
+    public IFormFile File { get; set; }
+    public bool RemoveFile { get; set; } = false;
+
   }
 
   public class ContentPropertyIndex

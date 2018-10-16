@@ -19,6 +19,7 @@ namespace SDHCC.DB.Content
   }
   public static class ContentE
   {
+    public static string RootPath { get; set; }
     public static Type RootType { get; set; }
     public static Type RootDropDown { get; set; }
     public static ContentBase ConvertToContentBase(this BsonDocument b)

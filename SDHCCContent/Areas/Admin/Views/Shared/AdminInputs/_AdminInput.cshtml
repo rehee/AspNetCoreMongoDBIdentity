@@ -12,6 +12,7 @@
 
   }
   var inputName = "Properties[" + @Model.Index.ToString() + "]." + @valueName;
+  var FileName = "Properties[" + @Model.Index.ToString() + "].File";
 }
 
 
@@ -52,5 +53,9 @@
 
       }
     </select>
+  }
+  @if(Model.Property.EditorType == SDHCC.EnumInputType.FileUpload)
+  {
+    <input type="file" name="@FileName" />
   }
 </div>

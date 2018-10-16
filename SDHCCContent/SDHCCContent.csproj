@@ -20,6 +20,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\lib\admin\assets\plugins\etc\" />
     <Folder Include="wwwroot\lib\admin\assets\plugins\footable\old\" />
+    <Folder Include="wwwroot\Resources\" />
   </ItemGroup>
 
   <ItemGroup>
