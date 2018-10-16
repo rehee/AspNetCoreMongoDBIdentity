@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,10 +19,10 @@ namespace SDHCCContent.Controllers
   {
     public string Index()
     {
-      var tPage = new TestPage();
-      var testPagePass = tPage.ConvertToPassingModel();
-
-
+      var test = new List<string>();
+      var a = test.GetType();
+      var isEnum = a.IsIEnumerable();
+      var eType = a.GetElementType() == null ? a.GetGenericArguments()[0] : a.GetElementType();
       return "";
     }
     public IActionResult Multi()
