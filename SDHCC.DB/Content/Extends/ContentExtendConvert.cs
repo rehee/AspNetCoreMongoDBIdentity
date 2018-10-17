@@ -14,19 +14,25 @@ namespace SDHCC.DB.Content
     public static ContentPostModel ConvertToPassingModel(this ContentBase input)
     {
       var result = new ContentPostModel();
+      
       var resultProperty = result.GetType().GetProperties().Where(b => b.BaseProperty()).ToList();
       var properties = input.GetType().GetProperties();
       foreach (var p in properties)
       {
+        if (p.SkippedProperty())
+          continue;
+        var inputValue = p.GetValue(input);
         if (p.BaseProperty())
         {
           var baseP = resultProperty.Where(b => b.Name == p.Name).FirstOrDefault();
-          baseP.SetValue(result, p.GetValue(input));
+          if (baseP == null)
+            continue;
+          if (inputValue == null)
+            continue;
+          baseP.SetValue(result, inputValue);
           continue;
         }
-        if (p.SkippedProperty())
-          continue;
-        var prop = p.GetContentPropertyByPropertyInfo(input);
+        var prop = p.GetContentPropertyByPropertyInfo(inputValue);
         if (prop == null)
           continue;
         result.Properties.Add(prop);
@@ -52,10 +58,10 @@ namespace SDHCC.DB.Content
           }
           if (p.SkippedProperty())
             continue;
-          
+
           p.SetPropertyValue(input, result);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
           Console.WriteLine(ex.Message);
         }
@@ -68,72 +74,56 @@ namespace SDHCC.DB.Content
 
     public static ContentProperty GetContentPropertyByPropertyInfo(this PropertyInfo p, object input)
     {
-      var editorType = EnumInputType.Text;
-      var multiSelect = false;
+      var result = new ContentProperty();
+      result.Key = p.Name;
+
+      var cValue = input.MyTryConvert(typeof(string));
+      if (cValue != null)
+        result.Value = (string)cValue;
+
       Type relatedType = null;
       var inputAttribute = p.GetCustomAttribute<InputTypeAttribute>();
       if (inputAttribute != null)
       {
-        editorType = inputAttribute.EditorType;
-        multiSelect = inputAttribute.MultiSelect;
+        result.EditorType = inputAttribute.EditorType;
+        result.MultiSelect = inputAttribute.MultiSelect;
         relatedType = inputAttribute.RelatedType;
       }
       var propertyType = p.GetType();
-      var displayTitle = p.Name.SpacesFromCamel();
       var displayAttribute = p.GetCustomAttribute<DisplayAttribute>();
       if (displayAttribute != null && String.IsNullOrEmpty(displayAttribute.Name))
       {
-        displayTitle = displayAttribute.Name;
-      }
-      string postValue = "";
-      var type = p.PropertyType;
-      var datetimeType = typeof(DateTime);
-      var postMultiValue = new List<string>();
-      List<DropDownViewModel> selector = new List<DropDownViewModel>();
-      if (editorType == EnumInputType.DropDwon)
-      {
-        if (!multiSelect)
-        {
-          postValue = p.GetValue(input) != null ? p.GetValue(input).ToString() : "";
-        }
-        else
-        {
-          postValue = "";
-          var selectValues = (dynamic)p.GetValue(input);
-          if (selectValues != null)
-          {
-            foreach (object item in selectValues)
-            {
-              postMultiValue.Add(item.ToString());
-            }
-          }
-        }
-        p.SetDropDownSelect(selector, relatedType, postValue, postMultiValue);
+        result.Title = displayAttribute.Name;
       }
       else
       {
-        //notmal value
-        if (ConvertTypeToStringDictionary.ContainsKey(type))
-        {
-          postValue = ConvertTypeToStringDictionary[type](p.GetValue(input));
-        }
-        else
-        {
-          postValue = p.GetValue(input) != null ? p.GetValue(input).ToString() : "";
-        }
+        result.Title = p.Name.SpacesFromCamel();
       }
 
-      return new ContentProperty()
+      var type = p.PropertyType;
+      var datetimeType = typeof(DateTime);
+      if (result.EditorType == EnumInputType.DropDwon)
       {
-        Key = p.Name,
-        Value = postValue,
-        EditorType = editorType,
-        ValueType = propertyType.FullName,
-        Title = displayTitle,
-        MultiSelect = multiSelect,
-        SelectItems = editorType == EnumInputType.DropDwon ? selector : Enumerable.Empty<DropDownViewModel>(),
-        MultiValue = multiSelect ? postMultiValue : Enumerable.Empty<string>(),
-      };
+        if (result.MultiSelect)
+        {
+          result.MultiValue = input.MyTryConvert<List<string>>();
+          result.Value = "";
+        }
+        p.SetDropDownSelect(
+          (List<DropDownViewModel>)result.SelectItems, relatedType, result.Value, result.MultiValue);
+      }
+      return result;
+      //return new ContentProperty()
+      //{
+      //  Key = p.Name,
+      //  Value = postValue,
+      //  EditorType = editorType,
+      //  ValueType = propertyType.FullName,
+      //  Title = displayTitle,
+      //  MultiSelect = multiSelect,
+      //  SelectItems = editorType == EnumInputType.DropDwon ? selector : Enumerable.Empty<DropDownViewModel>(),
+      //  MultiValue = multiSelect ? postMultiValue : Enumerable.Empty<string>(),
+      //};
     }
     public static Type GetTypeFromContent(this BaseTypeEntity input, out string typeName, out string assemblyName)
     {
@@ -175,7 +165,8 @@ namespace SDHCC.DB.Content
       }
       return result;
     }
-    public static void SetDropDownSelect(this PropertyInfo p, List<DropDownViewModel> selector, Type relatedType, string postValue, IEnumerable<string> postValues = null)
+    public static void SetDropDownSelect(
+      this PropertyInfo p, List<DropDownViewModel> selector, Type relatedType, string postValue, IEnumerable<string> postValues = null)
     {
       List<String> values;
       if (postValues != null && postValues.Count() > 0)
@@ -186,18 +177,19 @@ namespace SDHCC.DB.Content
       {
         values = !String.IsNullOrEmpty(postValue) ? new List<string>() { postValue } : new List<string>();
       }
-      if (p.PropertyType.IsEnum || p.PropertyType.GenericTypeArguments.Where(b => b.IsEnum).FirstOrDefault() != null)
+      var targetType = p.PropertyType;
+      Type targetElementType;
+      if (targetType.IsIEnumerable())
       {
-        Array enumValues;
-        if (p.PropertyType.IsEnum)
-        {
-          enumValues = p.PropertyType.GetEnumValues();
-        }
-        else
-        {
-
-          enumValues = p.PropertyType.GenericTypeArguments.Where(b => b.IsEnum).FirstOrDefault().GetEnumValues();
-        }
+        targetElementType = targetType.GetIElementType();
+      }
+      else
+      {
+        targetElementType = targetType;
+      }
+      if (targetElementType.IsEnum)
+      {
+        Array enumValues = targetElementType.GetEnumValues();
         foreach (var item in enumValues)
         {
           var select = new DropDownViewModel();
@@ -221,6 +213,7 @@ namespace SDHCC.DB.Content
           selector.Add(select);
         }
       }
+
     }
     public static void SetPropertyValue(this PropertyInfo p, IPassModel input, object result)
     {
@@ -264,7 +257,7 @@ namespace SDHCC.DB.Content
           {
             Array enumValue;
             Type enumType;
-            if(p.PropertyType.IsEnum)
+            if (p.PropertyType.IsEnum)
             {
               enumType = p.PropertyType;
               enumValue = p.PropertyType.GetEnumValues();
@@ -289,7 +282,7 @@ namespace SDHCC.DB.Content
               }
               catch { }
             });
-            
+
             p.SetValue(result, instance);
             return;
           }
@@ -299,7 +292,7 @@ namespace SDHCC.DB.Content
           }
         }
       }
-      else if(inputAttribute != null && inputAttribute.EditorType == EnumInputType.FileUpload)
+      else if (inputAttribute != null && inputAttribute.EditorType == EnumInputType.FileUpload)
       {
         var files = propertyPost;
         if (files.File == null)
@@ -313,7 +306,7 @@ namespace SDHCC.DB.Content
         {
           files.File.CopyToAsync(stream).GetAsyncValue();
         }
-        
+
         Console.WriteLine("123");
       }
       else if (ConvertStringToTypeDictionary.ContainsKey(keyType))
@@ -329,29 +322,15 @@ namespace SDHCC.DB.Content
     }
     public static bool SkippedProperty(this PropertyInfo property)
     {
-
-      if (property.CustomAttributes.Where(b => b.AttributeType == typeof(IgnoreEditAttribute)).FirstOrDefault() != null)
-      {
-        return true;
-      }
-      return false;
+      return property.GetObjectCustomAttribute<IgnoreEditAttribute>() != null;
     }
     public static bool CustomProperty(this PropertyInfo property)
     {
-      if (property.CustomAttributes.Where(b => b.AttributeType == typeof(CustomPropertyAttribute)).FirstOrDefault() != null)
-      {
-        return true;
-      }
-      return false;
+      return property.GetObjectCustomAttribute<CustomPropertyAttribute>() != null;
     }
     public static bool BaseProperty(this PropertyInfo property)
     {
-
-      if (property.CustomAttributes.Where(b => b.AttributeType == typeof(BasePropertyAttribute)).FirstOrDefault() != null)
-      {
-        return true;
-      }
-      return false;
+      return property.GetObjectCustomAttribute<BasePropertyAttribute>() != null;
     }
   }
 }

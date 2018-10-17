@@ -26,7 +26,7 @@ namespace SDHCC.DB.Content
     public string Title { get; set; } = "";
     public EnumInputType EditorType { get; set; } = EnumInputType.Text;
     public bool MultiSelect { get; set; } = false;
-    public IEnumerable<DropDownViewModel> SelectItems { get; set; } = Enumerable.Empty<DropDownViewModel>();
+    public IEnumerable<DropDownViewModel> SelectItems { get; set; } = new List<DropDownViewModel>();
     public IFormFile File { get; set; }
     public bool RemoveFile { get; set; } = false;
 

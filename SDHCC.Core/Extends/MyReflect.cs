@@ -44,10 +44,27 @@ namespace System
           var info = o.GetType().GetField(o.ToString());
           return info.GetCustomAttribute<T>();
         }
-        return o.GetType().GetCustomAttribute<T>();
+        var t1 = o.GetType().GetCustomAttribute<T>();
+        var t2 = o.GetType().GetCustomAttribute(typeof(T));
+        return (T)t2;
       }
       catch { return default(T); }
     }
+    public static T GetObjectCustomAttribute<T>(this PropertyInfo p, bool getField = true) where T : Attribute, new()
+    {
+      try
+      {
+        if (p.PropertyType.IsEnum && getField)
+        {
+          var info = p.PropertyType.GetType().GetField(p.Name);
+          return info.GetCustomAttribute<T>();
+        }
+        var t1 = p.GetCustomAttribute<T>();
+        return t1;
+      }
+      catch { return default(T); }
+    }
+
     /// <summary>
     /// get DisplayAttribute from input object
     /// </summary>
@@ -132,7 +149,7 @@ namespace System
     /// <returns></returns>
     public static bool IsIEnumerable(this Type type)
     {
-      return typeof(IEnumerable).IsAssignableFrom(type);
+      return typeof(IList).IsAssignableFrom(type);
     }
     /// <summary>
     /// Get Element Type from Ienumerable Type
@@ -164,27 +181,94 @@ namespace System
         property.SetValue(result, value);
         return;
       }
-      if (targetType.IsIEnumerable() && valueType.IsIEnumerable())
-      {
-        var listType = typeof(List<>);
-        var elementType = targetType.GetElementType() == null ? targetType.GetGenericArguments()[0] : targetType.GetElementType();
-        var constructedListType = listType.MakeGenericType(elementType);
-        var instance = (IList)Activator.CreateInstance(constructedListType);
-        foreach (var v in ((IEnumerable)value))
-        {
+      var convertResult = value.MyTryConvert(targetType);
+      property.SetValue(result, convertResult);
+    }
 
-        }
+    public static Dictionary<Type, Func<string, object>> MyStringObjectConvertDictionary { get; set; } =
+      new Dictionary<Type, Func<string, object>>();
+
+    public static Dictionary<Type, Func<object, string>> MyObjectStringConvertDictionary { get; set; } =
+      new Dictionary<Type, Func<object, string>>();
+
+    public static object MyTryConvert(this string value, Type type)
+    {
+      if (MyStringObjectConvertDictionary.ContainsKey(type))
+        return MyStringObjectConvertDictionary[type](value);
+      var convertMethod = type.GetMethods().Where(b => b.Name == "" && b.GetParameters().Count() == 2).FirstOrDefault();
+      if (convertMethod != null)
+      {
+        var parames = new object[] { value, null };
+        var result = convertMethod.Invoke(null, parames);
+        return parames[1];
       }
       try
       {
-        property.SetValue(result, Convert.ChangeType(value, targetType));
+        return Convert.ChangeType(value, type);
       }
-      catch { }
+      catch { return null; }
     }
-
     public static object MyTryConvert(this object value, Type type)
     {
-      return null;
+      if (value == null)
+        return null;
+      var valueType = value.GetType();
+      if (valueType == typeof(string))
+        return MyTryConvert((string)value, type);
+      if (type == typeof(string))
+      {
+        if (MyObjectStringConvertDictionary.ContainsKey(valueType))
+          return MyObjectStringConvertDictionary[valueType](value);
+        return value.ToString();
+      }
+      try
+      {
+        return Convert.ChangeType(value, type);
+      }
+      catch
+      {
+        return null;
+      }
+    }
+    public static T MyTryConvert<T>(this object value)
+    {
+      if (value == null)
+        return default(T);
+      var targetType = typeof(T);
+      if (targetType.IsIEnumerable())
+      {
+        var valueType = value.GetType();
+        if (!valueType.IsIEnumerable())
+          return default(T);
+        var targetElementType = targetType.GetIElementType();
+        var valueElementType = valueType.GetIElementType();
+        var listType = typeof(List<>);
+        var constructedListType = listType.MakeGenericType(targetElementType);
+        var instance = (IList)Activator.CreateInstance(constructedListType);
+        foreach (var item in (IEnumerable)value)
+        {
+          if (targetElementType == valueElementType)
+          {
+            instance.Add(item);
+          }
+          else
+          {
+            var elementConvert = item.MyTryConvert(targetElementType);
+            if (elementConvert != null)
+              instance.Add(elementConvert);
+          }
+        }
+        if (!targetType.IsArray)
+          return (T)instance;
+        var array = new object[instance.Count];
+        instance.CopyTo(array, 0);
+        return (T)((object)array);
+
+      }
+      var resultConvert = value.MyTryConvert(targetType);
+      if (resultConvert == null)
+        return default(T);
+      return (T)resultConvert;
     }
     public static object MyTryConvertIEnumable(this object value, Type type)
     {
@@ -212,7 +296,7 @@ namespace System
         {
           if (instance.Count == 0)
             return null;
-          Array array = new int[instance.Count];
+          Array array = new object[instance.Count];
           instance.CopyTo(array, 0);
           return array;
         }
