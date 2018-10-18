@@ -20,10 +20,15 @@ namespace SDHCCContent.Controllers
   {
     public string Index()
     {
-      var test = new List<string>();
-      var a = test.GetType();
-      var isEnum = a.IsIEnumerable();
-      var eType = a.GetElementType() == null ? a.GetGenericArguments()[0] : a.GetElementType();
+      //var t = ContentBase.context.Where(b => b["_id"] == "992bc8eb-b05f-4055-8299-96840fb6a2e5", "ContentBase").FirstOrDefault();
+      //var bb = t["CreateTime"];
+      //var stringvalue = bb.ToString();
+      var dateString = "2018-10-15T12:50:04.79Z";
+      var d = DateTime.TryParse(dateString,out var s);
+      var u = s.ToUniversalTime();
+      var s2 = s.MyTryConvert(typeof(string));
+      var u2 = dateString.MyTryConvert(typeof(DateTime));
+      var s3 = u2.MyTryConvert(typeof(string));
       return "";
     }
     public IActionResult Multi()
@@ -51,31 +56,7 @@ namespace SDHCCContent.Controllers
         await stream.CopyToAsync(memory);
       }
       memory.Position = 0;
-      return File(memory, GetContentType(path), Path.GetFileName(path));
-    }
-    private string GetContentType(string path)
-    {
-      var types = GetMimeTypes();
-      var ext = Path.GetExtension(path).ToLowerInvariant();
-      return types[ext];
-    }
-
-    private Dictionary<string, string> GetMimeTypes()
-    {
-      return new Dictionary<string, string>
-            {
-                {".txt", "text/plain"},
-                {".pdf", "application/pdf"},
-                {".doc", "application/vnd.ms-word"},
-                {".docx", "application/vnd.ms-word"},
-                {".xls", "application/vnd.ms-excel"},
-                {".xlsx", "application/vnd.openxmlformatsofficedocument.spreadsheetml.sheet"},
-                {".png", "image/png"},
-                {".jpg", "image/jpeg"},
-                {".jpeg", "image/jpeg"},
-                {".gif", "image/gif"},
-                {".csv", "text/csv"}
-            };
+      return File(memory, path.GetContentTypeFromPath(), Path.GetFileName(path));
     }
   }
   public class TestPage : ContentBaseModel

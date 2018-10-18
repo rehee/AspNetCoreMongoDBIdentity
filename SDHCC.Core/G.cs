@@ -9,6 +9,7 @@ namespace System
   {
     public static string DateTimeFormat { get; set; } = "yyyy-MM-dd hh:mm:ss";
     public static string DateFormat { get; set; } = "yyyy-MM-dd";
+    public static string DateConvertFormats { get; set; } = "yyyy-MM-ddTHH:mm:ss.ffZ";
     public static T GetAsyncValue<T>(this Task<T> task)
     {
       return Task.Run(async () => await task).ConfigureAwait(false).GetAwaiter().GetResult();
