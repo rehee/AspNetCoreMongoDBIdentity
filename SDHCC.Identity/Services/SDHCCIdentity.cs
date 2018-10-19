@@ -278,12 +278,10 @@ namespace SDHCC.Identity.Services
     {
       var user = model as TUser;
       var userRoles = this.GetUserRoles(b => b.Id == model.Id).Select(b => b.Roles).FirstOrDefault().ToList();
-
       var deletedRoles = userRoles.Where(b => !roles.Contains(b)).ToList();
       userManager.RemoveFromRolesAsync(user, deletedRoles).GetAsyncValue();
       var addRoles = roles.Where(b => !userRoles.Contains(b)).ToList();
       userManager.AddToRolesAsync(user, addRoles).GetAsyncValue();
-
     }
     public void UpdateUser(SDHCCUserBase model)
     {

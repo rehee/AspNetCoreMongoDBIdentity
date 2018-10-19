@@ -21,7 +21,6 @@ namespace System
           return s.ToUniversalTime();
         },
       };
-
     public static Dictionary<Type, Func<object, string>> MyObjectStringConvertDictionary { get; set; } =
       new Dictionary<Type, Func<object, string>>()
       {
@@ -35,7 +34,6 @@ namespace System
           return date.ToString(G.DateConvertFormats);
         },
       };
-
     public static object MyTryConvert(this string value, Type type)
     {
       if (MyStringObjectConvertDictionary.ContainsKey(type))

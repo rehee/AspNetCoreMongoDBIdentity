@@ -21,16 +21,18 @@ namespace SDHCC.DB
 
     T Find<T>(string key, string entityName, out MethodResponse response) where T : class;
     T Find<T>(string key, out MethodResponse response) where T : class;
+    T Find<T>(string key, string entityName, Expression<Func<BsonDocument, T>> convert, out MethodResponse response);
+    
+    BsonDocument Find(string key, string entityName, out MethodResponse response);
+    object Find(string key, string entityName, string fullName, out MethodResponse response);
+
+    T Find<T>(object search, out MethodResponse response) where T : class;
+    object Find(SearchParam search, out MethodResponse response);
+
     IEnumerable<T> Find<T>(IEnumerable<string> keys, out MethodResponse response) where T : class;
     IQueryable<T> Find<T>(IEnumerable<string> keys, string entityName, out MethodResponse response) where T : class;
-
-    object Find(string key, string entityName, string fullName, out MethodResponse response);
-    T Find<T>(object search, out MethodResponse response) where T : class;
-    BsonDocument Find(string key, string entityName, out MethodResponse response);
-    T Find<T>(string key, string entityName, Expression<Func<BsonDocument, T>> convert, out MethodResponse response);
-
     IEnumerable<object> Find(IEnumerable<string> keys, string entityName, string fullName, out MethodResponse response);
-    object Find(SearchParam search, out MethodResponse response);
+    
     //IEnumerable<T> Filter<T>(FilterParam param, out MethodResponse response) where T : class;
     void Update<T>(T input, string id, out MethodResponse response) where T : class;
     void Update<T>(T input, string id, string entityName, out MethodResponse response) where T : class;

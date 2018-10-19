@@ -4,7 +4,7 @@ using System.Text;
 
 namespace System
 {
-  public static class S
+  public static class SpellExtend
   {
     public static string SpacesFromCamel(this string value)
     {

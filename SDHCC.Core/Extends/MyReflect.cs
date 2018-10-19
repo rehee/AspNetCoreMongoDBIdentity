@@ -169,7 +169,6 @@ namespace System
         return null;
       }
     }
-
     public static void SetPropertyValue(this PropertyInfo property, object result, object value)
     {
       if (value == null)

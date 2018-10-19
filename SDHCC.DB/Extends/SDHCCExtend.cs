@@ -33,5 +33,49 @@ namespace System
       return input[selectedKey];
 
     }
+
+    public static string GetMongoCollectionName(this object input, out Type type)
+    {
+      type = null;
+      if (input == null)
+        return null;
+      type = input.GetType();
+      return type.Name;
+    }
+    public static string GetMongoCollectionName(this Type input)
+    {
+      return input.Name;
+    }
+    public static string GetMongoEntityId(this Type type, object input)
+    {
+      foreach (var p in type.GetProperties())
+      {
+        if (p.Name != "Id")
+          continue;
+        return p.GetValue(input).MyTryConvert<string>();
+      }
+      return null;
+    }
+
+    public static void GenerateMongoEntityId(this Type type, object input)
+    {
+      foreach (var p in type.GetProperties())
+      {
+        if (p.Name != "Id")
+          continue;
+        var id = p.GetValue(input).MyTryConvert<string>();
+        if (string.IsNullOrEmpty(id))
+        {
+          id = Guid.NewGuid().ToString();
+        }
+        else
+        {
+          if (!Guid.TryParse(id, out var guid))
+            id = Guid.NewGuid().ToString();
+        }
+        p.SetValue(input, id);
+        return;
+      }
+    }
   }
 }

@@ -22,7 +22,7 @@ namespace MVCAuth.Models
     [Required]
     public string Title { get; set; }
 
-    [InputType(EnumInputType.TextArea)]
+    [InputType(EditorType = EnumInputType.TextArea)]
     public string BriefContent { get; set; }
 
 

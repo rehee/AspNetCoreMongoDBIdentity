@@ -47,16 +47,34 @@ namespace SDHCC.DB
 
     public void Add<T>(T input, out MethodResponse response) where T : class
     {
-      var typeName = input.GetType().Name;
+      if (input == null)
+      {
+        response = new MethodResponse()
+        {
+          Success = false,
+          ResponseMessage = "Input is Null",
+        };
+        return;
+      }
+      var typeName = input.GetMongoCollectionName(out var type);
       Add<T>(input, typeName, out response);
 
     }
     public void Add<T>(T input, string entityName, out MethodResponse response) where T : class
     {
       response = new MethodResponse();
+      if (input == null)
+      {
+        response.ResponseMessage = "Input value is null";
+        return;
+      }
       try
       {
+        var thisEntityName = input.GetMongoCollectionName(out var type);
+        if (string.IsNullOrEmpty(entityName))
+          entityName = thisEntityName;
         var collection = db.GetCollection<T>(entityName);
+        type.GenerateMongoEntityId(input);
         collection.InsertOne(input);
         response.Success = true;
       }
@@ -69,11 +87,17 @@ namespace SDHCC.DB
     public void Add(object input, out MethodResponse response)
     {
       response = new MethodResponse();
+      if (input == null)
+      {
+        response.ResponseMessage = "Input value is null";
+        return;
+      }
       try
       {
         var bsonObject = input.ToBsonDocument();
-        var typeName = input.GetType().Name;
+        var typeName = input.GetMongoCollectionName(out var type);
         var collection = db.GetCollection<BsonDocument>(typeName);
+        type.GetMongoEntityId(input);
         collection.InsertOne(bsonObject);
         response.Success = true;
       }
@@ -108,11 +132,6 @@ namespace SDHCC.DB
       foreach (var item in input)
       {
         this.Add(item, out var res);
-        if (res.Success != true)
-        {
-          response = res;
-          return;
-        }
       }
       response = new MethodResponse();
       response.Success = true;
@@ -120,13 +139,39 @@ namespace SDHCC.DB
 
     public T Find<T>(string key, out MethodResponse response) where T : class
     {
-      var typeName = typeof(T).Name;
+      var typeName = typeof(T).GetMongoCollectionName();
       return Find<T>(key, typeName, out response);
     }
     public T Find<T>(string key, string entityName, out MethodResponse response) where T : class
     {
       return Find<T>(key, entityName, ConvertBsonToGeneric<T>(), out response);
     }
+    public T Find<T>(string key, string entityName, Expression<Func<BsonDocument, T>> convert, out MethodResponse response)
+    {
+      var bson = Find(key, entityName, out response);
+      if (bson == null)
+      {
+        return default(T);
+      }
+      return convert.Compile()(bson);
+    }
+    public BsonDocument Find(string key, string entityName, out MethodResponse response)
+    {
+      response = new MethodResponse();
+      try
+      {
+        var bson = Where(b => b["_id"] == key, entityName).FirstOrDefault();
+        response.Success = true;
+        return bson;
+      }
+      catch (Exception ex)
+      {
+        response.ResponseMessage = ex.Message;
+        response.ResponseObject = ex;
+        return null;
+      }
+    }
+
 
     public IEnumerable<T> Find<T>(IEnumerable<string> keys, out MethodResponse response) where T : class
     {
@@ -254,31 +299,8 @@ namespace SDHCC.DB
       }
     }
 
-    public BsonDocument Find(string key, string entityName, out MethodResponse response)
-    {
-      response = new MethodResponse();
-      try
-      {
-        var bson = Where(b => b["_id"] == key, entityName).FirstOrDefault();
-        response.Success = true;
-        return bson;
-      }
-      catch (Exception ex)
-      {
-        response.ResponseMessage = ex.Message;
-        response.ResponseObject = ex;
-        return null;
-      }
-    }
-    public T Find<T>(string key, string entityName, Expression<Func<BsonDocument, T>> convert, out MethodResponse response)
-    {
-      var bson = Find(key, entityName, out response);
-      if (bson == null)
-      {
-        return default(T);
-      }
-      return convert.Compile()(bson);
-    }
+    
+    
 
     public IEnumerable<T> Filter<T>(FilterParam param, out MethodResponse response) where T : class
     {
