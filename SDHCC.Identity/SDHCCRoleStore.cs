@@ -99,7 +99,8 @@ namespace SDHCC.Identity
       var name = normalizedRoleName.Trim().ToLower();
       var task = new Task<TRole>(() =>
       {
-        return db.Where<TRole>(b => b.NormalizedName == name).FirstOrDefault();
+        var role = db.Where<TRole>(b => b.NormalizedName == name).FirstOrDefault();
+        return role;
       });
       task.Start();
       return task;

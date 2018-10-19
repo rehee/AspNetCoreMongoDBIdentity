@@ -1,4 +1,6 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using SDHCC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +19,61 @@ namespace System
       var value = input[key];
       try
       {
-        return (T)Convert.ChangeType(value, typeof(T));
+        return value.MyTryConvert<T>();
       }
       catch { }
       return default(T);
+    }
+    public static Type GetTypeFromBson(this BsonDocument input)
+    {
+      if (input == null)
+        return null;
+      var fullType = input.GetTypeValue<string>(ContentE.FullTypeString);
+      var assem = input.GetTypeValue<string>(ContentE.AssemblyNameString);
+      if (string.IsNullOrEmpty(fullType) || string.IsNullOrEmpty(assem))
+        return null;
+      return Type.GetType($"{fullType},{assem}");
+    }
+    public static object ConvertBsonToObject(this BsonDocument input, Type type)
+    {
+      if (type == null)
+        return null;
+      try
+      {
+        return BsonSerializer.Deserialize(input, type);
+      }
+      catch
+      {
+        return null;
+      }
+    }
+    public static object ConvertBsonToObject(this BsonDocument input)
+    {
+      var type = input.GetTypeFromBson();
+      if (type == null)
+        return null;
+      try
+      {
+        return BsonSerializer.Deserialize(input, type);
+      }
+      catch
+      {
+        return null;
+      }
+    }
+    public static T ConvertBsonToObject<T>(this BsonDocument input)
+    {
+      try
+      {
+        var type = input.GetTypeFromBson();
+        if (type != null)
+          return (T)input.ConvertBsonToObject(type);
+        var valueType = typeof(T);
+        if (valueType.IsInterface || valueType.IsAbstract)
+          return default(T);
+        return BsonSerializer.Deserialize<T>(input);
+      }
+      catch { return default(T); }
     }
 
     public static BsonValue GetValueByKey(this BsonDocument input, string key)
@@ -33,7 +86,6 @@ namespace System
       return input[selectedKey];
 
     }
-
     public static string GetMongoCollectionName(this object input, out Type type)
     {
       type = null;
@@ -56,7 +108,6 @@ namespace System
       }
       return null;
     }
-
     public static void GenerateMongoEntityId(this Type type, object input)
     {
       foreach (var p in type.GetProperties())

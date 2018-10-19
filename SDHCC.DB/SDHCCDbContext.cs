@@ -26,7 +26,7 @@ namespace SDHCC.DB
     }
     private T BsonConvertTo<T>(BsonDocument bson)
     {
-      return bson.ConvertToGeneric<T>();
+      return bson.ConvertBsonToObject<T>();
     }
     private Type GetType<T>(BsonDocument bson)
     {
@@ -171,30 +171,6 @@ namespace SDHCC.DB
         return null;
       }
     }
-
-
-    public IEnumerable<T> Find<T>(IEnumerable<string> keys, out MethodResponse response) where T : class
-    {
-      var entityName = typeof(T).Name;
-      return Find<T>(keys, entityName, out response).AsEnumerable();
-    }
-    public IQueryable<T> Find<T>(IEnumerable<string> keys, string entityName, out MethodResponse response) where T : class
-    {
-      response = new MethodResponse();
-      try
-      {
-        var strings = keys.Select(c => (object)c).ToList();
-        var query = Where<T>(b => strings.Contains(b["_id"]), entityName, ConvertBsonToGeneric<T>());
-        return query;
-      }
-      catch (Exception ex)
-      {
-        response.ResponseObject = ex;
-        response.Message = ex.Message;
-        return Enumerable.Empty<T>().AsQueryable();
-      }
-
-    }
     public object Find(string key, string entityName, string fullName, out MethodResponse response)
     {
       response = new MethodResponse();
@@ -202,27 +178,14 @@ namespace SDHCC.DB
       {
         var collection = db.GetCollection<BsonDocument>(entityName);
         BsonDocument obj = null;
-        try
-        {
-          ObjectId oId = ObjectId.Parse(key);
-          obj = collection.Find(new { Id = oId }.ToBsonDocument()).FirstOrDefault();
-        }
-        catch
-        {
-          obj = collection.Find(new { _id = key }.ToBsonDocument()).FirstOrDefault();
-        }
-
+        obj = collection.Find(new { _id = key }.ToBsonDocument()).FirstOrDefault();
         if (obj == null)
         {
-          response.Success = true;
+          response.Success = false;
           return null;
         }
-        if (String.IsNullOrEmpty(fullName))
-        {
-          fullName = $"{obj["FullType"].ToString()},{obj["AssemblyName"].ToString()}";
-        }
-        var returnObj = BsonSerializer.Deserialize(obj, Type.GetType(fullName));
-        response.Success = true;
+        var returnObj = obj.ConvertBsonToObject();
+        response.Success = returnObj != null;
         return returnObj;
       }
       catch (Exception ex)
@@ -251,28 +214,6 @@ namespace SDHCC.DB
         return default(T);
       }
     }
-    public IEnumerable<object> Find(IEnumerable<string> keys, string entityName, string fullName, out MethodResponse response)
-    {
-      var result = new List<object>();
-      var uniqueKeys = keys.Distinct();
-      foreach (var key in uniqueKeys)
-      {
-        MethodResponse res;
-        var obj = this.Find(key, entityName, fullName, out res);
-        if (res.Success)
-        {
-          result.Add(obj);
-        }
-        else
-        {
-          response = res;
-          return result;
-        }
-      }
-      response = new MethodResponse() { Success = true };
-      return result;
-    }
-
     public object Find(SearchParam search, out MethodResponse response)
     {
       var filter = Builders<BsonDocument>.Filter.In("_id", "");
@@ -299,8 +240,55 @@ namespace SDHCC.DB
       }
     }
 
-    
-    
+
+    public IEnumerable<T> Find<T>(IEnumerable<string> keys, out MethodResponse response) where T : class
+    {
+      var entityName = typeof(T).Name;
+      return Find<T>(keys, entityName, out response).AsEnumerable();
+    }
+    public IQueryable<T> Find<T>(IEnumerable<string> keys, string entityName, out MethodResponse response) where T : class
+    {
+      response = new MethodResponse();
+      try
+      {
+        var strings = keys.Select(c => (object)c).ToList();
+        var query = Where<T>(b => strings.Contains(b["_id"]), entityName, ConvertBsonToGeneric<T>());
+        return query;
+      }
+      catch (Exception ex)
+      {
+        response.ResponseObject = ex;
+        response.Message = ex.Message;
+        return Enumerable.Empty<T>().AsQueryable();
+      }
+
+    }
+
+    public IEnumerable<object> Find(IEnumerable<string> keys, string entityName, string fullName, out MethodResponse response)
+    {
+      var result = new List<object>();
+      var uniqueKeys = keys.Distinct();
+      foreach (var key in uniqueKeys)
+      {
+        MethodResponse res;
+        var obj = this.Find(key, entityName, fullName, out res);
+        if (res.Success)
+        {
+          result.Add(obj);
+        }
+        else
+        {
+          response = res;
+          return result;
+        }
+      }
+      response = new MethodResponse() { Success = true };
+      return result;
+    }
+
+
+
+
 
     public IEnumerable<T> Filter<T>(FilterParam param, out MethodResponse response) where T : class
     {
@@ -385,7 +373,18 @@ namespace SDHCC.DB
     }
     public IQueryable<T> Where<T>(Expression<Func<T, bool>> where = null, string entityName = "") where T : class
     {
-      return Where<T>(b => true, entityName, this.ConvertBsonToGeneric<T>()).Where(where);
+      if (entityName == "TestUser")
+      {
+        Console.WriteLine();
+      }
+      //var t = Where(b => true, entityName).ToList();
+      //var a = t.Select(b => this.ConvertBsonToGeneric<T>().Compile()(b));
+      //return a.AsQueryable();
+      //var t = Where<T>(b => true, entityName, this.ConvertBsonToGeneric<T>()).Where(where).ToList();
+      if(where!=null)
+        return Where<T>(b => true, entityName, this.ConvertBsonToGeneric<T>()).Where(where);
+      return Where<T>(b => true, entityName, this.ConvertBsonToGeneric<T>());
+      //return t.AsQueryable();
     }
     public IQueryable<BsonDocument> Where(Expression<Func<BsonDocument, bool>> where, string entityName)
     {

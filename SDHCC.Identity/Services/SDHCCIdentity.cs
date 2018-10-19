@@ -128,7 +128,9 @@ namespace SDHCC.Identity.Services
     }
     public IQueryable<UserRoleView> GetUserRoles(Expression<Func<IdentityUser<string>, bool>> where = null)
     {
-      var query = userManager.Users;
+      var aa = userManager.Users;
+      var aaa = userManager.Users.ToList();
+      var query = userManager.Users.ToList().AsQueryable();
       if (where != null)
       {
         query = query.Where(where).Select(b => (TUser)b);
