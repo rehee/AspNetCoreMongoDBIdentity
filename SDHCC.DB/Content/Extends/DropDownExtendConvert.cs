@@ -28,7 +28,7 @@ namespace SDHCC.DB.Content
     }
     public static DropDownBase ConvertToBaseModel(this DropDownPostModel input)
     {
-      var result = (DropDownBase)input.ConvertBaseTypeToT(out var typeName, out var assemblyName);
+      var result = (DropDownBase)input.ConvertBaseTypeToEnity(out var typeName, out var assemblyName);
       var properties = result.GetType().GetProperties();
       var baseProperty = input.GetType().GetProperties().Where(b => b.BaseProperty()).ToList();
       foreach (var p in properties)

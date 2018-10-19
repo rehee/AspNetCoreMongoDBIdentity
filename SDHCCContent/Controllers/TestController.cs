@@ -20,15 +20,9 @@ namespace SDHCCContent.Controllers
   {
     public string Index()
     {
-      //var t = ContentBase.context.Where(b => b["_id"] == "992bc8eb-b05f-4055-8299-96840fb6a2e5", "ContentBase").FirstOrDefault();
-      //var bb = t["CreateTime"];
-      //var stringvalue = bb.ToString();
-      var dateString = "2018-10-15T12:50:04.79Z";
-      var d = DateTime.TryParse(dateString,out var s);
-      var u = s.ToUniversalTime();
-      var s2 = s.MyTryConvert(typeof(string));
-      var u2 = dateString.MyTryConvert(typeof(DateTime));
-      var s3 = u2.MyTryConvert(typeof(string));
+      BaseTypeEntity ti = new Ti();
+      var type = ti.GetType();
+      var p = type.GetProperties();
       return "";
     }
     public IActionResult Multi()
@@ -58,6 +52,16 @@ namespace SDHCCContent.Controllers
       memory.Position = 0;
       return File(memory, path.GetContentTypeFromPath(), Path.GetFileName(path));
     }
+
+
+  }
+  public class Ti : BaseTypeEntity
+  {
+    public string AssemblyName { get; set; }
+    public string Id { get; set; }
+    public string FullType { get; set; }
+
+    public string aa { get; set; }
   }
   public class TestPage : ContentBaseModel
   {

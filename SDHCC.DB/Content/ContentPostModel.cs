@@ -17,6 +17,11 @@ namespace SDHCC.DB.Content
     List<ContentProperty> Properties { get; set; }
   }
 
+  public class BasePassModel : IPassModel
+  {
+    public List<ContentProperty> Properties { get; set; } = new List<ContentProperty>();
+  }
+
   public class ContentProperty
   {
     public string Key { get; set; } = "";
@@ -29,7 +34,9 @@ namespace SDHCC.DB.Content
     public IEnumerable<DropDownViewModel> SelectItems { get; set; } = new List<DropDownViewModel>();
     public IFormFile File { get; set; }
     public bool RemoveFile { get; set; } = false;
-
+    public bool BaseProperty { get; set; } = false;
+    public bool IgnoreProperty { get; set; } = false;
+    public bool CustomProperty { get; set; } = false;
   }
 
   public class ContentPropertyIndex

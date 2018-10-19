@@ -14,7 +14,7 @@ namespace SDHCC.DB.Content
     public static ContentPostModel ConvertToPassingModel(this ContentBase input)
     {
       var result = new ContentPostModel();
-      
+
       var resultProperty = result.GetType().GetProperties().Where(b => b.BaseProperty()).ToList();
       var properties = input.GetType().GetProperties();
       foreach (var p in properties)
@@ -41,7 +41,7 @@ namespace SDHCC.DB.Content
     }
     public static ContentBase ConvertToBaseModel(this ContentPostModel input)
     {
-      var result = (ContentBase)input.ConvertBaseTypeToT(out var typeName, out var assemblyName);
+      var result = (ContentBase)input.ConvertBaseTypeToEnity(out var typeName, out var assemblyName);
       var properties = result.GetType().GetProperties();
       var baseProperty = input.GetType().GetProperties().Where(b => b.BaseProperty()).ToList();
       foreach (var p in properties)
@@ -75,6 +75,18 @@ namespace SDHCC.DB.Content
     public static ContentProperty GetContentPropertyByPropertyInfo(this PropertyInfo p, object input)
     {
       var result = new ContentProperty();
+      if (p.GetObjectCustomAttribute<BasePropertyAttribute>() != null)
+      {
+        result.BaseProperty = true;
+      }
+      if (p.GetObjectCustomAttribute<IgnoreEditAttribute>() != null)
+      {
+        result.IgnoreProperty = true;
+      }
+      if (p.GetObjectCustomAttribute<CustomPropertyAttribute>() != null)
+      {
+        result.CustomProperty = true;
+      }
       result.Key = p.Name;
 
       var cValue = input.MyTryConvert(typeof(string));
@@ -142,7 +154,7 @@ namespace SDHCC.DB.Content
       var type = Type.GetType(typeString);
       return type;
     }
-    public static object ConvertBaseTypeToT(this BaseTypeEntity input, out string typeName, out string assemblyName)
+    public static object ConvertBaseTypeToEnity(this BaseTypeEntity input, out string typeName, out string assemblyName)
     {
       var type = input.GetTypeFromContent(out typeName, out assemblyName);
       if (type == null)
@@ -215,6 +227,20 @@ namespace SDHCC.DB.Content
       }
 
     }
+    public static object GetDropDownValue(InputTypeAttribute inputAttribute, PropertyInfo p, ContentProperty propertyPost)
+    {
+      if (inputAttribute == null || propertyPost == null)
+        return null;
+      if (!inputAttribute.MultiSelect)
+      {
+        return propertyPost.Value.MyTryConvert(p.PropertyType);
+      }
+      else
+      {
+        return propertyPost.MultiValue.MyTryConvert(p.PropertyType);
+      }
+
+    }
     public static void SetPropertyValue(this PropertyInfo p, IPassModel input, object result)
     {
       var propertyPost = input.Properties.Find(b => b.Key == p.Name);
@@ -223,102 +249,45 @@ namespace SDHCC.DB.Content
         return;
       }
       dynamic value = null;
-      var stringValue = "";
-      if (!String.IsNullOrEmpty(propertyPost.Value))
-      {
-        stringValue = propertyPost.Value;
-      }
+      var stringValue = !String.IsNullOrEmpty(propertyPost.Value) ? propertyPost.Value : "";
       var keyType = p.PropertyType;
       var inputAttribute = p.GetCustomAttribute<InputTypeAttribute>();
-      if (inputAttribute != null && inputAttribute.EditorType == EnumInputType.DropDwon)
+      if (inputAttribute != null)
       {
-        if (!inputAttribute.MultiSelect)
+        switch (inputAttribute.EditorType)
         {
-          if (p.PropertyType.IsEnum)
-          {
-            var enumValue = p.PropertyType.GetEnumValues();
-            foreach (var item in enumValue)
+          case EnumInputType.DropDwon:
+            value = GetDropDownValue(inputAttribute, p, propertyPost);
+            break;
+          case EnumInputType.FileUpload:
+            var files = propertyPost;
+            if (files.File == null)
             {
-              if (item.ToString() == stringValue)
-              {
-                value = item;
-                break;
-              }
+              return;
             }
-          }
-          else
-          {
-            value = stringValue;
-          }
-        }
-        else
-        {
-          if (p.PropertyType.IsEnum || p.PropertyType.GenericTypeArguments.Where(b => b.IsEnum).FirstOrDefault() != null)
-          {
-            Array enumValue;
-            Type enumType;
-            if (p.PropertyType.IsEnum)
+            //var path = ContentE.RootPath;
+            var path = Path.Combine(Directory.GetCurrentDirectory(),
+                               "wwwroot", "123.jpg");
+            using (var stream = new FileStream(path, FileMode.Create))
             {
-              enumType = p.PropertyType;
-              enumValue = p.PropertyType.GetEnumValues();
+              files.File.CopyToAsync(stream).GetAsyncValue();
             }
-            else
-            {
-              enumType = p.PropertyType.GenericTypeArguments.Where(b => b.IsEnum).FirstOrDefault();
-              enumValue = enumType.GetEnumValues();
 
-            }
-            var stringValues = propertyPost.MultiValue.ToList();
-            var values = new List<dynamic>();
-            //var t = Activator.CreateInstance(p.PropertyType);
-            var listType = typeof(List<>);
-            var constructedListType = listType.MakeGenericType(enumType);
-            var instance = (IList)Activator.CreateInstance(constructedListType);
-            stringValues.ForEach(s =>
-            {
-              try
-              {
-                instance.Add(Enum.Parse(enumType, s));
-              }
-              catch { }
-            });
-
-            p.SetValue(result, instance);
-            return;
-          }
-          else
-          {
-            value = propertyPost.MultiValue.ToList();
-          }
+            Console.WriteLine("123");
+            break;
+          default:
+            value = stringValue.MyTryConvert(keyType);
+            break;
         }
-      }
-      else if (inputAttribute != null && inputAttribute.EditorType == EnumInputType.FileUpload)
-      {
-        var files = propertyPost;
-        if (files.File == null)
-        {
-          return;
-        }
-        //var path = ContentE.RootPath;
-        var path = Path.Combine(Directory.GetCurrentDirectory(),
-                           "wwwroot", "123.jpg");
-        using (var stream = new FileStream(path, FileMode.Create))
-        {
-          files.File.CopyToAsync(stream).GetAsyncValue();
-        }
-
-        Console.WriteLine("123");
-      }
-      else if (ConvertStringToTypeDictionary.ContainsKey(keyType))
-      {
-        value = ConvertStringToTypeDictionary[keyType](stringValue);
       }
       else
       {
-        value = stringValue;
-      }
+        //normal type switch and set
+        value = stringValue.MyTryConvert(keyType);
 
-      p.SetValue(result, value);
+      }
+      if (value != null)
+        p.SetValue(result, value);
     }
     public static bool SkippedProperty(this PropertyInfo property)
     {

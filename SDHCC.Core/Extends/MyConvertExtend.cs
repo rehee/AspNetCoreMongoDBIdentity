@@ -49,6 +49,15 @@ namespace System
       }
       try
       {
+        if (type.IsEnum)
+        {
+          var values = type.GetEnumValues();
+          foreach (var v in values)
+          {
+            if (v.ToString() == value)
+              return v;
+          }
+        }
         return Convert.ChangeType(value, type);
       }
       catch { return null; }
@@ -60,6 +69,8 @@ namespace System
       var valueType = value.GetType();
       if (valueType == typeof(string))
         return MyTryConvert((string)value, type);
+      if (type.IsIEnumerable())
+        return value.MyTryConvertIEnumable(type);
       if (type == typeof(string))
       {
         if (MyObjectStringConvertDictionary.ContainsKey(valueType))
