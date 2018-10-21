@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SDHCC.Core\SDHCC.Core.csproj" />
+    <ProjectReference Include="..\SDHCC.DB\SDHCC.DB.csproj" />
+    <ProjectReference Include="..\SDHCC.E\SDHCC.E.csproj" />
+    <ProjectReference Include="..\SDHCC.Identity\SDHCC.Identity.csproj" />
+  </ItemGroup>
+
+</Project>
