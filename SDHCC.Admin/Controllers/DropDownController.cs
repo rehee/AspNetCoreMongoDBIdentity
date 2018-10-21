@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SDHCC;
 using SDHCC.DB;
 using SDHCC.DB.Content;
-using SDHCCContent.Models.DropDowns;
 
-namespace SDHCCContent.Areas.Admin.Controllers
+namespace SDHCC.Admins.Controllers
 {
   [Area("Admin")]
   public class DropDownController : Controller

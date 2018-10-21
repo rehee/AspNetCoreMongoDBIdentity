@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SDHCC.Identity.Models.UserModels;
 using SDHCC.Identity.Services;
 
-namespace SDHCCContent.Areas.Admin.Controllers
+namespace SDHCC.Admins.Controllers
 {
   [Area("Admin")]
   public class UserController : Controller

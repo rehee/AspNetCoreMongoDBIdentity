@@ -7,7 +7,7 @@ using SDHCC;
 using SDHCC.DB;
 using SDHCC.DB.Content;
 
-namespace SDHCCContent.Areas.Admin.Controllers
+namespace SDHCC.Admins.Controllers
 {
   public class ContentController : Controller
   {

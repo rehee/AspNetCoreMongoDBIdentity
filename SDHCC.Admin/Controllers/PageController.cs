@@ -13,7 +13,7 @@ using SDHCC.DB.Content;
 using SDHCC.Identity.Models.UserModels;
 using SDHCC.Identity.Services;
 
-namespace SDHCCContent.Areas.Admin.Controllers
+namespace SDHCC.Admins.Controllers
 {
   [Area("Admin")]
   [Authorize]
