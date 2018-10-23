@@ -17,6 +17,7 @@ using SDHCC.Identity.Models.UserRoles;
 using SDHCC.Identity.Services;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace System
@@ -81,8 +82,9 @@ namespace System
 
       //services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders();
       //.AddEntityFrameworkStores<ApplicationDbContext>();
-
+      var assembly = Assembly.Load("SDHCC.Admins");
       services.AddMvc()
+        .AddApplicationPart(assembly).AddControllersAsServices()
         .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
       services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
         .AddCookie(options =>

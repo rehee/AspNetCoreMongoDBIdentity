@@ -36,7 +36,7 @@ namespace SDHCCContent
     public IHostingEnvironment HostingEnvironment { get; }
     public void ConfigureServices(IServiceCollection services)
     {
-      StartUpFunction.ConfigureServices<TestUser, ContentBaseModel, DropDownBaseModel>(
+      StartUpFunction.ConfigureServices<TestUser, SDHCCContent.Models.ContentBaseModel, DropDownBaseModel>(
         services, Configuration, HostingEnvironment);
     }
 
