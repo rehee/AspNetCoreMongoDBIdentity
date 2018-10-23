@@ -10,14 +10,18 @@
     <Compile Remove="AdminSpa\**" />
     <Content Remove="AdminSpa\**" />
     <EmbeddedResource Remove="AdminSpa\**" />
+    
     <None Remove="AdminSpa\**" />
   </ItemGroup>
-
+  <ItemGroup>
+    <EmbeddedResource Include="Areas\Admins\Views\**\*.cshtml" />
+  </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\" />
     <Folder Include="wwwroot\lib\admin\assets\plugins\etc\" />
     <Folder Include="wwwroot\lib\admin\assets\plugins\footable\old\" />
     <Folder Include="wwwroot\Resources\" />
+    
   </ItemGroup>
 
   <ItemGroup>

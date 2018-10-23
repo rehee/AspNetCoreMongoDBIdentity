@@ -3,8 +3,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.DotNet.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using MongoDB.Driver;
 using Newtonsoft.Json.Serialization;
 using SDHCC;
@@ -17,18 +23,45 @@ using SDHCC.Identity.Models.UserRoles;
 using SDHCC.Identity.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
 namespace System
 {
+  public class MultiAssemblyViewLocationExpander : IViewLocationExpander
+  {
+    public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
+    {
+      var actionContext = (ResultExecutingContext)context.ActionContext;
+      var assembly = actionContext.Controller.GetType().Assembly;
+      var assemblyName = assembly.GetName().Name;
+
+      foreach (var viewLocation in viewLocations)
+        yield return "/" + assemblyName + viewLocation;
+    }
+
+    public void PopulateValues(ViewLocationExpanderContext context)
+    {
+
+    }
+  }
+
   public static class StartUpFunction
   {
+    public static RazorViewEngineOptions AddCloudscribeSimpleContentBootstrap3Views(this RazorViewEngineOptions options, Assembly ass)
+    {
+      options.FileProviders.Add(new EmbeddedFileProvider(
+                  ass, "SDHCC.Admins"
+            ));
+
+      return options;
+    }
     public static void ConfigureServices<TUser, TContentBase, TDropDownBase>(IServiceCollection services,
       IConfiguration configuration, IHostingEnvironment hostingEnvironment)
-      where TUser : SDHCCUserBase, new() 
+      where TUser : SDHCCUserBase, new()
       where TContentBase : ContentBase
-      where TDropDownBase: DropDownBase
+      where TDropDownBase : DropDownBase
     {
       E.Setting = configuration.GetSection("SiteSetting").Get<SiteSetting>();
       //TelemetryConfiguration.Active.DisableTelemetry = true;
@@ -82,17 +115,46 @@ namespace System
 
       //services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders();
       //.AddEntityFrameworkStores<ApplicationDbContext>();
-      var assembly = Assembly.Load("SDHCC.Admins");
-      var assemblyView = Assembly.Load("SDHCC.Admins.Views");
+      var assembly = typeof(SDHCC.Admins.Controllers.PageController).Assembly;
+      //var assemblyView = Assembly.Load("SDHCC.Admins.Views");
       services.AddMvc()
-        .AddApplicationPart(assembly).AddControllersAsServices()
-        .AddApplicationPart(assemblyView).AddViewComponentsAsServices()
+        .AddApplicationPart(assembly)
+        //.ConfigureRazorViewEngine(options =>
+        //{
+        //  var oldRoot = ApplicationEnviroment.ApplicationBasePath;
+        //  var trimmedRoot = oldRoot.Remove(oldRoot.LastIndexOf('\\'));
+
+        //  options.FileProvider = new PhysicalFileProvider(trimmedRoot);
+        //})
+        ////.AddApplicationPart(assemblyView)
+        //.ConfigureApplicationPartManager(m =>
+        //{
+        //  var feature = new ControllerFeature();
+        //  m.ApplicationParts.Add(new AssemblyPart(assembly));
+        //  m.PopulateFeature(feature);
+        //  services.AddSingleton(feature.Controllers.Select(t => t.AsType()).ToArray());
+        //})
+        //.AddRazorOptions(options =>
+        //{
+        //  options.AddCloudscribeSimpleContentBootstrap3Views(assembly);
+        //})
         .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
       services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
         .AddCookie(options =>
         {
           options.LoginPath = E.Setting.Login;
         });
+      //services.Configure<RazorViewEngineOptions>(options =>
+      //{
+      //  //options.FileProviders.Add(
+      //  //    new EmbeddedFileProvider(assembly, "SDHCC.Admins"));
+      //  ////options.ViewLocationExpanders.Add(new MultiAssemblyViewLocationExpander());
+      //  var oldRoot = ApplicationEnvironment.ApplicationBasePath;
+      //  var trimmedRoot = oldRoot.Remove(oldRoot.LastIndexOf('\\'));
+
+      //  options.FileProviders.Add(new PhysicalFileProvider(trimmedRoot));
+      //});
+
     }
 
     public static void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -120,7 +182,7 @@ namespace System
       {
         routes.MapRoute(
           name: "areas",
-          template: "{area}/{controller=Home}/{action=Index}/{id?}"
+          template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
         );
         //routes.MapRoute("content", "{*names}",
         //    defaults: new { controller = "Content", action = "Index" });

@@ -7,7 +7,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.ALL" Version="2.1.1" />
   </ItemGroup>
-
+  <ItemGroup>
+    <EmbeddedResource Include="Areas\Admin\Views\**\*.cshtml" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SDHCC.Admin\SDHCC.Admins.csproj" />
     <ProjectReference Include="..\SDHCC.Core\SDHCC.Core.csproj" />
