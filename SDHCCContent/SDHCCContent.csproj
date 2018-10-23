@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Views\Home\" />
     <Folder Include="wwwroot\lib\admin\assets\plugins\etc\" />
     <Folder Include="wwwroot\lib\admin\assets\plugins\footable\old\" />
     <Folder Include="wwwroot\Resources\" />
@@ -41,12 +40,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SDHCC.Admins.Views\SDHCC.Admins.Views.csproj" />
     <ProjectReference Include="..\SDHCC.Admin\SDHCC.Admins.csproj" />
     <ProjectReference Include="..\SDHCC.Core\SDHCC.Core.csproj" />
     <ProjectReference Include="..\SDHCC.DB\SDHCC.DB.csproj" />
     <ProjectReference Include="..\SDHCC.E\SDHCC.E.csproj" />
     <ProjectReference Include="..\SDHCC.Identity\SDHCC.Identity.csproj" />
-    <ProjectReference Include="..\WebApplication3\SDHCC.Admins.Views.csproj" />
   </ItemGroup>
 
   <ItemGroup>
