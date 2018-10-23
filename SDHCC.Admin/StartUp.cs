@@ -83,8 +83,10 @@ namespace System
       //services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders();
       //.AddEntityFrameworkStores<ApplicationDbContext>();
       var assembly = Assembly.Load("SDHCC.Admins");
+      var assemblyView = Assembly.Load("SDHCC.Admins.Views");
       services.AddMvc()
         .AddApplicationPart(assembly).AddControllersAsServices()
+        .AddApplicationPart(assemblyView).AddViewComponentsAsServices()
         .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
       services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
         .AddCookie(options =>
