@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDHCC.E", "SDHCC.E\SDHCC.E.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDHCC.Admins", "SDHCC.Admin\SDHCC.Admins.csproj", "{E6226430-07E0-40E8-B877-9D8D0580C885}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication3", "WebApplication3\WebApplication3.csproj", "{8250D5C3-67AC-4144-8D0D-3D4D9B45AC22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDHCC.Admins.Views", "WebApplication3\SDHCC.Admins.Views.csproj", "{8250D5C3-67AC-4144-8D0D-3D4D9B45AC22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
