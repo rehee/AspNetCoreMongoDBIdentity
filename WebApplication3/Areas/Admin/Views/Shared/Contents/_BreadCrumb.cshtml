@@ -1,0 +1,19 @@
+﻿@model string
+@{
+  var id = "";
+  if (!string.IsNullOrEmpty(Model))
+  {
+    id = Model;
+  }
+  var page = ContentBase.context.GetContent(id);
+  var pages = page.Breadcrumb();
+}
+<p>
+  <a href="@Url.Action("Index","Page",new{ @id="" })">Root</a>
+  @foreach (var item in pages)
+  {
+  <a href="@Url.Action("Index","Page",new{ @id=item.Id })">
+    @(!String.IsNullOrEmpty(item.Name) ? item.Name : item.Id)
+  </a>
+  }
+</p>

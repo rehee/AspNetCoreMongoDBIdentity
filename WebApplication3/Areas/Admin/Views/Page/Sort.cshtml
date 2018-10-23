@@ -1,0 +1,60 @@
+﻿@model ContentPostModel
+@{
+    ViewData["Title"] = "Content";
+    Layout = "_Layout_Content";
+    var contentId = Model != null ? Model.Id : "";
+    var contents = ContentBase.context.GetChildrenNode(contentId).ToList();
+}
+@section breadcrumb{
+    @{ await Html.RenderPartialAsync("_BreadCrumbContent", contentId);}
+}
+<h1>Sortable table</h1>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.15.0/vuedraggable.min.js"></script>
+
+<div class="card" id="main">
+    <div class="card-block">
+        <div class="row">
+            <h2>Draggable</h2>
+            <!-- Column -->
+            <div class="col-lg-12 col-md-12">
+                <draggable :list="list" class="dragArea">
+                    <div v-for="element in list" class="alert alert-success">{{element.name}}</div>
+                </draggable>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+        var vm = new Vue({
+            el: "#main",
+            data: {
+                list: [
+                    @foreach(var item in contents)
+                    {
+                      <text>
+                        { name: "@item.GetValueByKey("_id")" },
+                      </text>
+                    }
+
+                ]
+            },
+            methods: {
+                console: function () {
+                    console.log(this.list);
+                },
+                replace: function () {
+                    this.list = [{ name: 'Edgard' }]
+                }
+            }
+        });
+</script>
+
+@section script{
+
+
+}

@@ -1,0 +1,233 @@
+﻿@model ContentPostModel
+@inject ISDHCCIdentity users
+@{
+
+
+  ViewData["Title"] = "Content";
+  Layout = "_Layout_Content";
+  var contentId = Model != null ? Model.Id : "";
+  var contents = ContentBase.context.GetChildrenNode(contentId)
+      .Where(b => users.IsUserInRoles(User, (BsonArray)b["AdminReadRoles"])).ToList();
+  IEnumerable<string> CreateRole;
+  IEnumerable<string> ReadRole;
+  IEnumerable<string> UpdateRole;
+  IEnumerable<string> DeleteRole;
+  if (Model == null)
+  {
+      CreateRole = Enumerable.Empty<string>();
+      ReadRole = Enumerable.Empty<string>();
+      UpdateRole = Enumerable.Empty<string>();
+      DeleteRole = Enumerable.Empty<string>();
+      var type = ContentE.RootType.CustomAttributes.Where(b => b.AttributeType == typeof(SDHCC.AllowChildrenAttribute)).FirstOrDefault();
+      if (type != null)
+      {
+          var createRoles = type.NamedArguments.Where(b => b.MemberName == "CreateRoles").FirstOrDefault();
+          if (createRoles != null)
+          {
+              var role = (System.Collections.ObjectModel.ReadOnlyCollection<System.Reflection.CustomAttributeTypedArgument>)createRoles.TypedValue.Value;
+              CreateRole = role.Select(b => b.Value.ToString()).ToList();
+          }
+          var editRoles = type.NamedArguments.Where(b => b.MemberName == "EditRoles").FirstOrDefault();
+          if (editRoles != null)
+          {
+              var eRoles = (System.Collections.ObjectModel.ReadOnlyCollection<System.Reflection.CustomAttributeTypedArgument>)editRoles.TypedValue.Value;
+              UpdateRole = eRoles.Select(b => b.Value.ToString()).ToList();
+          }
+      }
+  }
+  else
+  {
+      CreateRole = Model.AdminCreateRoles;
+      ReadRole = Model.AdminReadRoles;
+      UpdateRole = Model.AdminUpdateRoles;
+      DeleteRole = Model.AdminDeleteRoles;
+  }
+}
+@section breadcrumb{
+    @{ await Html.RenderPartialAsync("_BreadCrumbContent", contentId);}
+}
+<link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.css" />
+<link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid-theme.min.css" />
+
+<div class="button-box">
+    @if (users.IsUserInRoles(User, CreateRole))
+    {
+        <div class="btn-group">
+            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Create
+            </button>
+            <div class="dropdown-menu">
+                @{
+                    var avaliableChild = contentId.GetAllowChild();
+                }
+                @foreach (var child in avaliableChild)
+                {
+                    <form action="@Url.Action("PreCreate","Page",new { @area="Admin" })" method="post">
+                        @Html.Hidden("ContentId", contentId)
+                        @Html.Hidden("FullType", child.FullName + "," + child.Assembly)
+                        <input type="submit" class="dropdown-item" name="name" value="@child.Name" />
+                    </form>
+
+                }
+            </div>
+        </div>
+    }
+    @if (Model != null && users.IsUserInRoles(User, UpdateRole))
+    {
+        <a href="@Url.Action("Edit","Page",new { @area="Admin",@id=contentId })" class="btn btn-success">Edit</a>
+    }
+    @if (users.IsUserInRoles(User, UpdateRole))
+    {
+        <a href="@Url.Action("Sort","Page",new { @area="Admin",@id=contentId })" class="btn btn-warning">Sort</a>
+    }
+    @if (Model != null && users.IsUserInRoles(User, DeleteRole))
+    {
+        <a href="#" onclick="deleteCurrent()" class="btn btn-danger">Delete</a>
+        <form id="ContentDeleteForm" action="@Url.Action("Delete","Page",new { @area="Admin" })" method="post">
+            @Html.Hidden("ContentId", contentId)
+        </form>
+    }
+
+</div>
+
+<br />
+
+<div class="card">
+    <div class="card-block">
+        <h4 class="card-title">Static</h4>
+        <div id="staticgrid"></div>
+    </div>
+</div>
+
+@section script{
+    <script src="/lib/admin/assets/plugins/jsgrid/db.js"></script>
+    <script type="text/javascript" src="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.js"></script>
+    <script>
+        window.contents = {};
+        contents.clients = [
+            @foreach(var item in contents)
+            {
+                <text>
+                {
+                    "id": "@item.GetValueByKey("_id")",
+                    "Name": "@item.GetValueByKey("Name")",
+                    "SortOrder": "@item.GetValueByKey("SortOrder")",
+                    "Type": "@item.GetValueByKey("FullType").ToString().Split('.').LastOrDefault()",
+                },
+              </text>
+            }
+              ];
+        ! function (document, window, $) {
+            "use strict";
+            var Site = window.Site;
+            $(document).ready(function ($) {
+
+            }), jsGrid.setDefaults({
+                tableClass: "jsgrid-table table table-striped table-hover"
+            }), jsGrid.setDefaults("text", {
+                _createTextBox: function () {
+                    return $("<input>").attr("type", "text").attr("class", "form-control input-sm")
+                }
+            }), jsGrid.setDefaults("number", {
+                _createTextBox: function () {
+                    return $("<input>").attr("type", "number").attr("class", "form-control input-sm")
+                }
+            }), jsGrid.setDefaults("textarea", {
+                _createTextBox: function () {
+                    return $("<input>").attr("type", "textarea").attr("class", "form-control")
+                }
+            }), jsGrid.setDefaults("control", {
+                _createGridButton: function (cls, tooltip, clickHandler) {
+                    var grid = this._grid;
+                    return $("<button>").addClass(this.buttonClass).addClass(cls).attr({
+                        type: "button",
+                        title: tooltip
+                    }).on("click", function (e) {
+                        clickHandler(grid, e)
+                    })
+                }
+            }),
+                function () {
+                    $("#staticgrid").jsGrid({
+                        height: "500px",
+                        width: "100%",
+                        sorting: !0,
+                        paging: !0,
+                        data: contents.clients,
+                        rowClick: function(b){
+                            window.location.href = "@Url.Action("Index","Page",new { @area="Admin",@id=""})/Index/" + b.item.id;
+                        },
+                        fields: [ {
+                            name: "SortOrder",
+                            type: "number",
+                            width: 5
+                        },{
+                            name: "Name",
+                            type: "text",
+                            width: 150
+                        }, {
+                            name: "Type",
+                            type: "text",
+                            width: 100
+                        }]
+                    })
+                }(),
+                function () {
+                    var MyDateField = function (config) {
+                        jsGrid.Field.call(this, config)
+                    };
+                    MyDateField.prototype = new jsGrid.Field({
+                        sorter: function (date1, date2) {
+                            return new Date(date1) - new Date(date2)
+                        },
+                        itemTemplate: function (value) {
+                            return new Date(value).toDateString()
+                        },
+                        insertTemplate: function () {
+                            if (!this.inserting) return "";
+                            var $result = this.insertControl = this._createTextBox();
+                            return $result
+                        },
+                        editTemplate: function (value) {
+                            if (!this.editing) return this.itemTemplate(value);
+                            var $result = this.editControl = this._createTextBox();
+                            return $result.val(value), $result
+                        },
+                        insertValue: function () {
+                            return this.insertControl.datepicker("getDate")
+                        },
+                        editValue: function () {
+                            return this.editControl.datepicker("getDate")
+                        },
+                        _createTextBox: function () {
+                            return $("<input>").attr("type", "text").addClass("form-control input-sm").datepicker({
+                                autoclose: !0
+                            })
+                        }
+                    }), jsGrid.fields.myDateField = MyDateField
+                }()
+        }(document, window, jQuery);
+
+        function deleteCurrent() {
+            swal({
+                title: "Confirm delete content?",
+                text: "You will delete this content and all other content under it. and will not recovered",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel plx!",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    swal("Deleted!", "Content has been deleted", "success");
+                    $("#ContentDeleteForm").submit();
+                } else {
+                    swal("Cancelled", "Canceled", "error");
+                }
+            });
+        }
+    </script>
+
+}

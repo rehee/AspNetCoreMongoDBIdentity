@@ -8,17 +8,9 @@
 
   <ItemGroup>
     <Compile Remove="AdminSpa\**" />
-    <Compile Remove="Areas\Admin\Data\**" />
-    <Compile Remove="Areas\Admin\Models\**" />
     <Content Remove="AdminSpa\**" />
-    <Content Remove="Areas\Admin\Data\**" />
-    <Content Remove="Areas\Admin\Models\**" />
     <EmbeddedResource Remove="AdminSpa\**" />
-    <EmbeddedResource Remove="Areas\Admin\Data\**" />
-    <EmbeddedResource Remove="Areas\Admin\Models\**" />
     <None Remove="AdminSpa\**" />
-    <None Remove="Areas\Admin\Data\**" />
-    <None Remove="Areas\Admin\Models\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,30 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Areas\Admin\Views\Shared\AdminInputs\_AdminInput.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Areas\Admin\Views\Shared\Contents\_BreadCrumb.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Areas\Admin\Views\Shared\Contents\_CurrentLevel.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Areas\Admin\Views\Shared\Users\_RolesRoleCheck.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Areas\Admin\Views\Shared\_Layout_Content.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Areas\Admin\Views\Shared\_Layout.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Areas\Admin\Views\_ViewImports.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Areas\Admin\Views\_ViewStart.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="Views\Home.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

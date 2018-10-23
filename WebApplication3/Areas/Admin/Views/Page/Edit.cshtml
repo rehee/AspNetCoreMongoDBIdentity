@@ -1,0 +1,19 @@
+﻿@model ContentPostModel
+@{
+    ViewData["Title"] = "Content";
+    Layout = "_Layout_Content";
+    var contentId = Model != null ? Model.Id : "";
+}
+@section breadcrumb{
+    @{ await Html.RenderPartialAsync("_BreadCrumbContent", contentId);}
+}
+<div class="card">
+    <div class="card-block">
+        <h4>Default Basic Forms</h4>
+        <form action="@Url.Action("Edit","Page",new { @area="Admin" })" class="form-horizontal m-t-40" method="post" enctype="multipart/form-data">
+           @{ await Html.RenderPartialAsync("_CreateOrEdit", Model);}
+        </form>
+
+    </div>
+
+</div>

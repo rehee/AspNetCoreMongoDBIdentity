@@ -1,0 +1,15 @@
+﻿@model SDHCC.Identity.Models.UserModels.SDHCCUserPass
+@{
+  ViewData["Title"] = "Detail";
+}
+<div class="card">
+  <div class="card-block">
+    <h4>Default Basic Forms</h4>
+    <form action="@Url.Action("Create","User",new { @area="Admin" })" class="form-horizontal m-t-40" method="post" enctype="multipart/form-data">
+      @{ await Html.RenderPartialAsync("_CreateOrUpdateUser", Model);}
+    </form>
+
+  </div>
+
+</div>
+

@@ -1,0 +1,20 @@
+﻿@inject ISDHCCIdentity users
+@model string
+@{
+  var roles = users.GetRoles();
+  var userRoles = new List<string>();
+  if (!String.IsNullOrEmpty(Model))
+  {
+    userRoles = users.GetUserRoles(b => b.Id == Model).Select(b => b.Roles).FirstOrDefault().ToList();
+  }
+  var index = -1;
+}
+<div>
+  @foreach (var role in roles)
+  {
+    index++;
+    <spam>
+      <input type="checkbox" name="selectRoles" value="@role.NormalizedName" @(userRoles.Contains(role.NormalizedName) ? "Checked" : "") />@role.Name
+    </spam>
+  }
+</div>
