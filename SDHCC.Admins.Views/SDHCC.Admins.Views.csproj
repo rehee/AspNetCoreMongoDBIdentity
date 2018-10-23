@@ -15,8 +15,4 @@
     <ProjectReference Include="..\SDHCC.E\SDHCC.E.csproj" />
     <ProjectReference Include="..\SDHCC.Identity\SDHCC.Identity.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Admin\Views\Home\" />
-  </ItemGroup>
 </Project>
