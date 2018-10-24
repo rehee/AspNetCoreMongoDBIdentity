@@ -116,7 +116,7 @@ namespace System
       //services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders();
       //.AddEntityFrameworkStores<ApplicationDbContext>();
       var assembly = typeof(SDHCC.Admins.Controllers.PageController).Assembly;
-      //var assemblyView = Assembly.Load("SDHCC.Admins.Views");
+      var assemblyView = Assembly.Load("SDHCC.Admins.Views");
       services.AddMvc()
         .AddApplicationPart(assembly)
         //.ConfigureRazorViewEngine(options =>
@@ -144,16 +144,16 @@ namespace System
         {
           options.LoginPath = E.Setting.Login;
         });
-      //services.Configure<RazorViewEngineOptions>(options =>
-      //{
-      //  //options.FileProviders.Add(
-      //  //    new EmbeddedFileProvider(assembly, "SDHCC.Admins"));
-      //  ////options.ViewLocationExpanders.Add(new MultiAssemblyViewLocationExpander());
-      //  var oldRoot = ApplicationEnvironment.ApplicationBasePath;
-      //  var trimmedRoot = oldRoot.Remove(oldRoot.LastIndexOf('\\'));
+      services.Configure<RazorViewEngineOptions>(options =>
+      {
+        options.FileProviders.Add(
+            new EmbeddedFileProvider(assemblyView, "SDHCC.Admins.Views"));
+        //options.ViewLocationExpanders.Add(new MultiAssemblyViewLocationExpander());
+        //var oldRoot = ApplicationEnvironment.ApplicationBasePath;
+        //var trimmedRoot = oldRoot.Remove(oldRoot.LastIndexOf('\\'));
 
-      //  options.FileProviders.Add(new PhysicalFileProvider(trimmedRoot));
-      //});
+        //options.FileProviders.Add(new PhysicalFileProvider(trimmedRoot));
+      });
 
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -56,8 +57,23 @@ namespace SDHCCContent
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
+      //var assemblyView = Assembly.Load("SDHCC.Admins.Views");
+      //var personEmbeddedFileProvider = new EmbeddedFileProvider(
+      //  assemblyView
+      //);
+      //app.UseStaticFiles(new StaticFileOptions
+      //{
+      //  FileProvider = personEmbeddedFileProvider,
+      //  RequestPath = ""
+      //});
+      //StartUpFunction.Configure(app, env);
+      //app.UseFileServer(
+      //  new EmbeddedFileProvider(assemblyView)
+      //  );
+
       StartUpFunction.Configure(app, env);
       
+
     }
   }
   public class PascalCaseJsonProfileFormatter : JsonOutputFormatter
