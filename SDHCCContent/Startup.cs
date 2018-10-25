@@ -42,38 +42,12 @@ namespace SDHCCContent
     {
       StartUpFunction.ConfigureServices<TestUser, SDHCCContent.Models.ContentBaseModel, DropDownBaseModel>(
         services, Configuration, HostingEnvironment);
-      //services.Configure<RazorViewEngineOptions>(options =>
-      //{
-      //  options.FileProviders.Add(
-      //      new EmbeddedFileProvider(typeof(SDHCC.Admins.Controllers.PageController).Assembly, "SDHCC.Admins"));
-      //  //options.ViewLocationExpanders.Add(new MultiAssemblyViewLocationExpander());
-      //  //var oldRoot = ApplicationEnvironment.ApplicationBasePath;
-      //  //var trimmedRoot = oldRoot.Remove(oldRoot.LastIndexOf('\\'));
-
-      //  //options.FileProviders.Add(new PhysicalFileProvider(trimmedRoot));
-      //});
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
-      //var assemblyView = Assembly.Load("SDHCC.Admins.Views");
-      //var personEmbeddedFileProvider = new EmbeddedFileProvider(
-      //  assemblyView
-      //);
-      //app.UseStaticFiles(new StaticFileOptions
-      //{
-      //  FileProvider = personEmbeddedFileProvider,
-      //  RequestPath = ""
-      //});
-      //StartUpFunction.Configure(app, env);
-      //app.UseFileServer(
-      //  new EmbeddedFileProvider(assemblyView)
-      //  );
-
       StartUpFunction.Configure(app, env);
-      
-
     }
   }
   public class PascalCaseJsonProfileFormatter : JsonOutputFormatter

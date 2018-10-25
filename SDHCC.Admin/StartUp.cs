@@ -29,41 +29,27 @@ using System.Text;
 
 namespace System
 {
-  public class MultiAssemblyViewLocationExpander : IViewLocationExpander
-  {
-    public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
-    {
-      var actionContext = (ResultExecutingContext)context.ActionContext;
-      var assembly = actionContext.Controller.GetType().Assembly;
-      var assemblyName = assembly.GetName().Name;
-
-      foreach (var viewLocation in viewLocations)
-        yield return "/" + assemblyName + viewLocation;
-    }
-
-    public void PopulateValues(ViewLocationExpanderContext context)
-    {
-
-    }
-  }
-
   public static class StartUpFunction
   {
-    public static RazorViewEngineOptions AddCloudscribeSimpleContentBootstrap3Views(this RazorViewEngineOptions options, Assembly ass)
-    {
-      options.FileProviders.Add(new EmbeddedFileProvider(
-                  ass, "SDHCC.Admins"
-            ));
-
-      return options;
-    }
     public static void ConfigureServices<TUser, TContentBase, TDropDownBase>(IServiceCollection services,
-      IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+      IConfiguration configuration, IHostingEnvironment hostingEnvironment, bool loadAdminView = true)
       where TUser : SDHCCUserBase, new()
       where TContentBase : ContentBase
       where TDropDownBase : DropDownBase
     {
+      var a = configuration.GetConnectionString("DefaultConnection");
       E.Setting = configuration.GetSection("SiteSetting").Get<SiteSetting>();
+
+      if (hostingEnvironment.IsDevelopment())
+      {
+
+        E.Setting = configuration.GetSection("SiteSetting").Get<SiteSetting>();
+      }
+      else
+      {
+        E.Setting = configuration.GetSection("SiteSetting").Get<SiteSetting>();
+      }
+
       //TelemetryConfiguration.Active.DisableTelemetry = true;
       //services.Configure<CookiePolicyOptions>(options =>
       //{
@@ -144,20 +130,19 @@ namespace System
         {
           options.LoginPath = E.Setting.Login;
         });
-      services.Configure<RazorViewEngineOptions>(options =>
+      if (loadAdminView)
       {
-        options.FileProviders.Add(
-            new EmbeddedFileProvider(assemblyView, "SDHCC.Admins.Views"));
-        //options.ViewLocationExpanders.Add(new MultiAssemblyViewLocationExpander());
-        //var oldRoot = ApplicationEnvironment.ApplicationBasePath;
-        //var trimmedRoot = oldRoot.Remove(oldRoot.LastIndexOf('\\'));
+        services.Configure<RazorViewEngineOptions>(options =>
+        {
+          options.FileProviders.Add(
+              new EmbeddedFileProvider(assemblyView, "SDHCC.Admins.Views"));
+        });
 
-        //options.FileProviders.Add(new PhysicalFileProvider(trimmedRoot));
-      });
+      }
 
     }
 
-    public static void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    public static void Configure(IApplicationBuilder app, IHostingEnvironment env, bool loadAdminView = true)
     {
       app.UseDeveloperExceptionPage();
       app.UseDatabaseErrorPage();
@@ -174,6 +159,19 @@ namespace System
 
       app.UseHttpsRedirection();
       app.UseStaticFiles();
+
+      if (loadAdminView)
+      {
+        var assemblyView = Assembly.Load("SDHCC.Admins.Views");
+        var personEmbeddedFileProvider = new EmbeddedFileProvider(
+          assemblyView
+        );
+        app.UseStaticFiles(new StaticFileOptions
+        {
+          FileProvider = personEmbeddedFileProvider,
+          RequestPath = ""
+        });
+      }
       //app.UseCookiePolicy();
 
       app.UseAuthentication();
@@ -184,8 +182,6 @@ namespace System
           name: "areas",
           template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
         );
-        //routes.MapRoute("content", "{*names}",
-        //    defaults: new { controller = "Content", action = "Index" });
         routes.MapRoute(
                   name: "default",
                   template: "{controller=Home}/{action=Index}/{id?}");

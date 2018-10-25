@@ -46,8 +46,6 @@
 @section breadcrumb{
     @{ await Html.RenderPartialAsync("_BreadCrumbContent", contentId);}
 }
-<link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.css" />
-<link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid-theme.min.css" />
 
 <div class="button-box">
     @if (users.IsUserInRoles(User, CreateRole))
