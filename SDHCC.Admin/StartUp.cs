@@ -42,14 +42,12 @@ namespace System
 
       if (hostingEnvironment.IsDevelopment())
       {
-
         E.Setting = configuration.GetSection("SiteSetting").Get<SiteSetting>();
       }
       else
       {
         E.Setting = configuration.GetSection("SiteSetting").Get<SiteSetting>();
       }
-
       //TelemetryConfiguration.Active.DisableTelemetry = true;
       //services.Configure<CookiePolicyOptions>(options =>
       //{

@@ -12,9 +12,6 @@
     <EmbeddedResource Include="lib\**\*.*" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="lib\admin\assets\plugins\jsgrid\jsgrid.min.js" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SDHCC.Admin\SDHCC.Admins.csproj" />
     <ProjectReference Include="..\SDHCC.Core\SDHCC.Core.csproj" />
     <ProjectReference Include="..\SDHCC.DB\SDHCC.DB.csproj" />

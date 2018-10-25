@@ -3,8 +3,6 @@
     ViewData["Title"] = "Index";
     Layout = "_Layout_Content";
 }
-<link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.css" />
-<link type="text/css" rel="stylesheet" href="/lib/admin/assets/plugins/jsgrid/dist/jsgrid-theme.min.css" />
 
 @section breadcrumb{
     @{ await Html.RenderPartialAsync("_BreadCrumbDropDown", new string[] { ViewBag.name });}
@@ -24,8 +22,6 @@
 
 
 @section script{
-    <script src="/lib/admin/assets/plugins/jsgrid/db.js"></script>
-    <script type="text/javascript" src="/lib/admin/assets/plugins/jsgrid/dist/jsgrid.min.js"></script>
     <script>
         window.contents = {};
         contents.clients = [

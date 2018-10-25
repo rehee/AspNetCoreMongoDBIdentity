@@ -8,10 +8,15 @@
 
   <ItemGroup>
     <Compile Remove="AdminSpa\**" />
+    <Compile Remove="tempFile\**" />
     <Content Remove="AdminSpa\**" />
+    <Content Remove="tempFile\**" />
     <EmbeddedResource Remove="AdminSpa\**" />
+    <EmbeddedResource Remove="tempFile\**" />
     
     <None Remove="AdminSpa\**" />
+    
+    <None Remove="tempFile\**" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Areas\Admins\Views\**\*.cshtml" />

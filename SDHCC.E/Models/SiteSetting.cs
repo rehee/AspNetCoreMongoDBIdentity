@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace System
 {
@@ -11,6 +9,8 @@ namespace System
     public string AdminRole { get; set; } = "Admin";
     public string BackUser { get; set; } = "BackUser";
     public string Login { get; set; } = "/Account/Login/";
+
+    public IEnumerable<SiteMapItem> SiteLink { get; set; }
   }
   
 }
