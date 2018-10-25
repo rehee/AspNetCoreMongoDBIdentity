@@ -22,7 +22,6 @@
     <EmbeddedResource Include="Areas\Admins\Views\**\*.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Areas\" />
     <Folder Include="wwwroot\" />
     
   </ItemGroup>
