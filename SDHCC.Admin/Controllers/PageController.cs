@@ -65,6 +65,7 @@ namespace SDHCC.Admins.Controllers
       }
       catch (Exception ex)
       {
+        Console.WriteLine(ex.Message);
         return RedirectToAction("Index", "Page", new { area = "Admin", id = ContentId });
       }
 

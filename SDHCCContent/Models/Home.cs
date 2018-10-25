@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace SDHCCContent.Models
 {
   [AllowChildren(ChildrenType = new Type[] { typeof(Page) })]
+  [ListItem(KeyAndDisplayNames = new string[] { "Title,ttt" })]
   public class Home : ContentBaseModel
   {
     [Display(Name = "This is the Name")]

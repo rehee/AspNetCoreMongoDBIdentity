@@ -301,5 +301,13 @@ namespace SDHCC.DB.Content
     {
       return property.GetObjectCustomAttribute<BasePropertyAttribute>() != null;
     }
+    public static Type ContentType(this ContentPostModel input)
+    {
+      if (input == null)
+        return ContentE.RootType;
+      var ttype = !String.IsNullOrEmpty(input.FullType) ? input.FullType : "";
+      var tasm = !String.IsNullOrEmpty(input.AssemblyName) ? input.AssemblyName : "";
+      return Type.GetType(ttype + "," + tasm);
+    }
   }
 }

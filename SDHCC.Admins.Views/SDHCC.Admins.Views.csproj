@@ -12,6 +12,7 @@
     <EmbeddedResource Include="lib\**\*.*" />
   </ItemGroup>
   <ItemGroup>
+    <Content Remove="Areas\Admin\Views\Shared\Contents\_ContentTable.cshtml" />
     <Content Remove="Areas\Admin\Views\Shared\Users\_css.cshtml" />
   </ItemGroup>
   <ItemGroup>

@@ -44,7 +44,7 @@ namespace SDHCC.DB
     }
     public void RemoveContent(string contentId)
     {
-      MethodResponse response;
+      MethodResponse response = new MethodResponse();
       if (String.IsNullOrEmpty(contentId))
       {
         return;
@@ -86,7 +86,7 @@ namespace SDHCC.DB
     }
     public void MoveContent(string contentId, string target)
     {
-      MethodResponse response;
+      MethodResponse response = new MethodResponse();
       if (String.IsNullOrEmpty(contentId))
       {
         return;

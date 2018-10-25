@@ -64,6 +64,20 @@ namespace System
       }
       catch { return default(T); }
     }
+    public static T GetObjectCustomAttribute<T>(this Type p, bool getField = true) where T : Attribute, new()
+    {
+      try
+      {
+        if (p.IsEnum && getField)
+        {
+          var info = p.GetType().GetField(p.Name);
+          return info.GetCustomAttribute<T>();
+        }
+        var t1 = p.GetCustomAttribute<T>();
+        return t1;
+      }
+      catch { return default(T); }
+    }
 
     /// <summary>
     /// get DisplayAttribute from input object

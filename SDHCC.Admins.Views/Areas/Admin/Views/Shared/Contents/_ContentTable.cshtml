@@ -1,0 +1,143 @@
+﻿@model ContentTableView
+<script>
+    window.contents = {};
+    contents.clients = [
+        @foreach(var item in Model.Contents)
+        {
+            <text>
+            {
+            </text>
+
+            <text>
+
+                "id": "@item.GetValueByKey("_id")",
+                "Name": "@item.GetValueByKey("Name")",
+            </text>
+            foreach(var k in Model.Keys)
+            {
+                <text>
+                    "@k.Key": "@item.GetValueByKey(k.Key)",
+                </text>
+            }
+            <text>
+            },
+            </text>
+        }
+            ];
+    ! function (document, window, $) {
+        "use strict";
+        var Site = window.Site;
+        $(document).ready(function ($) {
+
+        }), jsGrid.setDefaults({
+            tableClass: "jsgrid-table table table-striped table-hover"
+        }), jsGrid.setDefaults("text", {
+            _createTextBox: function () {
+                return $("<input>").attr("type", "text").attr("class", "form-control input-sm")
+            }
+        }), jsGrid.setDefaults("number", {
+            _createTextBox: function () {
+                return $("<input>").attr("type", "number").attr("class", "form-control input-sm")
+            }
+        }), jsGrid.setDefaults("textarea", {
+            _createTextBox: function () {
+                return $("<input>").attr("type", "textarea").attr("class", "form-control")
+            }
+        }), jsGrid.setDefaults("control", {
+            _createGridButton: function (cls, tooltip, clickHandler) {
+                var grid = this._grid;
+                return $("<button>").addClass(this.buttonClass).addClass(cls).attr({
+                    type: "button",
+                    title: tooltip
+                }).on("click", function (e) {
+                    clickHandler(grid, e)
+                })
+            }
+        }),
+            function () {
+                $("#staticgrid").jsGrid({
+                    height: "500px",
+                    width: "100%",
+                    sorting: !0,
+                    paging: !0,
+                    data: contents.clients,
+                    rowClick: function(b){
+                        @Html.Raw(Model.RowClickFunction)
+                    },
+                    fields: [{
+                        name: "Name",
+                        type: "text",
+                        width: 150
+                    }
+                        @foreach(var k in Model.Keys)
+                        {
+                          <text>
+                        , {
+                            name: "@k.Key",
+                            type: "text",
+                            width: 100
+                        }
+
+                          </text>
+                        }
+                        
+                    ]
+                })
+            }(),
+            function () {
+                var MyDateField = function (config) {
+                    jsGrid.Field.call(this, config)
+                };
+                MyDateField.prototype = new jsGrid.Field({
+                    sorter: function (date1, date2) {
+                        return new Date(date1) - new Date(date2)
+                    },
+                    itemTemplate: function (value) {
+                        return new Date(value).toDateString()
+                    },
+                    insertTemplate: function () {
+                        if (!this.inserting) return "";
+                        var $result = this.insertControl = this._createTextBox();
+                        return $result
+                    },
+                    editTemplate: function (value) {
+                        if (!this.editing) return this.itemTemplate(value);
+                        var $result = this.editControl = this._createTextBox();
+                        return $result.val(value), $result
+                    },
+                    insertValue: function () {
+                        return this.insertControl.datepicker("getDate")
+                    },
+                    editValue: function () {
+                        return this.editControl.datepicker("getDate")
+                    },
+                    _createTextBox: function () {
+                        return $("<input>").attr("type", "text").addClass("form-control input-sm").datepicker({
+                            autoclose: !0
+                        })
+                    }
+                }), jsGrid.fields.myDateField = MyDateField
+            }()
+    }(document, window, jQuery);
+
+    function deleteCurrent() {
+        swal({
+            title: "Confirm delete content?",
+            text: "You will delete this content and all other content under it. and will not recovered",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        }, function (isConfirm) {
+            if (isConfirm) {
+                swal("Deleted!", "Content has been deleted", "success");
+                $("#ContentDeleteForm").submit();
+            } else {
+                swal("Cancelled", "Canceled", "error");
+            }
+        });
+    }
+</script>
