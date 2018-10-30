@@ -99,6 +99,6 @@
     @{
         await Html.RenderPartialAsync("Contents/_ContentTable", new ContentTableView(
          contents,
-         $@"window.location.href ='{Url.Action("Index", "Page", new { @area = "Admin" })}/Index/' + b.item.id;",
+         $@"window.location.href ='/admin/page/Index/' + b.item.id;",
          Model.ContentType()));}
 }

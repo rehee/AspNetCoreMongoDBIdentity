@@ -12,6 +12,7 @@ namespace SDHCC
     public static string FullTypeString { get; set; } = "FullType";
     public static string AssemblyNameString { get; set; } = "AssemblyName";
     public static string RootPath { get; set; }
+    public static string FileUploadPath { get; set; } = "wwwroot";
     public static Type RootType { get; set; }
     public static Type RootDropDown { get; set; }
     public static ContentBase ConvertToContentBase(this BsonDocument b)

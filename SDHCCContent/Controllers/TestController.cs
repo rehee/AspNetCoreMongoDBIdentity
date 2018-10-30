@@ -34,23 +34,10 @@ namespace SDHCCContent.Controllers
     {
       return View();
     }
-    public async Task<IActionResult> File(string id)
+    public IActionResult File(string id)
     {
-      var filename = id;
-      if (filename == null)
-        return Content("filename not present");
-
-      var path = Path.Combine(
-                     Directory.GetCurrentDirectory(),
-                     "wwwroot", filename);
-
-      var memory = new MemoryStream();
-      using (var stream = new FileStream(path, FileMode.Open))
-      {
-        await stream.CopyToAsync(memory);
-      }
-      memory.Position = 0;
-      return File(memory, path.GetContentTypeFromPath(), Path.GetFileName(path));
+      id = "files\\" + id;
+      return id.GetFileFromPath(this);
     }
 
 

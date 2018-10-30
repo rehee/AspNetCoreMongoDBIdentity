@@ -9,7 +9,7 @@ namespace System
     public string AdminRole { get; set; } = "Admin";
     public string BackUser { get; set; } = "BackUser";
     public string Login { get; set; } = "/Account/Login/";
-
+    public string FileUploadPath { get; set; } = "wwwroot"; 
     public IEnumerable<SiteMapItem> SiteLink { get; set; }
   }
   

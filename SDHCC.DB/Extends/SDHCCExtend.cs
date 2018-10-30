@@ -1,8 +1,10 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using SDHCC;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -128,5 +130,36 @@ namespace System
         return;
       }
     }
+    public static void Save(this IFormFile file, out string filePath)
+    {
+      filePath = "";
+      if (file == null)
+        return;
+      try
+      {
+        var name = file.FileName.Split('.').LastOrDefault();
+        if (String.IsNullOrEmpty(name))
+          name = "";
+        else
+          name = '.' + name;
+        var path = Path.Combine(Directory.GetCurrentDirectory(),
+                               ContentE.FileUploadPath, $"{Guid.NewGuid().ToString()}{name}");
+        var exist = Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(),
+                                 ContentE.FileUploadPath));
+        if (!exist)
+        {
+          Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(),
+                                 ContentE.FileUploadPath));
+        }
+        using (var stream = new FileStream(path, FileMode.Create))
+        {
+          file.CopyToAsync(stream).GetAsyncValue();
+        }
+        filePath = path;
+      }
+      catch { }
+
+    }
+    
   }
 }

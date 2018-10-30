@@ -77,7 +77,7 @@ namespace System
 
       ContentE.RootType = typeof(TContentBase);
       ContentE.RootDropDown = typeof(TDropDownBase);
-
+      ContentE.FileUploadPath = E.Setting.FileUploadPath;
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
       services.AddScoped<IRoleStore<IdentityRole>, SDHCCRoleStore<IdentityRole, SDHCUserRole>>();
       //services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();
