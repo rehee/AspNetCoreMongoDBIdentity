@@ -11,6 +11,7 @@ namespace SDHCC.DB
 {
   public partial interface ISDHCCDbContext
   {
+    Expression<Func<BsonDocument, T>> ConvertBsonToGeneric<T>();
     void Add<T>(T input, out MethodResponse response) where T : class;
     void Add<T>(T input, string entityName, out MethodResponse response) where T : class;
     void Add(object input, out MethodResponse response);
@@ -47,7 +48,5 @@ namespace SDHCC.DB
     void Remove<T>(T input, string entityName, string id) where T : class;
     void Remove<T>(IEnumerable<UpdateEntity<T>> items) where T : class;
     void Remove<T>(IEnumerable<UpdateEntity<T>> items, string entityName) where T : class;
-
-    Expression<Func<BsonDocument, T>> ConvertBsonToGeneric<T>();
   }
 }

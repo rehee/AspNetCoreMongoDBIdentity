@@ -8,6 +8,7 @@ namespace SDHCC.DB
 {
   public partial interface ISDHCCDbContext
   {
+    string BaseContentType { get; set; }
     void AddContent(ContentBase content);
     void RemoveContent(ContentBase content);
     void RemoveContent(string contentId);
