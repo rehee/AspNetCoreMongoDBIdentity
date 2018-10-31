@@ -9,20 +9,36 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using SDHCC;
+using SDHCC.DB;
 using SDHCC.DB.Content;
 using SDHCC.DB.Models;
 using SDHCC.Identity.Models.UserModels;
+using SDHCCContent.Models;
 using SDHCCContent.Models.Enums;
+using ContentBaseModel = SDHCCContent.Models.ContentBaseModel;
 
 namespace SDHCCContent.Controllers
 {
   public class TestController : Controller
   {
+    ISDHCCDbContext db;
+    public TestController(ISDHCCDbContext db)
+    {
+      this.db = db;
+    }
     public string Index()
     {
-      BaseTypeEntity ti = new Ti();
-      var type = ti.GetType();
-      var p = type.GetProperties();
+      var list = new List<string>() { "1", "2" };
+      var t = db.Where<TestPage>(b => list.Intersect(b.ABC).Count() > 0).ToList();
+      //for(var i = 0; i < 10; i++)
+      //{
+      //  var page = new TestPage();
+      //  for(var i2 = 0; i2 < i; i2++)
+      //  {
+      //    page.ABC.Add(i2.ToString());
+      //  }
+      //  db.Add<TestPage>(page,out var response);
+      //}
       return "";
     }
     public IActionResult Multi()
@@ -58,6 +74,7 @@ namespace SDHCCContent.Controllers
       {
         EnumGender.Female, EnumGender.Male
       };
+    public List<string> ABC { get; set; } = new List<string>();
   }
   public enum AAA
   {
