@@ -22,6 +22,7 @@
     <EmbeddedResource Include="Areas\Admins\Views\**\*.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="fileupload\" />
     <Folder Include="wwwroot\" />
     
   </ItemGroup>

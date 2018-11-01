@@ -39,7 +39,7 @@ namespace SDHCC.DB.Content
       }
       return result;
     }
-    public static ContentBase ConvertToBaseModel(this ContentPostModel input)
+    public static ContentBase ConvertToBaseModel(this ContentPostModel input,bool deleteExistFile = true,List<string> oldFiles = null, List<string>newFiles = null)
     {
       var result = (ContentBase)input.ConvertBaseTypeToEnity(out var typeName, out var assemblyName);
       var properties = result.GetType().GetProperties();
@@ -59,7 +59,7 @@ namespace SDHCC.DB.Content
           if (p.SkippedProperty())
             continue;
 
-          p.SetPropertyValue(input, result);
+          p.SetPropertyValue(input, result, deleteExistFile, oldFiles, newFiles);
         }
         catch (Exception ex)
         {
@@ -241,7 +241,7 @@ namespace SDHCC.DB.Content
       }
 
     }
-    public static void SetPropertyValue(this PropertyInfo p, IPassModel input, object result)
+    public static void SetPropertyValue(this PropertyInfo p, IPassModel input, object result, bool deleteExistFile = true, List<string> oldFiles = null, List<string> newFiles = null)
     {
       var propertyPost = input.Properties.Find(b => b.Key == p.Name);
       if (propertyPost == null)
@@ -261,19 +261,19 @@ namespace SDHCC.DB.Content
             break;
           case EnumInputType.FileUpload:
             var files = propertyPost;
-            if (files.File == null)
+            if (files.File != null)
             {
-              return;
+              files.File.Save(out var filePath);
+              if (deleteExistFile)
+              {
+                files.Value.DeleteFile(out var deleted);
+              }
+              value = filePath;
             }
-            //var path = ContentE.RootPath;
-            var path = Path.Combine(Directory.GetCurrentDirectory(),
-                               "wwwroot", "123.jpg");
-            using (var stream = new FileStream(path, FileMode.Create))
+            else
             {
-              files.File.CopyToAsync(stream).GetAsyncValue();
+              value = files.Value;
             }
-
-            Console.WriteLine("123");
             break;
           default:
             value = stringValue.MyTryConvert(keyType);

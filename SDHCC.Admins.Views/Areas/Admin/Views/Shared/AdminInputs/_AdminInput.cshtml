@@ -54,8 +54,9 @@
       }
     </select>
   }
-  @if(Model.Property.EditorType == SDHCC.EnumInputType.FileUpload)
+  @if (Model.Property.EditorType == SDHCC.EnumInputType.FileUpload)
   {
     <input type="file" name="@FileName" />
+    <input type="hidden"name="@inputName" value="@Model.Property.Value" />
   }
 </div>

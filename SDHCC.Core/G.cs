@@ -7,6 +7,10 @@ namespace System
 {
   public static class G
   {
+    public static bool IsNullOrEmpty(this string input)
+    {
+      return String.IsNullOrEmpty(input);
+    }
     public static string DateTimeFormat { get; set; } = "yyyy-MM-dd hh:mm:ss";
     public static string DateFormat { get; set; } = "yyyy-MM-dd";
     public static string DateConvertFormats { get; set; } = "yyyy-MM-ddTHH:mm:ss.ffZ";

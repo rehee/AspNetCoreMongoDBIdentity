@@ -1,0 +1,11 @@
+﻿
+@{
+  ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+<form action="@Url.Action("Index","Files")" method="post" enctype="multipart/form-data">
+  <input type="file" name="fileup" value="" />
+  <input type="submit" name="s" value="s" />
+</form>
+

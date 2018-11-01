@@ -142,8 +142,9 @@ namespace System
           name = "";
         else
           name = '.' + name;
-        var path = Path.Combine(Directory.GetCurrentDirectory(),
-                               ContentE.FileUploadPath, $"{Guid.NewGuid().ToString()}{name}");
+        var fileName = $"{Guid.NewGuid().ToString()}{name}";
+        var uploadPath = Path.Combine(ContentE.FileUploadPath, fileName);
+        var path = Path.Combine(Directory.GetCurrentDirectory(), uploadPath);
         var exist = Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(),
                                  ContentE.FileUploadPath));
         if (!exist)
@@ -155,11 +156,27 @@ namespace System
         {
           file.CopyToAsync(stream).GetAsyncValue();
         }
-        filePath = path;
+        filePath = uploadPath;
       }
       catch { }
-
     }
-    
+
+    public static void DeleteFile(this string filePath,out bool success)
+    {
+      success = false;
+      if (!File.Exists(filePath))
+      {
+        success = true;
+        return;
+      }
+      try
+      {
+        var path = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+        File.Delete(path);
+        success = true;
+      }
+      catch { }
+    }
+
   }
 }
