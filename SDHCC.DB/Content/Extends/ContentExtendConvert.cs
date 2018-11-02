@@ -103,7 +103,7 @@ namespace SDHCC.DB.Content
       }
       var propertyType = p.GetType();
       var displayAttribute = p.GetCustomAttribute<DisplayAttribute>();
-      if (displayAttribute != null && String.IsNullOrEmpty(displayAttribute.Name))
+      if (displayAttribute != null && !String.IsNullOrEmpty(displayAttribute.Name))
       {
         result.Title = displayAttribute.Name;
       }

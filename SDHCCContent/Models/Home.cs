@@ -14,7 +14,7 @@ namespace SDHCCContent.Models
   [ListItem(KeyAndDisplayNames = new string[] { "Title,ttt" })]
   public class Home : ContentBaseModel
   {
-    [Display(Name = "This is the Name")]
+    [Display(Name = "名字")]
     public string Title { get; set; }
 
     [InputType(EditorType = EnumInputType.TextArea)]

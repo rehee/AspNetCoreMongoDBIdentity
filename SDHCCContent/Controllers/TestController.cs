@@ -31,7 +31,7 @@ namespace SDHCCContent.Controllers
     }
     public string Index()
     {
-      var isUser = us.IsUserInRoles(User, new List<string>() { "Admin", "Lalala" });
+      var home = new Home().ConvertToPassingModel();
       return "";
     }
     public IActionResult Multi()
