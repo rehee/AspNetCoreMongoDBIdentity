@@ -28,17 +28,8 @@ namespace SDHCCContent.Controllers
     }
     public string Index()
     {
-      var list = new List<string>() { "1", "2" };
-      var t = db.Where<TestPage>(b => list.Intersect(b.ABC).Count() > 0).ToList();
-      //for(var i = 0; i < 10; i++)
-      //{
-      //  var page = new TestPage();
-      //  for(var i2 = 0; i2 < i; i2++)
-      //  {
-      //    page.ABC.Add(i2.ToString());
-      //  }
-      //  db.Add<TestPage>(page,out var response);
-      //}
+      var a = User.IsInRole(E.Setting.AdminRole);
+      
       return "";
     }
     public IActionResult Multi()

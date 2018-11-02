@@ -80,8 +80,8 @@ namespace System
       ContentE.FileUploadPath = E.Setting.FileUploadPath;
       services.AddScoped<ISDHCCDbContext, SDHCCDbContext>();
       services.AddScoped<IRoleStore<IdentityRole>, SDHCCRoleStore<IdentityRole, SDHCUserRole>>();
-      //services.AddScoped<IUserRoleStore<MUser>, SDHCCUserRoleStore<MUser, MRole, MUserRole>>();
-
+      services.AddScoped<IUserRoleStore<TUser>, SDHCCUserRoleStore<TUser, IdentityRole, SDHCUserRole>>();
+      
       services.AddScoped<IUserStore<TUser>, SDHCCUserStore<TUser, IdentityRole, SDHCUserRole>>();
       services.AddScoped<UserManager<TUser>>();
 

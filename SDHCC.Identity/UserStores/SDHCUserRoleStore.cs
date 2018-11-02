@@ -64,7 +64,7 @@ namespace SDHCC.Identity
       var task = new Task<bool>(() =>
       {
         var roleNameLow = roleName.ToLower();
-        var role = db.Where<TRole>(b => b.NormalizedName == roleNameLow).FirstOrDefault();
+        var role = db.Where<TRole>(b => b.NormalizedName.Equals(roleNameLow,StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
         if (role == null)
           return false;
         return db.Where<TUserRole>(b => b.UserId == user.Id && b.RoleId == role.Id).Count() > 0;

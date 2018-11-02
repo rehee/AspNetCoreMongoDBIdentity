@@ -12,6 +12,7 @@ namespace SDHCC
     Number,
     DateTime,
     DropDwon,
-    FileUpload
+    FileUpload,
+    Bool,
   }
 }
