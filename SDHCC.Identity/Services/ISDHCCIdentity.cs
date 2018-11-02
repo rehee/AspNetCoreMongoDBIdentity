@@ -14,8 +14,8 @@ namespace SDHCC.Identity.Services
   {
     bool IsUserInRole(ClaimsPrincipal user, string role);
     bool IsUserInRole(string userName, string role);
-    bool IsUserInRoles(ClaimsPrincipal user, IEnumerable<string> roles, bool isBackSite = true);
-    bool IsUserInRoles(ClaimsPrincipal user, BsonArray roles, bool isBackSite = true);
+    bool IsUserInRoles(ClaimsPrincipal user, IEnumerable<string> roles, bool isBackSite = false);
+    bool IsUserInRoles(ClaimsPrincipal user, BsonArray roles, bool isBackSite = false);
     IQueryable<UserRoleView> GetUserRoles(Expression<Func<IdentityUser<string>, bool>> where = null);
     IQueryable<IdentityRole> GetRoles(bool noSystemRole = false);
     void AddRole(string roleName, out IdentityRole result);

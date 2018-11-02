@@ -13,6 +13,7 @@ using SDHCC.DB;
 using SDHCC.DB.Content;
 using SDHCC.DB.Models;
 using SDHCC.Identity.Models.UserModels;
+using SDHCC.Identity.Services;
 using SDHCCContent.Models;
 using SDHCCContent.Models.Enums;
 using ContentBaseModel = SDHCCContent.Models.ContentBaseModel;
@@ -22,14 +23,15 @@ namespace SDHCCContent.Controllers
   public class TestController : Controller
   {
     ISDHCCDbContext db;
-    public TestController(ISDHCCDbContext db)
+    ISDHCCIdentity us;
+    public TestController(ISDHCCDbContext db, ISDHCCIdentity us)
     {
       this.db = db;
+      this.us = us;
     }
     public string Index()
     {
-      var a = User.IsInRole(E.Setting.AdminRole);
-      
+      var isUser = us.IsUserInRoles(User, new List<string>() { "Admin", "Lalala" });
       return "";
     }
     public IActionResult Multi()

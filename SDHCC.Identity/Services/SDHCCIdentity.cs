@@ -87,7 +87,7 @@ namespace SDHCC.Identity.Services
       var result = userManager.IsInRoleAsync(user, role).GetAsyncValue();
       return result;
     }
-    public bool IsUserInRoles(ClaimsPrincipal user, IEnumerable<string> roles, bool isBackSite = true)
+    public bool IsUserInRoles(ClaimsPrincipal user, IEnumerable<string> roles, bool isBackSite = false)
     {
       if (user == null)
         return false;
@@ -104,20 +104,20 @@ namespace SDHCC.Identity.Services
           return true;
         }
         var isBackUser = userManager.IsInRoleAsync(checkUser, E.Setting.BackUser).GetAsyncValue();
-        if (!isBackUser)
+        if (isBackUser)
         {
-          return false;
+          return true;
         }
       }
       foreach (var role in roles)
       {
         var checkRoles = userManager.IsInRoleAsync(checkUser, role).GetAsyncValue();
-        if (!checkRoles)
-          return false;
+        if (checkRoles)
+          return true;
       }
-      return true;
+      return false;
     }
-    public bool IsUserInRoles(ClaimsPrincipal user, BsonArray roles, bool isBackSite = true)
+    public bool IsUserInRoles(ClaimsPrincipal user, BsonArray roles, bool isBackSite = false)
     {
       var list = new List<string>();
       foreach (var item in roles)
