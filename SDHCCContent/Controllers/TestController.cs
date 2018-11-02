@@ -13,6 +13,7 @@ using SDHCC.DB;
 using SDHCC.DB.Content;
 using SDHCC.DB.Models;
 using SDHCC.Identity.Models.UserModels;
+using SDHCC.Identity.Services;
 using SDHCCContent.Models;
 using SDHCCContent.Models.Enums;
 using ContentBaseModel = SDHCCContent.Models.ContentBaseModel;
@@ -22,23 +23,15 @@ namespace SDHCCContent.Controllers
   public class TestController : Controller
   {
     ISDHCCDbContext db;
-    public TestController(ISDHCCDbContext db)
+    ISDHCCIdentity us;
+    public TestController(ISDHCCDbContext db, ISDHCCIdentity us)
     {
       this.db = db;
+      this.us = us;
     }
     public string Index()
     {
-      var list = new List<string>() { "1", "2" };
-      var t = db.Where<TestPage>(b => list.Intersect(b.ABC).Count() > 0).ToList();
-      //for(var i = 0; i < 10; i++)
-      //{
-      //  var page = new TestPage();
-      //  for(var i2 = 0; i2 < i; i2++)
-      //  {
-      //    page.ABC.Add(i2.ToString());
-      //  }
-      //  db.Add<TestPage>(page,out var response);
-      //}
+      var isUser = us.IsUserInRoles(User, new List<string>() { "Admin", "Lalala" });
       return "";
     }
     public IActionResult Multi()
