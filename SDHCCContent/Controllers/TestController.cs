@@ -43,10 +43,10 @@ namespace SDHCCContent.Controllers
     {
       return View();
     }
-    public IActionResult File(string id)
+    public FileStreamResult File(string id)
     {
       id = "files\\" + id;
-      return id.GetFileFromPath(this);
+      return id.GetFileFromPath(this, 50);
     }
 
 

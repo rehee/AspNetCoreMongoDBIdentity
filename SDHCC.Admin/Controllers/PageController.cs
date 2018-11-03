@@ -30,10 +30,6 @@ namespace SDHCC.Admins.Controllers
     }
     public IActionResult Index(string id = "")
     {
-      if (!(users.IsUserInRoles(User, Enumerable.Empty<string>())))
-      {
-        return Redirect(setting.Login);
-      }
       ContentPostModel model = null;
       if (!string.IsNullOrEmpty(id))
       {

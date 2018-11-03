@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,21 +11,44 @@ namespace System
 {
   public static class FileReadExtend
   {
-    public static FileStreamResult GetFileFromPath(this string fullPath, Controller controller)
+    public static Stream GetFileStreamFromPath(this string fullPath, Controller controller, int widthPx = 0)
     {
-      if (string.IsNullOrEmpty(fullPath))
-        return null;
-
-      var path = Path.Combine(
-                     Directory.GetCurrentDirectory(), fullPath);
-
-      var memory = new MemoryStream();
-      using (var stream = new FileStream(path, FileMode.Open))
+      try
       {
-        stream.CopyToAsync(memory).GetAsyncValue();
+        if (string.IsNullOrEmpty(fullPath))
+          return null;
+        var path = Path.Combine(
+                       Directory.GetCurrentDirectory(), fullPath);
+        //var f = File.OpenWrite(path);
+        Image<Rgba32> image = Image.Load(path);
+        if (widthPx > 0)
+        {
+          int persent = image.Width / widthPx;
+          image.Mutate(x => x
+           .Resize(image.Width / persent, image.Height / persent)
+           .Grayscale());
+        }
+
+        var memory = new MemoryStream();
+        image.SaveAsJpeg(memory);
+        memory.Position = 0;
+        return memory;
       }
-      memory.Position = 0;
-      return controller.File(memory, path.GetContentTypeFromPath(), Path.GetFileName(path));
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+        return null;
+      }
+
+    }
+    public static FileStreamResult GetFileFromPath(this string fullPath, Controller controller, int widthPx = 0)
+    {
+      var fileStream = fullPath.GetFileStreamFromPath(controller, widthPx);
+      if (fileStream == null)
+        return null;
+      var memory = new MemoryStream();
+      var fileName = $"{Guid.NewGuid().ToString()}.jpg";
+      return controller.File(fileStream, fileName.GetContentTypeFromPath(), Path.GetFileName(fileName));
     }
   }
 }
