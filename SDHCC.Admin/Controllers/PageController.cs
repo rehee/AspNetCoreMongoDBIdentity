@@ -34,7 +34,7 @@ namespace SDHCC.Admins.Controllers
       if (!string.IsNullOrEmpty(id))
       {
         var content = db.GetContent(id);
-        if (content != null && users.IsUserInRoles(User, content.AdminReadRoles))
+        if (content != null && users.IsUserInRoles(User, content.AdminReadRoles, true))
         {
           model = content.ConvertToPassingModel();
         }

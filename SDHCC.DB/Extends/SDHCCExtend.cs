@@ -130,7 +130,7 @@ namespace System
         return;
       }
     }
-    public static void Save(this IFormFile file, out string filePath)
+    public static void Save(this IFormFile file, out string filePath, string extraPath = "")
     {
       filePath = "";
       if (file == null)
@@ -143,14 +143,15 @@ namespace System
         else
           name = '.' + name;
         var fileName = $"{Guid.NewGuid().ToString()}{name}";
-        var uploadPath = Path.Combine(ContentE.FileUploadPath, fileName);
+        string uploadPath;
+        uploadPath = Path.Combine(ContentE.FileUploadPath, extraPath, fileName);
         var path = Path.Combine(Directory.GetCurrentDirectory(), uploadPath);
         var exist = Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(),
-                                 ContentE.FileUploadPath));
+                                 ContentE.FileUploadPath, extraPath));
         if (!exist)
         {
           Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(),
-                                 ContentE.FileUploadPath));
+                                 ContentE.FileUploadPath, extraPath));
         }
         using (var stream = new FileStream(path, FileMode.Create))
         {
@@ -161,7 +162,7 @@ namespace System
       catch { }
     }
 
-    public static void DeleteFile(this string filePath,out bool success)
+    public static void DeleteFile(this string filePath, out bool success)
     {
       success = false;
       if (!File.Exists(filePath))

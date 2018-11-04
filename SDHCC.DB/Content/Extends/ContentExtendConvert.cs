@@ -263,7 +263,7 @@ namespace SDHCC.DB.Content
             var files = propertyPost;
             if (files.File != null)
             {
-              files.File.Save(out var filePath);
+              files.File.Save(out var filePath,$"{p.DeclaringType.FullName}_{p.Name}");
               if (deleteExistFile)
               {
                 files.Value.DeleteFile(out var deleted);

@@ -45,7 +45,7 @@ namespace SDHCCContent.Controllers
     }
     public FileStreamResult File(string id)
     {
-      id = "files\\" + id;
+      id = "fileupload\\SDHCCContent.Models.Home_UploadFile\\" + id;
       return id.GetFileFromPath(this, 50);
     }
 

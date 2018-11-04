@@ -5,7 +5,7 @@
     Layout = "_Layout_Content";
     var contentId = Model != null ? Model.Id : "";
     var contents = ContentBase.context.GetChildrenNode(contentId)
-        .Where(b => users.IsUserInRoles(User, (BsonArray)b["AdminReadRoles"])).ToList();
+      .Where(b => users.IsUserInRoles(User, (BsonArray)b["AdminReadRoles"], true)).ToList();
     IEnumerable<string> CreateRole;
     IEnumerable<string> ReadRole;
     IEnumerable<string> UpdateRole;
@@ -46,7 +46,7 @@
 }
 
 <div class="button-box">
-    @if (users.IsUserInRoles(User, CreateRole))
+    @if (users.IsUserInRoles(User, CreateRole, true))
     {
         <div class="btn-group">
             <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -68,15 +68,15 @@
             </div>
         </div>
     }
-    @if (Model != null && users.IsUserInRoles(User, UpdateRole))
+    @if (Model != null && users.IsUserInRoles(User, UpdateRole, true))
     {
         <a href="@Url.Action("Edit","Page",new { @area="Admin",@id=contentId })" class="btn btn-success">Edit</a>
     }
-    @if (users.IsUserInRoles(User, UpdateRole))
+    @if (users.IsUserInRoles(User, UpdateRole, true))
     {
         <a href="@Url.Action("Sort","Page",new { @area="Admin",@id=contentId })" class="btn btn-warning">Sort</a>
     }
-    @if (Model != null && users.IsUserInRoles(User, DeleteRole))
+    @if (Model != null && users.IsUserInRoles(User, DeleteRole, true))
     {
         <a href="#" onclick="deleteCurrent()" class="btn btn-danger">Delete</a>
         <form id="ContentDeleteForm" action="@Url.Action("Delete","Page",new { @area="Admin" })" method="post">
