@@ -25,8 +25,7 @@ namespace System
         {
           int persent = image.Width / widthPx;
           image.Mutate(x => x
-           .Resize(image.Width / persent, image.Height / persent)
-           .Grayscale());
+           .Resize(image.Width / persent, image.Height / persent));
         }
 
         var memory = new MemoryStream();
