@@ -100,6 +100,13 @@ namespace SDHCC.DB.Content
         result.EditorType = inputAttribute.EditorType;
         result.MultiSelect = inputAttribute.MultiSelect;
         relatedType = inputAttribute.RelatedType;
+        result.RangeMax = inputAttribute.RangeMax;
+        result.RangeMin = inputAttribute.RangeMin;
+        if (inputAttribute.RangeMaxSelf)
+        {
+          var max = input.MyTryConvert<int>();
+          result.RangeMax = max;
+        }
       }
       var propertyType = p.GetType();
       var displayAttribute = p.GetCustomAttribute<DisplayAttribute>();

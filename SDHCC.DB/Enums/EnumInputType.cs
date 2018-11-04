@@ -14,5 +14,6 @@ namespace SDHCC
     DropDwon,
     FileUpload,
     Bool,
+    Range
   }
 }

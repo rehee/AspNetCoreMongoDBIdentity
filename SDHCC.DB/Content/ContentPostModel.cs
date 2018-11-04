@@ -37,6 +37,10 @@ namespace SDHCC.DB.Content
     public bool BaseProperty { get; set; } = false;
     public bool IgnoreProperty { get; set; } = false;
     public bool CustomProperty { get; set; } = false;
+
+    public int RangeMin { get; set; } = 0;
+    public int RangeMax { get; set; } = 100;
+
   }
 
   public class ContentPropertyIndex

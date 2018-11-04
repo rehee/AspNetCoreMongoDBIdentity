@@ -38,5 +38,9 @@ namespace SDHCCContent.Models
     [InputType(EditorType = EnumInputType.FileUpload)]
     public string UploadFile { get; set; }
 
+    [InputType(EditorType = EnumInputType.Range, RangeMaxSelf = true)]
+    public int aaa { get; set; } = 10;
+
+
   }
 }

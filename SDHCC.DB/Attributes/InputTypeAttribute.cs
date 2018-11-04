@@ -9,6 +9,10 @@ namespace SDHCC
     public EnumInputType EditorType { get; set; } = EnumInputType.Text;
     public bool MultiSelect { get; set; } = false;
     public Type RelatedType { get; set; } = null;
+    public int RangeMin { get; set; } = 0;
+    public int RangeMax { get; set; } = 100;
+    public bool RangeMaxSelf { get; set; } = false;
+
     public InputTypeAttribute()
     {
 
